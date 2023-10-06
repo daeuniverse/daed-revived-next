@@ -4,16 +4,33 @@ import { ClientError, GraphQLClient } from 'graphql-request'
 import { useRouter } from 'next/navigation'
 import { FC, ReactNode, createContext, useContext, useMemo } from 'react'
 
-const GraphqlClientContext = createContext<GraphQLClient>(null as unknown as GraphQLClient)
+export type SessionContextProps = { endpointURL: string; token: string }
 
-export const useGraphqlClient = () => useContext(GraphqlClientContext)
+const SessionContext = createContext<SessionContextProps>(null as unknown as { endpointURL: string; token: string })
 
-export const GraphqlClientProvider: FC<{ endpointURL: string; token: string; children: ReactNode }> = ({
+export const useSession = () => useContext(SessionContext)
+
+export const SessionProvider: FC<SessionContextProps & { children: ReactNode }> = ({
   endpointURL,
   token,
   children
 }) => {
   const router = useRouter()
+
+  if (!endpointURL || !token) {
+    router.replace('/setup')
+  }
+
+  return <SessionContext.Provider value={{ endpointURL, token }}>{children}</SessionContext.Provider>
+}
+
+const GraphqlClientContext = createContext<GraphQLClient>(null as unknown as GraphQLClient)
+
+export const useGraphqlClient = () => useContext(GraphqlClientContext)
+
+export const GraphqlClientProvider: FC<{ children: ReactNode }> = ({ children }) => {
+  const router = useRouter()
+  const { endpointURL, token } = useSession()
 
   const graphqlClient = useMemo(
     () =>

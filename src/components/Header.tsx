@@ -9,7 +9,7 @@ import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useUserQuery } from '~/apis/query'
 import { LogoText } from '~/components/LogoText'
-import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar'
+import { Avatar, AvatarFallback } from '~/components/ui/avatar'
 import { Button } from '~/components/ui/button'
 import { ModeToggle } from '~/components/ui/mode-toggle'
 import {
@@ -68,9 +68,8 @@ const Header: FC = () => {
               variant="outline"
               size="icon"
               onClick={() => void i18n.changeLanguage(i18n.language === 'en-US' ? 'zh-Hans' : 'en-US')}
-            >
-              <LanguagesIcon className="w-4" />
-            </Button>
+              icon={<LanguagesIcon className="w-4" />}
+            />
           </TooltipTrigger>
 
           <TooltipContent>{t('actions.switchLanguage')}</TooltipContent>
@@ -80,9 +79,7 @@ const Header: FC = () => {
 
         <Avatar>
           {userQuery.data?.user.avatar && (
-            <AvatarImage asChild>
-              <Image width={20} height={20} src={userQuery.data.user.avatar} alt="avatar" />
-            </AvatarImage>
+            <Image width={40} height={40} src={userQuery.data.user.avatar} alt="avatar" />
           )}
 
           <AvatarFallback>daed</AvatarFallback>

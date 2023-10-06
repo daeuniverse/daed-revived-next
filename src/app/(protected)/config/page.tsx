@@ -665,7 +665,7 @@ export default function ConfigPage() {
 
               {isDefault(config.id) && (
                 <CardDescription>
-                  <Badge>{t('primitives.default')}</Badge>
+                  <Badge className="uppercase">{t('primitives.default')}</Badge>
                 </CardDescription>
               )}
             </CardHeader>

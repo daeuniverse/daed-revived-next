@@ -1,21 +1,21 @@
 import '~/app/globals.css'
 
 import { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Noto_Sans_SC } from 'next/font/google'
 import { ReactNode } from 'react'
 import { Bootstrap } from '~/app/bootstrap'
 import { Providers } from '~/app/providers'
 import { Toaster } from '~/components/ui/toaster'
 import { cn } from '~/lib/ui'
 
-const inter = Inter({ subsets: ['latin'] })
+const notoSansSC = Noto_Sans_SC({ subsets: ['latin', 'latin-ext', 'cyrillic', 'vietnamese'] })
 
 export const metadata: Metadata = { title: 'daed', description: 'daed' }
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={cn(inter.className)}>
+      <body className={cn(notoSansSC.className)}>
         <Providers>
           <Bootstrap>
             <main
