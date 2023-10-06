@@ -17,7 +17,6 @@ export const POST = async (req: Request) => {
   )
 
   const jwtToken = jwt.sign({ endpointURL, token }, process.env.NEXT_PUBLIC_JWT_SECRET!)
-  console.log(jwtToken)
 
   const cookieMaxAge = 60 * 60 * 24 * 30 // 30 days
 
