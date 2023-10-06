@@ -1,17 +1,17 @@
 import { z } from 'zod'
 
 export const editConfigFormSchema = z.object({
-  tproxyPort: z.number().min(0).max(65535).positive(),
+  tproxyPort: z.number().min(0).max(65535),
   tproxyPortProtect: z.boolean(),
   soMarkFromDae: z.number().min(0),
   logLevel: z.string(),
   disableWaitingNetwork: z.boolean(),
-  lanInterface: z.array(z.string().nonempty()),
-  wanInterface: z.array(z.string().nonempty()),
+  lanInterface: z.array(z.string()),
+  wanInterface: z.array(z.string()),
   autoConfigKernelParameter: z.boolean(),
-  tcpCheckUrl: z.array(z.string().nonempty()).nonempty(),
+  tcpCheckUrl: z.array(z.string().min(1)).min(1),
   tcpCheckHttpMethod: z.string(),
-  udpCheckDns: z.array(z.string().nonempty()).nonempty(),
+  udpCheckDns: z.array(z.string().min(1)).min(1),
   checkIntervalSeconds: z.number().min(0),
   checkToleranceMS: z.number().min(0),
   dialMode: z.string(),
@@ -22,7 +22,7 @@ export const editConfigFormSchema = z.object({
 })
 
 export const createConfigFormSchema = editConfigFormSchema.extend({
-  name: z.string().nonempty().max(20)
+  name: z.string().min(4).max(20)
 })
 
 export enum LogLevel {

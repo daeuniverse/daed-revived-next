@@ -1,7 +1,7 @@
 import { z } from 'zod'
 
 export const setupFormSchema = z.object({
-  endpointURL: z.string().url().nonempty(),
+  endpointURL: z.string().url().min(1),
   username: z.string().min(4).max(20),
   password: z.string().min(6).max(20)
 })
