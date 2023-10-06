@@ -92,6 +92,8 @@ const documents = {
     types.DnSsDocument,
   '\n          query User {\n            user {\n              username\n              name\n              avatar\n            }\n          }\n        ':
     types.UserDocument,
+  '\n        query User {\n          user {\n            username\n            name\n            avatar\n          }\n        }\n      ':
+    types.UserDocument,
   '\n      query Token($username: String!, $password: String!) {\n        token(username: $username, password: $password)\n      }\n    ':
     types.TokenDocument
 }
@@ -350,6 +352,12 @@ export function graphql(
 export function graphql(
   source: '\n          query User {\n            user {\n              username\n              name\n              avatar\n            }\n          }\n        '
 ): (typeof documents)['\n          query User {\n            user {\n              username\n              name\n              avatar\n            }\n          }\n        ']
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: '\n        query User {\n          user {\n            username\n            name\n            avatar\n          }\n        }\n      '
+): (typeof documents)['\n        query User {\n          user {\n            username\n            name\n            avatar\n          }\n        }\n      ']
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

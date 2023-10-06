@@ -1,6 +1,6 @@
 'use client'
 
-// FIXME: type guards for conditional types used by the Props of ConfigDialogContent
+// TODO: add type guards for conditional types used by the Props of ConfigDialogContent
 import { zodResolver } from '@hookform/resolvers/zod'
 import { SelectIcon } from '@radix-ui/react-select'
 import { CodeIcon, EditIcon, PlusIcon, Trash2Icon } from 'lucide-react'
@@ -77,9 +77,9 @@ const ConfigDialogContent: FC<
 
   return (
     <DialogContent size="medium">
-      {/* @ts-ignore */}
+      {/* @ts-expect-error */}
       <Form {...form}>
-        {/* @ts-ignore */}
+        {/* @ts-expect-error */}
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <DialogHeader>
             {type === 'edit' && (
@@ -505,7 +505,7 @@ const ConfigDialogContent: FC<
                       )}
                     />
 
-                    {/* @ts-ignore */}
+                    {/* @ts-expect-error */}
                     {form.getValues('tlsImplementation') === TLSImplementation.utls && (
                       <FormField
                         name="utlsImitate"

@@ -61,6 +61,7 @@
     "encoding": "^0.1.13",
     "eslint": "^8.50.0",
     "eslint-config-next": "13.5.4",
+    "graphql": "^16.8.1",
     "graphql-request": "^6.1.0",
     "husky": "^8.0.3",
     "i18next": "^23.5.1",

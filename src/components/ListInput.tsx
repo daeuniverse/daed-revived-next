@@ -19,13 +19,13 @@ const ListInput: FC<{ name: string }> = ({ name }) => {
             name={`${name}.${index}`}
             render={({ field }) => (
               <FormItem>
-                <div className="flex gap-2">
+                <div className="flex items-center gap-2">
                   <Input {...field} />
 
                   <Button
+                    className="h-fit w-fit p-2"
                     variant="destructive"
-                    size="icon"
-                    icon={<XIcon className="w-4" />}
+                    icon={<XIcon className="h-3 w-3" />}
                     onClick={() => remove(index)}
                   />
                 </div>
@@ -37,7 +37,9 @@ const ListInput: FC<{ name: string }> = ({ name }) => {
         )
       })}
 
-      <Button onClick={() => append('')} icon={<PlusIcon className="w-4" />} />
+      <div className="self-end">
+        <Button className="h-fit w-fit p-2" onClick={() => append('')} icon={<PlusIcon className="h-3 w-3" />} />
+      </div>
     </div>
   )
 }

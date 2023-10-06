@@ -132,9 +132,8 @@ const TagsInput = forwardRef<HTMLInputElement, TagsInputProps>(
 
                   removeSelectedItem(selectedValue)
                 }}
-              >
-                <XIcon className="h-3 w-3" />
-              </Button>
+                icon={<XIcon className="h-3 w-3" />}
+              />
             </Badge>
           ))}
 
