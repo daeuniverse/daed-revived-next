@@ -71,7 +71,8 @@
     "cancel": "Cancel",
     "confirm": "Confirm",
     "reset": "Reset",
-    "submit": "Submit"
+    "submit": "Submit",
+    "refresh": "Refresh"
   },
   "primitives": {
     "create": "Create {{resourceName}}",
