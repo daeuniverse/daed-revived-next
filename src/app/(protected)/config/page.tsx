@@ -84,9 +84,11 @@ const ConfigDialogContent: FC<
 
   return (
     <DialogContent size="medium">
-      <Form {...(form as CreateConfigDialogContentProps['form'])}>
+      {/* @ts-expect-error */}
+      <Form {...form}>
         <form
           onSubmit={form.handleSubmit((values) => {
+            // just to make typescript happy
             if (type === 'create') {
               return onSubmit(values as z.infer<typeof createConfigFormSchema>)
             } else if (type === 'edit') {

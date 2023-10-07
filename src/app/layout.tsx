@@ -10,7 +10,12 @@ import { cn } from '~/lib/ui'
 
 const notoSansSC = Noto_Sans_SC({ subsets: ['latin', 'latin-ext', 'cyrillic', 'vietnamese'] })
 
-export const metadata: Metadata = { title: 'daed', description: 'daed' }
+export const metadata: Metadata = {
+  title: 'daed',
+  description: 'A modern dashboard for dae',
+  viewport:
+    'width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover'
+}
 
 export default async function RootLayout({ children }: { children: ReactNode }) {
   return (
