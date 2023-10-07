@@ -53,7 +53,7 @@
       "checkTolerance": "只有当 新的延迟 <= (旧的延迟 - 公差) 时，群组才会切换节点",
       "allowInsecure": "允许使用不安全的TLS证书。除非迫不得已，否则不建议打开它",
       "sniffingTimeout": "等待第一次发送数据以进行嗅探时超时。如果拨号模式为 ip，则始终为 0。将其设置得更高在高延迟局域网网络中很有用",
-      "tlsImplementation": "TLS 实现。tls 是使用 Go 的 crypto/tls。utls 是使用 utls，它可以模仿浏览器的客户端 Hello",
+      "tlsImplementation": "TLS 实现。tls 是使用 GO 的 crypto/tls。utls 是使用 utls，它可以模仿浏览器的客户端 Hello",
       "utlsImitate": "要模仿的 uTLS 的客户端 Hello ID。只有当 TLS 实现 为 utls 时，此操作才会生效"
     }
   },

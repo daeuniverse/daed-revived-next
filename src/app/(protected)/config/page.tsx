@@ -22,8 +22,10 @@ import {
   AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
+  AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
+  AlertDialogTitle,
   AlertDialogTrigger
 } from '~/components/ui/alert-dialog'
 import { Badge } from '~/components/ui/badge'
@@ -314,7 +316,7 @@ const ConfigDialogContent: FC<
                       name="tcpCheckUrl"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>{t('form.fields.tcpCheckUrl')}</FormLabel>
+                          <FormLabel dangling>{t('form.fields.tcpCheckUrl')}</FormLabel>
 
                           <FormDescription>{t('form.descriptions.tcpCheckUrl')}</FormDescription>
 
@@ -360,7 +362,7 @@ const ConfigDialogContent: FC<
                       name="udpCheckDns"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>{t('form.fields.udpCheckDns')}</FormLabel>
+                          <FormLabel dangling>{t('form.fields.udpCheckDns')}</FormLabel>
 
                           <FormDescription>{t('form.descriptions.udpCheckDns')}</FormDescription>
 
@@ -768,7 +770,13 @@ export default function ConfigPage() {
                   </AlertDialogTrigger>
 
                   <AlertDialogContent>
-                    <AlertDialogHeader>hello world</AlertDialogHeader>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>
+                        {t('primitives.remove', { resourceName: t('primitives.config') })}
+                      </AlertDialogTitle>
+
+                      <AlertDialogDescription>{config.name}</AlertDialogDescription>
+                    </AlertDialogHeader>
 
                     <AlertDialogFooter>
                       <AlertDialogCancel>{t('actions.cancel')}</AlertDialogCancel>

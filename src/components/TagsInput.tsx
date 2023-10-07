@@ -1,7 +1,6 @@
 'use client'
 
 import { autoUpdate, flip, offset, useFloating } from '@floating-ui/react'
-import * as Portal from '@radix-ui/react-portal'
 import { useCombobox, useMultipleSelection } from 'downshift'
 import { differenceWith } from 'lodash'
 import { ChevronDownIcon, ChevronUpIcon, XIcon } from 'lucide-react'
@@ -106,7 +105,7 @@ const TagsInput = forwardRef<HTMLInputElement, TagsInputProps>(
 
     const { refs, floatingStyles } = useFloating({
       whileElementsMounted: autoUpdate,
-      middleware: [offset(4), flip()]
+      middleware: [offset(6), flip()]
     })
 
     return (
@@ -161,10 +160,10 @@ const TagsInput = forwardRef<HTMLInputElement, TagsInputProps>(
           </div>
         </div>
 
-        <div className={cn(open && 'hidden')} {...getMenuProps()}>
+        <div className={cn(!open && 'hidden')} {...getMenuProps()}>
           {open && (
-            <Portal.Root ref={refs.setFloating} className="z-[100]" style={{ width, ...floatingStyles }}>
-              <ul className="max-h-64 overflow-y-auto rounded bg-background">
+            <div ref={refs.setFloating} className="z-50" style={{ width, ...floatingStyles }}>
+              <ul className="max-h-64 overflow-y-auto rounded border bg-background">
                 {items.map((item, index) => (
                   <li
                     key={index}
@@ -185,7 +184,7 @@ const TagsInput = forwardRef<HTMLInputElement, TagsInputProps>(
                   </li>
                 ))}
               </ul>
-            </Portal.Root>
+            </div>
           )}
         </div>
       </div>

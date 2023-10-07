@@ -53,7 +53,7 @@
       "checkTolerance": "Group will switch node only when new_latency <= (old_latency - tolerance)",
       "allowInsecure": "Allow insecure TLS certificates. It is not recommended to turn it on unless you have to.",
       "sniffingTimeout": "Timeout to waiting for first data sending for sniffing. It is always 0 if dial_mode is ip. Set it higher is useful in high latency LAN network",
-      "tlsImplementation": "TLS implementation. tls is to use Go's crypto/tls. utls is to use uTLS, which can imitate browser's Client Hello",
+      "tlsImplementation": "TLS implementation. tls is to use GO's crypto/tls. utls is to use uTLS, which can imitate browser's Client Hello",
       "utlsImitate": "The Client Hello ID for uTLS to imitate. This takes effect only if tls_implementation is utls"
     }
   },
