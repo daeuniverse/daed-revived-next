@@ -16,7 +16,7 @@ export default function ProtectedLayout({ children }: { children: ReactNode }) {
 
   return (
     <Providers endpointURL={endpointURL} token={token}>
-      <div className="sticky inset-x-0 top-0">
+      <div className="sticky inset-x-0 top-0 z-50 bg-background">
         <Header />
       </div>
 

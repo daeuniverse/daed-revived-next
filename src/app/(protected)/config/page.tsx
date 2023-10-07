@@ -1,9 +1,7 @@
 'use client'
 
-// TODO: add type guards for conditional types used by the Props of ConfigDialogContent
 import { zodResolver } from '@hookform/resolvers/zod'
-import { SelectIcon } from '@radix-ui/react-select'
-import { CodeIcon, EditIcon, PlusIcon, Trash2Icon } from 'lucide-react'
+import { CodeIcon, EditIcon, PlayIcon, PlusIcon, Trash2Icon } from 'lucide-react'
 import { FC, Fragment, useMemo, useState } from 'react'
 import { SubmitHandler, UseFormReturn, useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
@@ -77,10 +75,16 @@ const ConfigDialogContent: FC<
 
   return (
     <DialogContent size="medium">
-      {/* @ts-expect-error */}
-      <Form {...form}>
-        {/* @ts-expect-error */}
-        <form onSubmit={form.handleSubmit(onSubmit)}>
+      <Form {...(form as CreateConfigDialogContentProps['form'])}>
+        <form
+          onSubmit={form.handleSubmit((values) => {
+            if (type === 'create') {
+              return onSubmit(values as z.infer<typeof createConfigFormSchema>)
+            } else if (type === 'edit') {
+              return onSubmit(values as z.infer<typeof editConfigFormSchema>)
+            }
+          })}
+        >
           <DialogHeader>
             {type === 'edit' && (
               <Fragment>
@@ -505,8 +509,7 @@ const ConfigDialogContent: FC<
                       )}
                     />
 
-                    {/* @ts-expect-error */}
-                    {form.getValues('tlsImplementation') === TLSImplementation.utls && (
+                    {form.getValues().tlsImplementation === TLSImplementation.utls && (
                       <FormField
                         name="utlsImitate"
                         render={({ field }) => (
@@ -678,7 +681,7 @@ export default function ConfigPage() {
                   size="icon"
                   loading={selectConfigMutation.isLoading}
                   onClick={() => selectConfigMutation.mutate({ id: config.id })}
-                  icon={<SelectIcon className="w-4" />}
+                  icon={<PlayIcon className="w-4" />}
                 />
               )}
 
