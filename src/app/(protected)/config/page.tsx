@@ -17,6 +17,15 @@ import { CodeBlock } from '~/components/CodeBlock'
 import { ListInput } from '~/components/ListInput'
 import { TagsInput, TagsInputOption } from '~/components/TagsInput'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '~/components/ui/accordion'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTrigger
+} from '~/components/ui/alert-dialog'
 import { Badge } from '~/components/ui/badge'
 import { Button } from '~/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '~/components/ui/card'
@@ -746,14 +755,35 @@ export default function ConfigPage() {
               </Dialog>
 
               {!isDefault(config.id) && (
-                <Button
-                  variant="destructive"
-                  size="icon"
-                  icon={<Trash2Icon className="w-4" />}
-                  disabled={config.selected}
-                  loading={removeConfigMutation.isLoading}
-                  onClick={() => removeConfigMutation.mutate({ id: config.id })}
-                />
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button
+                      variant="destructive"
+                      size="icon"
+                      icon={<Trash2Icon className="w-4" />}
+                      disabled={config.selected}
+                    />
+                  </AlertDialogTrigger>
+
+                  <AlertDialogContent>
+                    <AlertDialogHeader>hello world</AlertDialogHeader>
+
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>{t('actions.cancel')}</AlertDialogCancel>
+                      <AlertDialogAction asChild>
+                        <Button
+                          onClick={async () => {
+                            await removeConfigMutation.mutateAsync({ id: config.id })
+                            await configsQuery.refetch()
+                          }}
+                          loading={removeConfigMutation.isLoading}
+                        >
+                          {t('actions.confirm')}
+                        </Button>
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               )}
             </CardFooter>
           </Card>

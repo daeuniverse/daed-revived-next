@@ -75,6 +75,7 @@
   },
   "primitives": {
     "create": "创建{{resourceName}}",
+    "remove": "移除{{resourceName}}",
     "routing": "路由",
     "dns": "域名解析",
     "config": "配置",

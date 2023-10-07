@@ -75,6 +75,7 @@
   },
   "primitives": {
     "create": "Create {{resourceName}}",
+    "remove": "Remove {{resourceName}}",
     "routing": "Routing",
     "dns": "DNS",
     "config": "Config",
