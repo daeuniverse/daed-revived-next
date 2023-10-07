@@ -18,7 +18,9 @@ export const SessionProvider: FC<SessionContextProps & { children: ReactNode }> 
   const router = useRouter()
 
   if (!endpointURL || !token) {
-    router.replace('/setup')
+    router.replace('/login')
+
+    return null
   }
 
   return <SessionContext.Provider value={{ endpointURL, token }}>{children}</SessionContext.Provider>
@@ -40,7 +42,7 @@ export const GraphqlClientProvider: FC<{ children: ReactNode }> = ({ children })
           const error = (response as ClientError).response?.errors?.[0]
 
           if (error?.message === 'access denied') {
-            router.replace('/setup')
+            router.replace('/login')
           }
 
           return response

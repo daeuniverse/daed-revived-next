@@ -30,15 +30,11 @@ export default function SetupPage() {
           <form
             onSubmit={form.handleSubmit(async ({ endpointURL, username, password }) => {
               try {
-                const { token } = await ky
-                  .post('/api/auth', { json: { endpointURL, username, password } })
-                  .json<{ token: string }>()
+                await ky.post('/api/login', { json: { endpointURL, username, password } }).json<{ token: string }>()
 
-                console.log(token)
-
-                router.replace('/')
+                router.replace('/orchestrate')
               } catch (err) {
-                toast({ description: (err as Error).message })
+                toast({ variant: 'destructive', description: (err as Error).message })
               }
             })}
           >

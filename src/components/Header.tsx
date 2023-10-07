@@ -1,16 +1,24 @@
 'use client'
 
 import i18n from 'i18next'
+import ky from 'ky'
 import { ActivityIcon, CogIcon, GlobeIcon, LanguagesIcon, NetworkIcon } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useUserQuery } from '~/apis/query'
 import { LogoText } from '~/components/LogoText'
 import { Avatar, AvatarFallback } from '~/components/ui/avatar'
 import { Button } from '~/components/ui/button'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger
+} from '~/components/ui/dropdown-menu'
 import { ModeToggle } from '~/components/ui/mode-toggle'
 import {
   NavigationMenu,
@@ -24,6 +32,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '~/components/ui/tooltip
 const Header: FC = () => {
   const { t } = useTranslation()
   const pathname = usePathname()
+  const router = useRouter()
   const userQuery = useUserQuery()
 
   const navigationMenus = [
@@ -77,13 +86,33 @@ const Header: FC = () => {
 
         <ModeToggle />
 
-        <Avatar>
-          {userQuery.data?.user.avatar && (
-            <Image width={40} height={40} src={userQuery.data.user.avatar} alt="avatar" />
-          )}
+        <DropdownMenu>
+          <DropdownMenuTrigger>
+            <Avatar>
+              {userQuery.data?.user.avatar && (
+                <Image width={40} height={40} src={userQuery.data.user.avatar} alt="avatar" />
+              )}
 
-          <AvatarFallback>daed</AvatarFallback>
-        </Avatar>
+              <AvatarFallback>daed</AvatarFallback>
+            </Avatar>
+          </DropdownMenuTrigger>
+
+          <DropdownMenuContent>
+            <DropdownMenuItem>Account Settings</DropdownMenuItem>
+
+            <DropdownMenuSeparator />
+
+            <DropdownMenuItem
+              onClick={async () => {
+                await ky.post('/api/logout')
+
+                router.replace('/login')
+              }}
+            >
+              {t('actions.logout')}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </div>
   )

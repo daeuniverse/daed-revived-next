@@ -12,7 +12,7 @@ const notoSansSC = Noto_Sans_SC({ subsets: ['latin', 'latin-ext', 'cyrillic', 'v
 
 export const metadata: Metadata = { title: 'daed', description: 'daed' }
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+export default async function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={cn(notoSansSC.className)}>

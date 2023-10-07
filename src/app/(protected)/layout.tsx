@@ -9,7 +9,7 @@ export default function ProtectedLayout({ children }: { children: ReactNode }) {
   const jwtToken = cookies().get('jwtToken')
 
   if (!jwtToken) {
-    redirect('/setup')
+    redirect('/login')
   }
 
   const { endpointURL, token } = jwt.decode(jwtToken.value, { json: true })!
