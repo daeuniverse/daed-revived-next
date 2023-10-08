@@ -321,7 +321,7 @@ export const useRemoveDNSMutation = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (id: string) => {
+    mutationFn: ({ id }: { id: string }) => {
       return gqlClient.request(
         graphql(`
           mutation RemoveDNS($id: ID!) {

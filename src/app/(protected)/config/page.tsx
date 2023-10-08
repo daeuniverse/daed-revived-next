@@ -587,16 +587,16 @@ export default function ConfigPage() {
     resolver: zodResolver(editConfigFormSchema),
     defaultValues: editConfigFormDefault
   })
-  const defaultConfigIdQuery = useGetJSONStorageRequest(['defaultConfigID'] as const)
+  const defaultConfigIDQuery = useGetJSONStorageRequest(['defaultConfigID'] as const)
   const generalQuery = useGeneralQuery()
   const configsQuery = useConfigsQuery()
-  const isDefault = (id: string) => id === defaultConfigIdQuery.data?.defaultConfigID
+  const isDefault = (id: string) => id === defaultConfigIDQuery.data?.defaultConfigID
   const [createDialogOpened, setCreateDialogOpened] = useState(false)
   const [editDialogOpened, setEditDialogOpened] = useState(false)
-  const selectConfigMutation = useSelectConfigMutation()
-  const createConfigMutation = useCreateConfigMutation()
-  const updateConfigMutation = useUpdateConfigMutation()
-  const removeConfigMutation = useRemoveConfigMutation()
+  const selectMutation = useSelectConfigMutation()
+  const createMutation = useCreateConfigMutation()
+  const updateMutation = useUpdateConfigMutation()
+  const removeMutation = useRemoveConfigMutation()
 
   const lanInterfaces: TagsInputOption[] = useMemo(() => {
     const interfaces = generalQuery.data?.general.interfaces
@@ -657,7 +657,7 @@ export default function ConfigPage() {
             onSubmit={async (values) => {
               const { name, checkIntervalSeconds, checkToleranceMS, sniffingTimeoutMS, ...global } = values
 
-              await createConfigMutation.mutateAsync({
+              await createMutation.mutateAsync({
                 name,
                 global: {
                   ...global,
@@ -692,8 +692,8 @@ export default function ConfigPage() {
               {!config.selected && (
                 <Button
                   size="icon"
-                  loading={selectConfigMutation.isLoading}
-                  onClick={() => selectConfigMutation.mutate({ id: config.id })}
+                  loading={selectMutation.isLoading}
+                  onClick={() => selectMutation.mutate({ id: config.id })}
                   icon={<PlayIcon className="w-4" />}
                 />
               )}
@@ -743,7 +743,7 @@ export default function ConfigPage() {
                   onSubmit={async (values) => {
                     const { checkIntervalSeconds, checkToleranceMS, sniffingTimeoutMS, ...global } = values
 
-                    await updateConfigMutation.mutateAsync({
+                    await updateMutation.mutateAsync({
                       id: config.id,
                       global: {
                         ...global,
@@ -783,10 +783,10 @@ export default function ConfigPage() {
                       <AlertDialogAction asChild>
                         <Button
                           onClick={async () => {
-                            await removeConfigMutation.mutateAsync({ id: config.id })
+                            await removeMutation.mutateAsync({ id: config.id })
                             await configsQuery.refetch()
                           }}
-                          loading={removeConfigMutation.isLoading}
+                          loading={removeMutation.isLoading}
                         >
                           {t('actions.confirm')}
                         </Button>
