@@ -195,7 +195,7 @@ export const useRemoveRoutingMutation = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (id: string) => {
+    mutationFn: ({ id }: { id: string }) => {
       return gqlClient.request(
         graphql(`
           mutation RemoveRouting($id: ID!) {

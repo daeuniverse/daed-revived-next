@@ -163,7 +163,7 @@ export default function DNSPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg">DNS</h2>
+        <h2 className="text-lg">{t('primitives.dns')}</h2>
 
         <Dialog open={createDialogOpened} onOpenChange={setCreateDialogOpened}>
           <DialogTrigger asChild>
