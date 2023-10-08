@@ -5,6 +5,7 @@
 :root {
   scrollbar-width: thin;
   scrollbar-color: transparent transparent;
+  font-family: var(--font-noto-sans);
 }
 
 ::-webkit-scrollbar {

@@ -1,14 +1,21 @@
-import '~/app/globals.css'
-
 import { Metadata } from 'next'
-import { Noto_Sans_SC } from 'next/font/google'
+import { Fira_Code, Noto_Sans_SC } from 'next/font/google'
 import { ReactNode } from 'react'
 import { Bootstrap } from '~/app/bootstrap'
 import { Providers } from '~/app/providers'
 import { Toaster } from '~/components/ui/toaster'
 import { cn } from '~/lib/ui'
 
-const notoSansSC = Noto_Sans_SC({ subsets: ['latin', 'latin-ext', 'cyrillic', 'vietnamese'] })
+import '~/app/globals.css'
+
+const notoSansSC = Noto_Sans_SC({
+  subsets: ['latin', 'latin-ext', 'cyrillic', 'vietnamese'],
+  variable: '--font-noto-sans'
+})
+const firaCode = Fira_Code({
+  subsets: ['latin', 'latin-ext', 'cyrillic', 'cyrillic-ext', 'greek', 'greek-ext'],
+  variable: '--font-fira-code'
+})
 
 export const metadata: Metadata = {
   title: 'daed',
@@ -19,8 +26,8 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={cn(notoSansSC.className)}>
+    <html lang="en" suppressHydrationWarning className={cn(firaCode.variable, notoSansSC.variable)}>
+      <body>
         <Providers>
           <Bootstrap>
             <main
