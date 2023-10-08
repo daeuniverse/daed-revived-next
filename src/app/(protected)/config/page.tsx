@@ -58,18 +58,18 @@ import {
   editConfigFormSchema
 } from '~/schemas/config'
 
-type ConfigDialogContentProps = {
+type CreateOrEditDialogContentProps = {
   lanInterfaces: TagsInputOption[]
   wanInterfaces: TagsInputOption[]
 }
 
-type CreateConfigDialogContentProps = {
+type CreateDialogContentProps = {
   type: 'create'
   form: UseFormReturn<z.infer<typeof createConfigFormSchema>>
   onSubmit: SubmitHandler<z.infer<typeof createConfigFormSchema>>
 }
 
-type EditConfigDialogContentProps = {
+type EditDialogContentProps = {
   type: 'edit'
   name: string
   id: string
@@ -77,8 +77,8 @@ type EditConfigDialogContentProps = {
   onSubmit: SubmitHandler<z.infer<typeof editConfigFormSchema>>
 }
 
-const ConfigDialogContent: FC<
-  ConfigDialogContentProps & (CreateConfigDialogContentProps | EditConfigDialogContentProps)
+const CreateOrEditDialogContent: FC<
+  CreateOrEditDialogContentProps & (CreateDialogContentProps | EditDialogContentProps)
 > = ({ lanInterfaces, wanInterfaces, ...createOrEditProps }) => {
   const { t } = useTranslation()
   const { type, form, onSubmit } = createOrEditProps
@@ -589,7 +589,7 @@ export default function ConfigPage() {
   })
   const defaultConfigIDQuery = useGetJSONStorageRequest(['defaultConfigID'] as const)
   const generalQuery = useGeneralQuery()
-  const configsQuery = useConfigsQuery()
+  const listQuery = useConfigsQuery()
   const isDefault = (id: string) => id === defaultConfigIDQuery.data?.defaultConfigID
   const [createDialogOpened, setCreateDialogOpened] = useState(false)
   const [editDialogOpened, setEditDialogOpened] = useState(false)
@@ -649,7 +649,7 @@ export default function ConfigPage() {
             <Button size="icon" icon={<PlusIcon className="w-4" />} />
           </DialogTrigger>
 
-          <ConfigDialogContent
+          <CreateOrEditDialogContent
             type="create"
             lanInterfaces={lanInterfaces}
             wanInterfaces={wanInterfaces}
@@ -666,7 +666,7 @@ export default function ConfigPage() {
                   sniffingTimeout: `${sniffingTimeoutMS}ms`
                 }
               })
-              await configsQuery.refetch()
+              await listQuery.refetch()
               setCreateDialogOpened(false)
             }}
           />
@@ -674,7 +674,7 @@ export default function ConfigPage() {
       </div>
 
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-        {configsQuery.data?.configs.map((config, index) => (
+        {listQuery.data?.configs.map((config, index) => (
           <Card key={index} className={cn(config.selected && 'border-primary')}>
             <CardHeader>
               <CardTitle className="uppercase">{config.name}</CardTitle>
@@ -733,7 +733,7 @@ export default function ConfigPage() {
                   <Button variant="secondary" size="icon" icon={<EditIcon className="w-4" />} />
                 </DialogTrigger>
 
-                <ConfigDialogContent
+                <CreateOrEditDialogContent
                   type="edit"
                   name={config.name}
                   id={config.id}
@@ -752,7 +752,7 @@ export default function ConfigPage() {
                         sniffingTimeout: `${sniffingTimeoutMS}ms`
                       }
                     })
-                    await configsQuery.refetch()
+                    await listQuery.refetch()
                     setEditDialogOpened(false)
                   }}
                 />
@@ -784,7 +784,7 @@ export default function ConfigPage() {
                         <Button
                           onClick={async () => {
                             await removeMutation.mutateAsync({ id: config.id })
-                            await configsQuery.refetch()
+                            await listQuery.refetch()
                           }}
                           loading={removeMutation.isLoading}
                         >

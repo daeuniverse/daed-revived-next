@@ -7,7 +7,7 @@ import { SubmitHandler, UseFormReturn, useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { z } from 'zod'
 import { useCreateDNSMutation, useRemoveDNSMutation, useSelectDNSMutation, useUpdateDNSMutation } from '~/apis/mutation'
-import { useDNSsQuery, useGeneralQuery, useGetJSONStorageRequest } from '~/apis/query'
+import { useDNSsQuery, useGetJSONStorageRequest } from '~/apis/query'
 import { CodeBlock } from '~/components/CodeBlock'
 import {
   AlertDialog,
@@ -38,13 +38,13 @@ import { Input } from '~/components/ui/input'
 import { cn } from '~/lib/ui'
 import { createDNSFormDefault, createDNSFormSchema, editDNSFormDefault, editDNSFormSchema } from '~/schemas/dns'
 
-type CreateDNSDialogContentProps = {
+type CreateDialogContentProps = {
   type: 'create'
   form: UseFormReturn<z.infer<typeof createDNSFormSchema>>
   onSubmit: SubmitHandler<z.infer<typeof createDNSFormSchema>>
 }
 
-type EditDNSDialogContentProps = {
+type EditDialogContentProps = {
   type: 'edit'
   name: string
   id: string
@@ -52,7 +52,7 @@ type EditDNSDialogContentProps = {
   onSubmit: SubmitHandler<z.infer<typeof editDNSFormSchema>>
 }
 
-const ConfigDialogContent: FC<CreateDNSDialogContentProps | EditDNSDialogContentProps> = ({ ...createOrEditProps }) => {
+const CreateOrEditDialogContent: FC<CreateDialogContentProps | EditDialogContentProps> = ({ ...createOrEditProps }) => {
   const { t } = useTranslation()
   const { type, form, onSubmit } = createOrEditProps
   const dirty = Object.values(form.formState.dirtyFields).some((dirty) => dirty)
@@ -137,8 +137,7 @@ export default function DNSPage() {
     defaultValues: editDNSFormDefault
   })
   const defaultDNSIDQuery = useGetJSONStorageRequest(['defaultDNSID'] as const)
-  const generalQuery = useGeneralQuery()
-  const dnssQuery = useDNSsQuery()
+  const listQuery = useDNSsQuery()
   const isDefault = (id: string) => id === defaultDNSIDQuery.data?.defaultDNSID
   const [createDialogOpened, setCreateDialogOpened] = useState(false)
   const [editDialogOpened, setEditDialogOpened] = useState(false)
@@ -157,7 +156,7 @@ export default function DNSPage() {
             <Button size="icon" icon={<PlusIcon className="w-4" />} />
           </DialogTrigger>
 
-          <ConfigDialogContent
+          <CreateOrEditDialogContent
             type="create"
             form={createForm}
             onSubmit={async (values) => {
@@ -167,7 +166,7 @@ export default function DNSPage() {
                 name,
                 dns: text
               })
-              await dnssQuery.refetch()
+              await listQuery.refetch()
               setCreateDialogOpened(false)
             }}
           />
@@ -175,7 +174,7 @@ export default function DNSPage() {
       </div>
 
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-        {dnssQuery.data?.dnss.map((dns, index) => (
+        {listQuery.data?.dnss.map((dns, index) => (
           <Card key={index} className={cn(dns.selected && 'border-primary')}>
             <CardHeader>
               <CardTitle className="uppercase">{dns.name}</CardTitle>
@@ -231,7 +230,7 @@ export default function DNSPage() {
                   <Button variant="secondary" size="icon" icon={<EditIcon className="w-4" />} />
                 </DialogTrigger>
 
-                <ConfigDialogContent
+                <CreateOrEditDialogContent
                   type="edit"
                   name={dns.name}
                   id={dns.id}
@@ -243,7 +242,7 @@ export default function DNSPage() {
                       id: dns.id,
                       dns: text
                     })
-                    await dnssQuery.refetch()
+                    await listQuery.refetch()
                     setEditDialogOpened(false)
                   }}
                 />
@@ -275,7 +274,7 @@ export default function DNSPage() {
                         <Button
                           onClick={async () => {
                             await removeMutation.mutateAsync({ id: dns.id })
-                            await dnssQuery.refetch()
+                            await listQuery.refetch()
                           }}
                           loading={removeMutation.isLoading}
                         >
