@@ -1,7 +1,10 @@
+'use client'
+
+import { useTranslation } from 'react-i18next'
+import { ResourcePage } from '~/components/ResourcePage'
+
 export default function OrchestratePage() {
-  return (
-    <div className="space-y-6">
-      <p>Orchestrate</p>
-    </div>
-  )
+  const { t } = useTranslation()
+
+  return <ResourcePage name={t('primitives.orchestrate')}>hello world</ResourcePage>
 }

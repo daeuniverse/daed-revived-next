@@ -15,6 +15,7 @@ import {
 import { useGetJSONStorageRequest, useRoutingsQuery } from '~/apis/query'
 import { CodeBlock } from '~/components/CodeBlock'
 import { Editor } from '~/components/Editor'
+import { ResourcePage } from '~/components/ResourcePage'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -94,7 +95,7 @@ const CreateOrEditDialogContent: FC<CreateDialogContentProps | EditDialogContent
               <Fragment>
                 <DialogTitle className="uppercase">
                   {t('primitives.create', {
-                    resourceName: t('primitives.dns')
+                    resourceName: t('primitives.routing')
                   })}
                 </DialogTitle>
               </Fragment>
@@ -171,10 +172,9 @@ export default function RoutingPage() {
   const removeMutation = useRemoveRoutingMutation()
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-lg">{t('primitives.routing')}</h2>
-
+    <ResourcePage
+      name={t('primitives.routing')}
+      creation={
         <Dialog open={createDialogOpened} onOpenChange={setCreateDialogOpened}>
           <DialogTrigger asChild>
             <Button size="icon" icon={<PlusIcon className="w-4" />} />
@@ -195,8 +195,8 @@ export default function RoutingPage() {
             }}
           />
         </Dialog>
-      </div>
-
+      }
+    >
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
         {listQuery.data?.routings.map((routing, index) => (
           <Card key={index} className={cn(routing.selected && 'border-primary')}>
@@ -313,6 +313,6 @@ export default function RoutingPage() {
           </Card>
         ))}
       </div>
-    </div>
+    </ResourcePage>
   )
 }

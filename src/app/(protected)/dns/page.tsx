@@ -10,6 +10,7 @@ import { useCreateDNSMutation, useRemoveDNSMutation, useSelectDNSMutation, useUp
 import { useDNSsQuery, useGetJSONStorageRequest } from '~/apis/query'
 import { CodeBlock } from '~/components/CodeBlock'
 import { Editor } from '~/components/Editor'
+import { ResourcePage } from '~/components/ResourcePage'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -161,10 +162,9 @@ export default function DNSPage() {
   const removeMutation = useRemoveDNSMutation()
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-lg">{t('primitives.dns')}</h2>
-
+    <ResourcePage
+      name={t('primitives.dns')}
+      creation={
         <Dialog open={createDialogOpened} onOpenChange={setCreateDialogOpened}>
           <DialogTrigger asChild>
             <Button size="icon" icon={<PlusIcon className="w-4" />} />
@@ -185,8 +185,8 @@ export default function DNSPage() {
             }}
           />
         </Dialog>
-      </div>
-
+      }
+    >
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
         {listQuery.data?.dnss.map((dns, index) => (
           <Card key={index} className={cn(dns.selected && 'border-primary')}>
@@ -303,6 +303,6 @@ export default function DNSPage() {
           </Card>
         ))}
       </div>
-    </div>
+    </ResourcePage>
   )
 }

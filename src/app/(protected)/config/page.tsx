@@ -15,6 +15,7 @@ import {
 import { useConfigsQuery, useGeneralQuery, useGetJSONStorageRequest } from '~/apis/query'
 import { CodeBlock } from '~/components/CodeBlock'
 import { ListInput } from '~/components/ListInput'
+import { ResourcePage } from '~/components/ResourcePage'
 import { TagsInput, TagsInputOption } from '~/components/TagsInput'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '~/components/ui/accordion'
 import {
@@ -640,10 +641,9 @@ export default function ConfigPage() {
   }, [generalQuery.data?.general.interfaces, t])
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-lg">Configs</h2>
-
+    <ResourcePage
+      name={t('primitives.config')}
+      creation={
         <Dialog open={createDialogOpened} onOpenChange={setCreateDialogOpened}>
           <DialogTrigger asChild>
             <Button size="icon" icon={<PlusIcon className="w-4" />} />
@@ -671,8 +671,8 @@ export default function ConfigPage() {
             }}
           />
         </Dialog>
-      </div>
-
+      }
+    >
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
         {listQuery.data?.configs.map((config, index) => (
           <Card key={index} className={cn(config.selected && 'border-primary')}>
@@ -799,6 +799,6 @@ export default function ConfigPage() {
           </Card>
         ))}
       </div>
-    </div>
+    </ResourcePage>
   )
 }
