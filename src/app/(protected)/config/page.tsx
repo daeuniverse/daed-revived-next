@@ -673,7 +673,7 @@ export default function ConfigPage() {
         </Dialog>
       }
     >
-      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-2">
         {listQuery.data?.configs.map((config, index) => (
           <Card key={index} className={cn(config.selected && 'border-primary')}>
             <CardHeader>

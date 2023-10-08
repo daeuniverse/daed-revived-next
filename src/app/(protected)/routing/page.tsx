@@ -197,7 +197,7 @@ export default function RoutingPage() {
         </Dialog>
       }
     >
-      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-2">
         {listQuery.data?.routings.map((routing, index) => (
           <Card key={index} className={cn(routing.selected && 'border-primary')}>
             <CardHeader>
