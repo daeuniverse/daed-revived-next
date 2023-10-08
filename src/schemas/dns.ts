@@ -9,7 +9,19 @@ export const createDNSFormSchema = editDNSFormSchema.extend({
 })
 
 export const editDNSFormDefault: z.infer<typeof editDNSFormSchema> = {
-  text: ''
+  text: `
+upstream {
+  alidns: 'udp://223.5.5.5:53'
+  googledns: 'tcp+udp://8.8.8.8:53'
+}
+
+routing {
+  request {
+    qname(geosite:cn) -> alidns
+    fallback: googledns
+  }
+}
+`.trim()
 }
 
 export const createDNSFormDefault: z.infer<typeof createDNSFormSchema> = {

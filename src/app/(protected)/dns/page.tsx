@@ -9,6 +9,7 @@ import { z } from 'zod'
 import { useCreateDNSMutation, useRemoveDNSMutation, useSelectDNSMutation, useUpdateDNSMutation } from '~/apis/mutation'
 import { useDNSsQuery, useGetJSONStorageRequest } from '~/apis/query'
 import { CodeBlock } from '~/components/CodeBlock'
+import { Editor } from '~/components/Editor'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -90,7 +91,7 @@ const CreateOrEditDialogContent: FC<CreateDialogContentProps | EditDialogContent
             )}
           </DialogHeader>
 
-          <DialogBody>
+          <DialogBody className="flex flex-col gap-2">
             {type === 'create' && (
               <FormField
                 name="name"
@@ -107,6 +108,19 @@ const CreateOrEditDialogContent: FC<CreateDialogContentProps | EditDialogContent
                 )}
               />
             )}
+
+            <FormField
+              name="text"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <Editor height="60vh" language="dae" value={field.value} onChange={field.onChange} />
+                  </FormControl>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </DialogBody>
 
           <DialogFooter>
@@ -209,7 +223,7 @@ export default function DNSPage() {
                   </DialogHeader>
 
                   <DialogBody>
-                    <CodeBlock language="json">{JSON.stringify(dns, null, 2)}</CodeBlock>
+                    <CodeBlock>{dns.dns.string}</CodeBlock>
                   </DialogBody>
                 </DialogContent>
               </Dialog>
