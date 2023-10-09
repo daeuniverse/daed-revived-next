@@ -97,7 +97,7 @@ const Header: FC = () => {
             </Avatar>
           </DropdownMenuTrigger>
 
-          <DropdownMenuContent>
+          <DropdownMenuContent align="end">
             <DropdownMenuItem>Account Settings</DropdownMenuItem>
 
             <DropdownMenuSeparator />

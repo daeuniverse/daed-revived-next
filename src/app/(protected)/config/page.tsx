@@ -118,7 +118,7 @@ const CreateOrEditDialogContent: FC<
             )}
           </DialogHeader>
 
-          <DialogBody>
+          <DialogBody className="flex flex-col gap-2">
             {type === 'create' && (
               <FormField
                 name="name"
