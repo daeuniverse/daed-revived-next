@@ -599,6 +599,38 @@ export default function ConfigPage() {
   const updateMutation = useUpdateConfigMutation()
   const removeMutation = useRemoveConfigMutation()
 
+  const onCreateSubmit: CreateDialogContentProps['onSubmit'] = async (values) => {
+    const { name, checkIntervalSeconds, checkToleranceMS, sniffingTimeoutMS, ...global } = values
+
+    await createMutation.mutateAsync({
+      name,
+      global: {
+        ...global,
+        checkInterval: `${checkIntervalSeconds}s`,
+        checkTolerance: `${checkToleranceMS}ms`,
+        sniffingTimeout: `${sniffingTimeoutMS}ms`
+      }
+    })
+    await listQuery.refetch()
+    setCreateDialogOpened(false)
+  }
+
+  const onEditSubmit: (id: string) => EditDialogContentProps['onSubmit'] = (id) => async (values) => {
+    const { checkIntervalSeconds, checkToleranceMS, sniffingTimeoutMS, ...global } = values
+
+    await updateMutation.mutateAsync({
+      id,
+      global: {
+        ...global,
+        checkInterval: `${checkIntervalSeconds}s`,
+        checkTolerance: `${checkToleranceMS}ms`,
+        sniffingTimeout: `${sniffingTimeoutMS}ms`
+      }
+    })
+    await listQuery.refetch()
+    setEditDialogOpened(false)
+  }
+
   const lanInterfaces: TagsInputOption[] = useMemo(() => {
     const interfaces = generalQuery.data?.general.interfaces
 
@@ -654,21 +686,7 @@ export default function ConfigPage() {
             lanInterfaces={lanInterfaces}
             wanInterfaces={wanInterfaces}
             form={createForm}
-            onSubmit={async (values) => {
-              const { name, checkIntervalSeconds, checkToleranceMS, sniffingTimeoutMS, ...global } = values
-
-              await createMutation.mutateAsync({
-                name,
-                global: {
-                  ...global,
-                  checkInterval: `${checkIntervalSeconds}s`,
-                  checkTolerance: `${checkToleranceMS}ms`,
-                  sniffingTimeout: `${sniffingTimeoutMS}ms`
-                }
-              })
-              await listQuery.refetch()
-              setCreateDialogOpened(false)
-            }}
+            onSubmit={onCreateSubmit}
           />
         </Dialog>
       }
@@ -740,21 +758,7 @@ export default function ConfigPage() {
                   lanInterfaces={lanInterfaces}
                   wanInterfaces={wanInterfaces}
                   form={editForm}
-                  onSubmit={async (values) => {
-                    const { checkIntervalSeconds, checkToleranceMS, sniffingTimeoutMS, ...global } = values
-
-                    await updateMutation.mutateAsync({
-                      id: config.id,
-                      global: {
-                        ...global,
-                        checkInterval: `${checkIntervalSeconds}s`,
-                        checkTolerance: `${checkToleranceMS}ms`,
-                        sniffingTimeout: `${sniffingTimeoutMS}ms`
-                      }
-                    })
-                    await listQuery.refetch()
-                    setEditDialogOpened(false)
-                  }}
+                  onSubmit={onEditSubmit(config.id)}
                 />
               </Dialog>
 

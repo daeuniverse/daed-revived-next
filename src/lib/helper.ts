@@ -16,18 +16,8 @@ export const fileToBase64 = (file: File) => {
   reader.readAsDataURL(file)
 
   const defer = new Defer<string>()
-
-  reader.onload = () => {
-    if (defer.resolve) {
-      defer.resolve(reader.result as string)
-    }
-  }
-
-  reader.onerror = (err) => {
-    if (defer.reject) {
-      defer.reject(err)
-    }
-  }
+  reader.onload = () => defer.resolve?.(reader.result as string)
+  reader.onerror = (err) => defer.reject?.(err)
 
   return defer.promise
 }

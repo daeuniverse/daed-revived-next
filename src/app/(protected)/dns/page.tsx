@@ -161,6 +161,24 @@ export default function DNSPage() {
   const updateMutation = useUpdateDNSMutation()
   const removeMutation = useRemoveDNSMutation()
 
+  const onCreateSubmit: CreateDialogContentProps['onSubmit'] = async ({ name, text }) => {
+    await createMutation.mutateAsync({ name, dns: text })
+    await listQuery.refetch()
+
+    setCreateDialogOpened(false)
+  }
+
+  const onEditSubmit: (id: string) => EditDialogContentProps['onSubmit'] = (id) => async (values) => {
+    const { text } = values
+
+    await updateMutation.mutateAsync({
+      id,
+      dns: text
+    })
+    await listQuery.refetch()
+    setEditDialogOpened(false)
+  }
+
   return (
     <ResourcePage
       name={t('primitives.dns')}
@@ -170,20 +188,7 @@ export default function DNSPage() {
             <Button size="icon" icon={<PlusIcon className="w-4" />} />
           </DialogTrigger>
 
-          <CreateOrEditDialogContent
-            type="create"
-            form={createForm}
-            onSubmit={async (values) => {
-              const { name, text } = values
-
-              await createMutation.mutateAsync({
-                name,
-                dns: text
-              })
-              await listQuery.refetch()
-              setCreateDialogOpened(false)
-            }}
-          />
+          <CreateOrEditDialogContent type="create" form={createForm} onSubmit={onCreateSubmit} />
         </Dialog>
       }
     >
@@ -249,16 +254,7 @@ export default function DNSPage() {
                   name={dns.name}
                   id={dns.id}
                   form={editForm}
-                  onSubmit={async (values) => {
-                    const { text } = values
-
-                    await updateMutation.mutateAsync({
-                      id: dns.id,
-                      dns: text
-                    })
-                    await listQuery.refetch()
-                    setEditDialogOpened(false)
-                  }}
+                  onSubmit={onEditSubmit(dns.id)}
                 />
               </Dialog>
 

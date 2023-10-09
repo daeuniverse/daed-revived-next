@@ -10,7 +10,7 @@
     "lint": "next lint",
     "prepare": "husky install",
     "start": "next start",
-    "test": "vitest"
+    "test:unit": "vitest run"
   },
   "dependencies": {
     "@commitlint/config-conventional": "^17.7.0",

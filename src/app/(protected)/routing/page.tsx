@@ -171,6 +171,24 @@ export default function RoutingPage() {
   const updateMutation = useUpdateRoutingMutation()
   const removeMutation = useRemoveRoutingMutation()
 
+  const onCreateSubmit: CreateDialogContentProps['onSubmit'] = async ({ name, text }) => {
+    await createMutation.mutateAsync({ name, routing: text })
+    await listQuery.refetch()
+
+    setCreateDialogOpened(false)
+  }
+
+  const onEditSubmit: (id: string) => EditDialogContentProps['onSubmit'] = (id) => async (values) => {
+    const { text } = values
+
+    await updateMutation.mutateAsync({
+      id,
+      routing: text
+    })
+    await listQuery.refetch()
+    setEditDialogOpened(false)
+  }
+
   return (
     <ResourcePage
       name={t('primitives.routing')}
@@ -180,20 +198,7 @@ export default function RoutingPage() {
             <Button size="icon" icon={<PlusIcon className="w-4" />} />
           </DialogTrigger>
 
-          <CreateOrEditDialogContent
-            type="create"
-            form={createForm}
-            onSubmit={async (values) => {
-              const { name, text } = values
-
-              await createMutation.mutateAsync({
-                name,
-                routing: text
-              })
-              await listQuery.refetch()
-              setCreateDialogOpened(false)
-            }}
-          />
+          <CreateOrEditDialogContent type="create" form={createForm} onSubmit={onCreateSubmit} />
         </Dialog>
       }
     >
@@ -259,16 +264,7 @@ export default function RoutingPage() {
                   name={routing.name}
                   id={routing.id}
                   form={editForm}
-                  onSubmit={async (values) => {
-                    const { text } = values
-
-                    await updateMutation.mutateAsync({
-                      id: routing.id,
-                      routing: text
-                    })
-                    await listQuery.refetch()
-                    setEditDialogOpened(false)
-                  }}
+                  onSubmit={onEditSubmit(routing.id)}
                 />
               </Dialog>
 

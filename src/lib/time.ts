@@ -1,6 +1,6 @@
 import dayjs from 'dayjs'
 
-const r = /([0-9]+)([a-z]+)/
+const timeReg = /([0-9]+)([a-zA-Z]+)/
 
 type Time = {
   hours: number
@@ -13,14 +13,12 @@ export const parseDigitAndUnit = (
   timeStr: string,
   output: Time = { hours: 0, milliseconds: 0, minutes: 0, seconds: 0 }
 ): Time => {
-  const matchRes = timeStr.match(r)
+  const matchRes = timeStr.match(timeReg)
 
-  if (!matchRes) {
-    return output
-  }
+  if (!matchRes) return output
 
   const digit = Number.parseInt(matchRes[1])
-  const unit = matchRes[2]
+  const unit = matchRes[2].toLowerCase()
 
   switch (unit) {
     case 'h':
@@ -41,7 +39,7 @@ export const parseDigitAndUnit = (
       break
   }
 
-  return parseDigitAndUnit(timeStr.replace(r, ''), output)
+  return parseDigitAndUnit(timeStr.replace(timeReg, ''), output)
 }
 
 export const deriveTime = (timeStr: string, outputUnit: 'ms' | 's') =>
