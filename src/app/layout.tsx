@@ -6,7 +6,7 @@ import { Providers } from '~/app/providers'
 import { Toaster } from '~/components/ui/toaster'
 import { cn } from '~/lib/ui'
 
-import '~/app/globals.css'
+import '~/styles/globals.css'
 
 const notoSansSC = Noto_Sans_SC({
   subsets: ['latin', 'latin-ext', 'cyrillic', 'vietnamese'],
