@@ -8,7 +8,7 @@ export const ResourcePage: FC<{ name: string; creation?: ReactNode; children: Re
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-bold">{name}</h2>
+        <h2 className="text-xl font-bold leading-10">{name}</h2>
 
         {creation}
       </div>

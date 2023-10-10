@@ -1,17 +1,16 @@
 'use client'
 
-import i18n from 'i18next'
 import ky from 'ky'
-import { ActivityIcon, CogIcon, GlobeIcon, LanguagesIcon, NetworkIcon } from 'lucide-react'
+import { ActivityIcon, CogIcon, GlobeIcon, NetworkIcon } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useUserQuery } from '~/apis/query'
+import { LanguageToggle } from '~/components/LanguageToggle'
 import { LogoText } from '~/components/LogoText'
 import { Avatar, AvatarFallback } from '~/components/ui/avatar'
-import { Button } from '~/components/ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -71,24 +70,13 @@ const Header: FC = () => {
       </div>
 
       <div className="flex w-1/2 items-center justify-end gap-2">
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={() => void i18n.changeLanguage(i18n.language === 'en-US' ? 'zh-Hans' : 'en-US')}
-              icon={<LanguagesIcon className="w-4" />}
-            />
-          </TooltipTrigger>
-
-          <TooltipContent>{t('actions.switchLanguage')}</TooltipContent>
-        </Tooltip>
+        <LanguageToggle />
 
         <ModeToggle />
 
         <DropdownMenu>
           <DropdownMenuTrigger>
-            <Avatar>
+            <Avatar className="h-8 w-8 sm:h-10 sm:w-10">
               {userQuery.data?.user.avatar && (
                 <Image width={40} height={40} src={userQuery.data.user.avatar} alt="avatar" />
               )}
