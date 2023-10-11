@@ -32,7 +32,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
           <Bootstrap>
             <main
               className={cn(
-                'relative mx-auto box-border flex h-screen w-full min-w-sm max-w-screen-xl flex-1 flex-col overflow-y-auto'
+                'relative mx-auto box-border flex h-screen w-full min-w-sm max-w-screen-xl flex-1 flex-col overflow-y-auto pb-12'
               )}
             >
               {children}
