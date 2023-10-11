@@ -71,7 +71,7 @@
     "ky": "^1.0.1",
     "lint-staged": "^14.0.1",
     "lodash": "^4.17.21",
-    "lucide-react": "^0.284.0",
+    "lucide-react": "^0.285.0",
     "match-sorter": "^6.3.1",
     "monaco-editor": "^0.44.0",
     "monaco-themes": "^0.4.4",
