@@ -423,7 +423,7 @@ const CreateOrEditDialogContent: FC<
                 </AccordionContent>
               </AccordionItem>
 
-              <AccordionItem value="connectiing-options">
+              <AccordionItem value="connecting-options">
                 <AccordionTrigger>{t('primitives.connectingOptions')}</AccordionTrigger>
 
                 <AccordionContent>
