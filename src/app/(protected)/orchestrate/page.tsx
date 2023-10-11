@@ -1,10 +1,14 @@
 'use client'
 
 import { useTranslation } from 'react-i18next'
+import { useGroupsQuery, useNodesQuery, useSubscriptionsQuery } from '~/apis/query'
 import { ResourcePage } from '~/components/ResourcePage'
 
 export default function OrchestratePage() {
   const { t } = useTranslation()
+  const groupsQuery = useGroupsQuery()
+  const subscriptionsQuery = useSubscriptionsQuery()
+  const nodesQuery = useNodesQuery()
 
   return (
     <ResourcePage name={t('primitives.orchestrate')}>
@@ -13,11 +17,11 @@ export default function OrchestratePage() {
           <h3 className="text-lg">{t('primitives.group')}</h3>
 
           <div className="flex flex-col gap-1">
-            <div className="rounded border border-accent p-1 text-sm">hello world</div>
-            <div className="rounded border border-accent p-1 text-sm">hello world</div>
-            <div className="rounded border border-accent p-1 text-sm">hello world</div>
-            <div className="rounded border border-accent p-1 text-sm">hello world</div>
-            <div className="rounded border border-accent p-1 text-sm">hello world</div>
+            {groupsQuery.data?.groups.map((group) => (
+              <div key={group.id} className="rounded border border-accent p-1 text-sm">
+                {group.name}
+              </div>
+            ))}
           </div>
         </div>
 
@@ -25,11 +29,11 @@ export default function OrchestratePage() {
           <h3 className="text-lg">{t('primitives.subscription')}</h3>
 
           <div className="flex flex-col gap-1">
-            <div className="rounded border border-accent p-1 text-sm">hello world</div>
-            <div className="rounded border border-accent p-1 text-sm">hello world</div>
-            <div className="rounded border border-accent p-1 text-sm">hello world</div>
-            <div className="rounded border border-accent p-1 text-sm">hello world</div>
-            <div className="rounded border border-accent p-1 text-sm">hello world</div>
+            {subscriptionsQuery.data?.subscriptions.map((subscription) => (
+              <div key={subscription.id} className="rounded border border-accent p-1 text-sm">
+                {subscription.tag}
+              </div>
+            ))}
           </div>
         </div>
 
@@ -37,11 +41,11 @@ export default function OrchestratePage() {
           <h3 className="text-lg">{t('primitives.node')}</h3>
 
           <div className="flex flex-col gap-1">
-            <div className="rounded border border-accent p-1 text-sm">hello world</div>
-            <div className="rounded border border-accent p-1 text-sm">hello world</div>
-            <div className="rounded border border-accent p-1 text-sm">hello world</div>
-            <div className="rounded border border-accent p-1 text-sm">hello world</div>
-            <div className="rounded border border-accent p-1 text-sm">hello world</div>
+            {nodesQuery.data?.nodes.edges.map((node) => (
+              <div key={node.id} className="rounded border border-accent p-1 text-sm">
+                {node.tag}
+              </div>
+            ))}
           </div>
         </div>
       </div>
