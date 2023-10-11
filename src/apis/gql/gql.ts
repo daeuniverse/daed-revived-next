@@ -78,7 +78,7 @@ const documents = {
     types.JsonStorageDocument,
   '\n          query General($interfacesUp: Boolean) {\n            general {\n              dae {\n                running\n                modified\n                version\n              }\n\n              interfaces(up: $interfacesUp) {\n                name\n                ifindex\n                ip\n                flag {\n                  default {\n                    ipVersion\n                    gateway\n                    source\n                  }\n                }\n              }\n            }\n          }\n        ':
     types.GeneralDocument,
-  '\n          query Nodes {\n            nodes {\n              edges {\n                id\n                name\n                link\n                address\n                protocol\n                tag\n              }\n            }\n          }\n        ':
+  '\n          query Nodes {\n            nodes {\n              edges {\n                id\n                name\n                link\n                address\n                protocol\n                tag\n                subscriptionID\n              }\n            }\n          }\n        ':
     types.NodesDocument,
   '\n          query Subscriptions {\n            subscriptions {\n              id\n              tag\n              status\n              link\n              info\n              updatedAt\n              nodes {\n                edges {\n                  id\n                  name\n                  protocol\n                  link\n                }\n              }\n            }\n          }\n        ':
     types.SubscriptionsDocument,
@@ -314,8 +314,8 @@ export function graphql(
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(
-  source: '\n          query Nodes {\n            nodes {\n              edges {\n                id\n                name\n                link\n                address\n                protocol\n                tag\n              }\n            }\n          }\n        '
-): (typeof documents)['\n          query Nodes {\n            nodes {\n              edges {\n                id\n                name\n                link\n                address\n                protocol\n                tag\n              }\n            }\n          }\n        ']
+  source: '\n          query Nodes {\n            nodes {\n              edges {\n                id\n                name\n                link\n                address\n                protocol\n                tag\n                subscriptionID\n              }\n            }\n          }\n        '
+): (typeof documents)['\n          query Nodes {\n            nodes {\n              edges {\n                id\n                name\n                link\n                address\n                protocol\n                tag\n                subscriptionID\n              }\n            }\n          }\n        ']
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

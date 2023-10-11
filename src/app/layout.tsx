@@ -1,5 +1,6 @@
 import { Metadata } from 'next'
 import { Fira_Code, Noto_Sans_SC } from 'next/font/google'
+import localFont from 'next/font/local'
 import { ReactNode } from 'react'
 import { Bootstrap } from '~/app/bootstrap'
 import { Providers } from '~/app/providers'
@@ -8,13 +9,18 @@ import { cn } from '~/lib/ui'
 
 import '~/styles/globals.css'
 
-const notoSansSC = Noto_Sans_SC({
+const notoSansSCFont = Noto_Sans_SC({
   subsets: ['latin', 'latin-ext', 'cyrillic', 'vietnamese'],
   variable: '--font-noto-sans'
 })
-const firaCode = Fira_Code({
+const firaCodeFont = Fira_Code({
   subsets: ['latin', 'latin-ext', 'cyrillic', 'cyrillic-ext', 'greek', 'greek-ext'],
   variable: '--font-fira-code'
+})
+const twemojiFont = localFont({
+  src: './twemoji.ttf',
+  variable: '--font-twemoji',
+  display: 'swap'
 })
 
 export const metadata: Metadata = {
@@ -26,7 +32,11 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning className={cn(firaCode.variable, notoSansSC.variable)}>
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={cn(firaCodeFont.variable, notoSansSCFont.variable, twemojiFont.variable)}
+    >
       <body>
         <Providers>
           <Bootstrap>

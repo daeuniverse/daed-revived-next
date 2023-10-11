@@ -901,6 +901,7 @@ export type NodesQuery = {
       address: string
       protocol: string
       tag?: string | null
+      subscriptionID?: string | null
     }>
   }
 }
@@ -2524,7 +2525,8 @@ export const NodesDocument = {
                       { kind: 'Field', name: { kind: 'Name', value: 'link' } },
                       { kind: 'Field', name: { kind: 'Name', value: 'address' } },
                       { kind: 'Field', name: { kind: 'Name', value: 'protocol' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'tag' } }
+                      { kind: 'Field', name: { kind: 'Name', value: 'tag' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'subscriptionID' } }
                     ]
                   }
                 }

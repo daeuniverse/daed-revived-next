@@ -84,6 +84,7 @@ export const useNodesQuery = () => {
                 address
                 protocol
                 tag
+                subscriptionID
               }
             }
           }
