@@ -48,7 +48,7 @@
     "@types/lodash": "^4.14.199",
     "@types/node": "^20.8.4",
     "@types/react": "^18.2.27",
-    "@types/react-dom": "^18.2.12",
+    "@types/react-dom": "^18.2.13",
     "@types/react-syntax-highlighter": "^15.5.8",
     "@vitejs/plugin-react": "^4.1.0",
     "autoprefixer": "^10.4.16",
