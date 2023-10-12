@@ -16,11 +16,9 @@ export default function ProtectedLayout({ children }: { children: ReactNode }) {
 
   return (
     <Providers endpointURL={endpointURL} token={token}>
-      <div className="sticky inset-x-0 top-0 z-50 bg-background">
-        <Header />
-      </div>
+      <Header />
 
-      <section className="p-2 sm:p-4">{children}</section>
+      <section className="flex-1 overflow-y-auto p-2 sm:p-4">{children}</section>
     </Providers>
   )
 }

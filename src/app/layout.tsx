@@ -41,9 +41,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
         <Providers>
           <Bootstrap>
             <main
-              className={cn(
-                'relative mx-auto box-border flex h-screen w-full min-w-sm max-w-screen-xl flex-1 flex-col overflow-y-auto pb-12'
-              )}
+              className={cn('mx-auto box-border flex h-screen w-full min-w-sm max-w-screen-xl flex-1 flex-col pb-12')}
             >
               {children}
             </main>
