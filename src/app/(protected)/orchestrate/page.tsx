@@ -2,6 +2,7 @@
 
 import { useTranslation } from 'react-i18next'
 import { useGroupsQuery, useNodesQuery, useSubscriptionsQuery } from '~/apis/query'
+import { NodeCard } from '~/components/NodeCard'
 import { ResourcePage } from '~/components/ResourcePage'
 
 export default function OrchestratePage() {
@@ -37,11 +38,7 @@ export default function OrchestratePage() {
 
                 <div className="grid grid-cols-2 gap-2">
                   {subscription.nodes.edges.map((node) => (
-                    <div key={node.id} className="flex flex-col gap-1 rounded border border-accent p-2">
-                      <span>{node.name}</span>
-                      <span className="uppercase">{node.protocol}</span>
-                      <span>{node.id}</span>
-                    </div>
+                    <NodeCard key={node.id} node={node} />
                   ))}
                 </div>
               </div>
@@ -53,17 +50,7 @@ export default function OrchestratePage() {
           <h3 className="text-xl font-bold">{t('primitives.node')}</h3>
 
           <div className="flex flex-col gap-1">
-            {nodesQuery.data?.nodes.edges.map((node) => (
-              <div key={node.id} className="rounded border border-accent p-2">
-                {node.address}
-                <br />
-                {node.id}
-                <br />
-                {node.subscriptionID}
-                <br />
-                {node.protocol} :: {node.tag}
-              </div>
-            ))}
+            {nodesQuery.data?.nodes.edges.map((node) => <NodeCard key={node.id} node={node} />)}
           </div>
         </div>
       </div>

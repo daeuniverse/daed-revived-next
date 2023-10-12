@@ -115,6 +115,7 @@ export const useSubscriptionsQuery = () => {
                 edges {
                   id
                   name
+                  address
                   protocol
                   link
                 }

@@ -920,7 +920,7 @@ export type SubscriptionsQuery = {
     updatedAt: any
     nodes: {
       __typename?: 'NodesConnection'
-      edges: Array<{ __typename?: 'Node'; id: string; name: string; protocol: string; link: string }>
+      edges: Array<{ __typename?: 'Node'; id: string; name: string; address: string; protocol: string; link: string }>
     }
   }>
 }
@@ -2574,6 +2574,7 @@ export const SubscriptionsDocument = {
                           selections: [
                             { kind: 'Field', name: { kind: 'Name', value: 'id' } },
                             { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'address' } },
                             { kind: 'Field', name: { kind: 'Name', value: 'protocol' } },
                             { kind: 'Field', name: { kind: 'Name', value: 'link' } }
                           ]
