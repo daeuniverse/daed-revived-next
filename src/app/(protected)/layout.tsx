@@ -8,9 +8,7 @@ import { Header } from '~/components/Header'
 export default function ProtectedLayout({ children }: { children: ReactNode }) {
   const jwtToken = cookies().get('jwtToken')
 
-  if (!jwtToken) {
-    redirect('/login')
-  }
+  if (!jwtToken) redirect('/login')
 
   const { endpointURL, token } = jwt.decode(jwtToken.value, { json: true })!
 
