@@ -19,7 +19,7 @@
     "@graphql-codegen/client-preset": "^4.1.0",
     "@graphql-codegen/introspection": "^4.0.0",
     "@graphql-typed-document-node/core": "^3.2.0",
-    "@hookform/resolvers": "^3.3.1",
+    "@hookform/resolvers": "^3.3.2",
     "@monaco-editor/react": "^4.6.0",
     "@parcel/watcher": "^2.3.0",
     "@radix-ui/react-accordion": "^1.1.2",
