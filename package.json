@@ -75,7 +75,7 @@
     "match-sorter": "^6.3.1",
     "monaco-editor": "^0.44.0",
     "monaco-themes": "^0.4.4",
-    "next": "^13.5.4",
+    "next": "^13.5.5",
     "next-auth": "^4.23.2",
     "next-themes": "^0.2.1",
     "postcss": "^8.4.31",
