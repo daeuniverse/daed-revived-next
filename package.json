@@ -69,7 +69,7 @@
     "jsdom": "^22.1.0",
     "jsonwebtoken": "^9.0.2",
     "ky": "^1.0.1",
-    "lint-staged": "^14.0.1",
+    "lint-staged": "^15.0.1",
     "lodash": "^4.17.21",
     "lucide-react": "^0.287.0",
     "match-sorter": "^6.3.1",
