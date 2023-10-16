@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@commitlint/config-conventional": "^17.8.0",
-    "@floating-ui/react": "^0.26.0",
+    "@floating-ui/react": "^0.26.1",
     "@graphql-codegen/cli": "^5.0.0",
     "@graphql-codegen/client-preset": "^4.1.0",
     "@graphql-codegen/introspection": "^4.0.0",
