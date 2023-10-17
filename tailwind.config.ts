@@ -1,7 +1,8 @@
+import { nextui } from '@nextui-org/react'
 import { Config } from 'tailwindcss'
-import shadcnPreset from './modules/tailwindcss-shadcn-preset'
 
 export default {
-  presets: [shadcnPreset],
-  content: ['./src/**/*.{css,ts,tsx}']
+  darkMode: 'class',
+  content: ['./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}', './src/**/*.{css,ts,tsx}'],
+  plugins: [nextui()]
 } satisfies Config

@@ -12,11 +12,11 @@
   @apply hidden bg-transparent;
 }
 
-@media screen(sm) {
-  :root {
-    scrollbar-color: theme(colors.primary.DEFAULT) transparent;
-  }
+form {
+  @apply contents;
+}
 
+@media screen(sm) {
   ::-webkit-scrollbar {
     @apply block;
   }

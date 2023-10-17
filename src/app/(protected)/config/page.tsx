@@ -1,11 +1,26 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
-import { CodeIcon, EditIcon, PlayIcon, PlusIcon, Trash2Icon } from 'lucide-react'
+import {
+  Button,
+  Card,
+  CardBody,
+  CardFooter,
+  CardHeader,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalHeader,
+  useDisclosure
+} from '@nextui-org/react'
+import { CheckIcon } from '@radix-ui/react-icons'
+import { IconCheck, IconPlus } from '@tabler/icons-react'
+import { CodeIcon, EditIcon, Trash2Icon } from 'lucide-react'
 import { FC, Fragment, useMemo, useState } from 'react'
 import { SubmitHandler, UseFormReturn, useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { z } from 'zod'
+import { Config } from '~/apis/gql/graphql'
 import {
   useCreateConfigMutation,
   useRemoveConfigMutation,
@@ -29,9 +44,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger
 } from '~/components/ui/alert-dialog'
-import { Badge } from '~/components/ui/badge'
-import { Button } from '~/components/ui/button'
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '~/components/ui/card'
 import {
   Dialog,
   DialogBody,
@@ -562,17 +574,41 @@ const CreateOrEditDialogContent: FC<
           </DialogBody>
 
           <DialogFooter>
-            <Button type="reset" variant="secondary" disabled={!dirty} onClick={() => form.reset()}>
+            <Button type="reset" color="secondary" disabled={!dirty} onClick={() => form.reset()}>
               {t('actions.reset')}
             </Button>
 
-            <Button type="submit" disabled={type === 'edit' && !dirty} loading={form.formState.isSubmitting}>
+            <Button type="submit" disabled={type === 'edit' && !dirty} isLoading={form.formState.isSubmitting}>
               {t('actions.submit')}
             </Button>
           </DialogFooter>
         </form>
       </Form>
     </DialogContent>
+  )
+}
+
+const ConfigDetailModalTrigger: FC<{
+  config: Config
+}> = ({ config }) => {
+  const { isOpen, onOpen, onOpenChange } = useDisclosure()
+
+  return (
+    <Fragment>
+      <Button isIconOnly onClick={onOpen}>
+        <CodeIcon className="w-4" />
+      </Button>
+
+      <Modal className="mx-0" isOpen={isOpen} onOpenChange={onOpenChange} backdrop="blur" scrollBehavior="inside">
+        <ModalContent>
+          <ModalHeader>{config.id}</ModalHeader>
+
+          <ModalBody>
+            <CodeBlock language="json">{JSON.stringify(config, null, 2)}</CodeBlock>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+    </Fragment>
   )
 }
 
@@ -678,7 +714,9 @@ export default function ConfigPage() {
       creation={
         <Dialog open={createDialogOpened} onOpenChange={setCreateDialogOpened}>
           <DialogTrigger asChild>
-            <Button size="icon" icon={<PlusIcon className="w-4" />} />
+            <Button color="primary" isIconOnly>
+              <IconPlus />
+            </Button>
           </DialogTrigger>
 
           <CreateOrEditDialogContent
@@ -695,42 +733,31 @@ export default function ConfigPage() {
         {listQuery.data?.configs.map((config, index) => (
           <Card key={index} className={cn(config.selected && 'border-primary')}>
             <CardHeader>
-              <CardTitle className="uppercase">{config.name}</CardTitle>
+              <div className="flex w-full items-center justify-between">
+                <h3>{config.name}</h3>
 
-              {isDefault(config.id) && (
-                <CardDescription>
-                  <Badge className="uppercase">{t('primitives.default')}</Badge>
-                </CardDescription>
-              )}
+                {!isDefault(config.id) && (
+                  <Button isIconOnly color="success" onClick={() => selectMutation.mutate({ id: config.id })}>
+                    <IconCheck />
+                  </Button>
+                )}
+              </div>
             </CardHeader>
 
-            <CardContent>{config.id}</CardContent>
+            <CardBody>{config.id}</CardBody>
 
             <CardFooter className="gap-2">
               {!config.selected && (
                 <Button
-                  size="icon"
-                  loading={selectMutation.isLoading}
+                  isIconOnly
+                  isLoading={selectMutation.isPending}
                   onClick={() => selectMutation.mutate({ id: config.id })}
-                  icon={<PlayIcon className="w-4" />}
-                />
+                >
+                  <CheckIcon className="w-4" />
+                </Button>
               )}
 
-              <Dialog>
-                <DialogTrigger asChild>
-                  <Button size="icon" icon={<CodeIcon className="w-4" />} />
-                </DialogTrigger>
-
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle className="uppercase">{config.name}</DialogTitle>
-                  </DialogHeader>
-
-                  <DialogBody>
-                    <CodeBlock language="json">{JSON.stringify(config, null, 2)}</CodeBlock>
-                  </DialogBody>
-                </DialogContent>
-              </Dialog>
+              <ConfigDetailModalTrigger config={config} />
 
               <Dialog
                 open={editDialogOpened}
@@ -748,7 +775,9 @@ export default function ConfigPage() {
                 }}
               >
                 <DialogTrigger asChild>
-                  <Button variant="secondary" size="icon" icon={<EditIcon className="w-4" />} />
+                  <Button color="secondary" isIconOnly>
+                    <EditIcon className="w-4" />
+                  </Button>
                 </DialogTrigger>
 
                 <CreateOrEditDialogContent
@@ -765,12 +794,9 @@ export default function ConfigPage() {
               {!isDefault(config.id) && (
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
-                    <Button
-                      variant="destructive"
-                      size="icon"
-                      icon={<Trash2Icon className="w-4" />}
-                      disabled={config.selected}
-                    />
+                    <Button color="danger" disabled={config.selected} isIconOnly>
+                      <Trash2Icon className="w-4" />
+                    </Button>
                   </AlertDialogTrigger>
 
                   <AlertDialogContent>
@@ -786,11 +812,11 @@ export default function ConfigPage() {
                       <AlertDialogCancel>{t('actions.cancel')}</AlertDialogCancel>
                       <AlertDialogAction asChild>
                         <Button
+                          isLoading={removeMutation.isPending}
                           onClick={async () => {
                             await removeMutation.mutateAsync({ id: config.id })
                             await listQuery.refetch()
                           }}
-                          loading={removeMutation.isLoading}
                         >
                           {t('actions.confirm')}
                         </Button>

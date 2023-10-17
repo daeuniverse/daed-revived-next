@@ -195,7 +195,7 @@ export default function RoutingPage() {
       creation={
         <Dialog open={createDialogOpened} onOpenChange={setCreateDialogOpened}>
           <DialogTrigger asChild>
-            <Button size="icon" icon={<PlusIcon className="w-4" />} />
+            <Button size="icon" icon={<PlusIcon />} />
           </DialogTrigger>
 
           <CreateOrEditDialogContent type="create" form={createForm} onSubmit={onCreateSubmit} />

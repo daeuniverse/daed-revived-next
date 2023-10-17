@@ -1,35 +1,32 @@
 'use client'
 
+import {
+  Avatar,
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownTrigger,
+  Link,
+  Navbar,
+  NavbarBrand,
+  NavbarContent,
+  NavbarItem,
+  NavbarMenu,
+  NavbarMenuItem,
+  NavbarMenuToggle
+} from '@nextui-org/react'
 import ky from 'ky'
 import { ActivityIcon, CogIcon, GlobeIcon, NetworkIcon } from 'lucide-react'
-import Image from 'next/image'
-import Link from 'next/link'
+import NextLink from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { FC } from 'react'
+import { FC, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useUserQuery } from '~/apis/query'
-import { LanguageToggle } from '~/components/LanguageToggle'
 import { LogoText } from '~/components/LogoText'
-import { Avatar, AvatarFallback } from '~/components/ui/avatar'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger
-} from '~/components/ui/dropdown-menu'
-import { ModeToggle } from '~/components/ui/mode-toggle'
-import {
-  NavigationMenu,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  navigationMenuTriggerStyle
-} from '~/components/ui/navigation-menu'
-import { Tooltip, TooltipContent, TooltipTrigger } from '~/components/ui/tooltip'
 
 const Header: FC = () => {
   const { t } = useTranslation()
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
   const pathname = usePathname()
   const router = useRouter()
   const userQuery = useUserQuery()
@@ -42,55 +39,54 @@ const Header: FC = () => {
   ]
 
   return (
-    <div className="flex w-full items-center justify-between p-2 sm:justify-center sm:p-4">
-      <div className="hidden w-1/2 justify-start sm:block">
-        <LogoText />
-      </div>
+    <Navbar isMenuOpen={isMenuOpen} onMenuOpenChange={setIsMenuOpen}>
+      <NavbarContent>
+        <NavbarMenuToggle className="sm:hidden" />
 
-      <div className="flex-shrink-0">
-        <NavigationMenu>
-          <NavigationMenuList className="flex items-center justify-center gap-0 space-x-0 sm:gap-6">
-            {navigationMenus.map((menu, index) => (
-              <NavigationMenuItem key={index}>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <NavigationMenuLink asChild active={menu.route === pathname}>
-                      <Link className={navigationMenuTriggerStyle()} href={menu.route}>
-                        <menu.Icon className="w-4 flex-shrink-0 sm:w-6" />
-                      </Link>
-                    </NavigationMenuLink>
-                  </TooltipTrigger>
+        <NavbarBrand>
+          <LogoText />
+        </NavbarBrand>
+      </NavbarContent>
 
-                  <TooltipContent>{menu.name}</TooltipContent>
-                </Tooltip>
-              </NavigationMenuItem>
-            ))}
-          </NavigationMenuList>
-        </NavigationMenu>
-      </div>
+      <NavbarContent className="hidden gap-4 sm:flex" justify="center">
+        {navigationMenus.map((menu, index) => (
+          <NavbarItem key={index} isActive={menu.route === pathname}>
+            <Link as={NextLink} href={menu.route} color={menu.route === pathname ? 'secondary' : 'foreground'}>
+              {menu.name}
+            </Link>
+          </NavbarItem>
+        ))}
+      </NavbarContent>
 
-      <div className="flex w-1/2 items-center justify-end gap-2">
-        <LanguageToggle />
+      <NavbarContent as="div" justify="end">
+        <Dropdown placement="bottom-end">
+          <DropdownTrigger>
+            <Avatar
+              isBordered
+              as="button"
+              className="transition-transform"
+              color="secondary"
+              size="sm"
+              name={userQuery.data?.user.name || userQuery.data?.user.username}
+              src={userQuery.data?.user.avatar || ''}
+            />
+          </DropdownTrigger>
 
-        <ModeToggle />
+          <DropdownMenu aria-label="Profile Actions" variant="flat">
+            <DropdownItem key="profile" className="h-14 gap-2">
+              <p className="font-semibold">Signed in as</p>
+              <p className="font-semibold">zoey@example.com</p>
+            </DropdownItem>
+            <DropdownItem key="settings">My Settings</DropdownItem>
+            <DropdownItem key="team_settings">Team Settings</DropdownItem>
+            <DropdownItem key="analytics">Analytics</DropdownItem>
+            <DropdownItem key="system">System</DropdownItem>
+            <DropdownItem key="configurations">Configurations</DropdownItem>
+            <DropdownItem key="help_and_feedback">Help & Feedback</DropdownItem>
 
-        <DropdownMenu>
-          <DropdownMenuTrigger>
-            <Avatar className="h-8 w-8 sm:h-10 sm:w-10">
-              {userQuery.data?.user.avatar && (
-                <Image width={40} height={40} src={userQuery.data.user.avatar} alt="avatar" />
-              )}
-
-              <AvatarFallback>daed</AvatarFallback>
-            </Avatar>
-          </DropdownMenuTrigger>
-
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem>Account Settings</DropdownMenuItem>
-
-            <DropdownMenuSeparator />
-
-            <DropdownMenuItem
+            <DropdownItem
+              key="logout"
+              color="danger"
               onClick={async () => {
                 await ky.post('/api/logout')
 
@@ -98,11 +94,21 @@ const Header: FC = () => {
               }}
             >
               {t('actions.logout')}
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-    </div>
+            </DropdownItem>
+          </DropdownMenu>
+        </Dropdown>
+      </NavbarContent>
+
+      <NavbarMenu>
+        {navigationMenus.map((menu, index) => (
+          <NavbarMenuItem key={index}>
+            <Link as={NextLink} className="w-full" href={menu.route} size="lg">
+              {menu.name}
+            </Link>
+          </NavbarMenuItem>
+        ))}
+      </NavbarMenu>
+    </Navbar>
   )
 }
 Header.displayName = 'Header'

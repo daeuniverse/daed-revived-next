@@ -1,14 +1,12 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
+import { Button, Input } from '@nextui-org/react'
 import ky from 'ky'
 import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { z } from 'zod'
-import { Button } from '~/components/ui/button'
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '~/components/ui/form'
-import { Input } from '~/components/ui/input'
 import { toast } from '~/components/ui/use-toast'
 import { setupFormDefault, setupFormSchema } from '~/schemas/setup'
 
@@ -26,89 +24,51 @@ export default function SetupPage() {
       <h1 className="text-center text-2xl font-bold">Welcome to daed</h1>
 
       <div className="flex flex-col gap-4">
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(async ({ endpointURL, username, password }) => {
-              try {
-                await ky.post('/api/login', { json: { endpointURL, username, password } }).json<{ token: string }>()
+        <form
+          onSubmit={form.handleSubmit(async ({ endpointURL, username, password }) => {
+            try {
+              await ky.post('/api/login', { json: { endpointURL, username, password } }).json<{ token: string }>()
 
-                router.replace('/orchestrate')
-              } catch (err) {
-                toast({ variant: 'destructive', description: (err as Error).message })
-              }
-            })}
-          >
-            <FormField
-              name="endpointURL"
-              control={form.control}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('form.fields.endpointURL')}</FormLabel>
+              router.replace('/orchestrate')
+            } catch (err) {
+              toast({ variant: 'destructive', description: (err as Error).message })
+            }
+          })}
+        >
+          <Input
+            type="url"
+            label={t('form.fields.endpointURL')}
+            placeholder="http://127.0.0.1:2023/graphql"
+            description={t('form.descriptions.pleaseEnter', { fieldName: t('form.fields.endpointURL') })}
+            isRequired
+            errorMessage={form.formState.errors.endpointURL?.message}
+            {...form.register('endpointURL')}
+          />
 
-                  <FormDescription>
-                    {t('form.descriptions.pleaseEnter', {
-                      fieldName: t('form.fields.endpointURL')
-                    })}
-                  </FormDescription>
+          <Input
+            type="text"
+            label={t('form.fields.username')}
+            placeholder="daed"
+            description={t('form.descriptions.pleaseEnter', { fieldName: t('form.fields.username') })}
+            isRequired
+            errorMessage={form.formState.errors.username?.message}
+            {...form.register('username')}
+          />
 
-                  <FormControl>
-                    <Input type="url" placeholder="http://127.0.0.1:2023/graphql" {...field} />
-                  </FormControl>
+          <Input
+            type="password"
+            label={t('form.fields.password')}
+            placeholder="daeuniverse"
+            description={t('form.descriptions.pleaseEnter', { fieldName: t('form.fields.password') })}
+            isRequired
+            errorMessage={form.formState.errors.password?.message}
+            {...form.register('password')}
+          />
 
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              name="username"
-              control={form.control}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('form.fields.username')}</FormLabel>
-
-                  <FormDescription>
-                    {t('form.descriptions.pleaseEnter', {
-                      fieldName: t('form.fields.username')
-                    })}
-                  </FormDescription>
-
-                  <FormControl>
-                    <Input type="text" placeholder="daed" {...field} />
-                  </FormControl>
-
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              name="password"
-              control={form.control}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('form.fields.password')}</FormLabel>
-
-                  <FormDescription>
-                    {t('form.descriptions.pleaseEnter', {
-                      fieldName: t('form.fields.password')
-                    })}
-                  </FormDescription>
-
-                  <FormControl>
-                    <Input type="password" placeholder="daeuniverse" {...field} />
-                  </FormControl>
-
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <Button className="w-full" type="submit" loading={form.formState.isSubmitting}>
-              {t('actions.login')}
-            </Button>
-          </form>
-        </Form>
+          <Button type="submit" color="primary" isLoading={form.formState.isSubmitting}>
+            {t('actions.login')}
+          </Button>
+        </form>
       </div>
     </div>
   )
