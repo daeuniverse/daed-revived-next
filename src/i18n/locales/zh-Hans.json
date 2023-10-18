@@ -96,9 +96,13 @@
     "autoDetect": "自动检测",
     "accountSettings": "账户设置",
     "settings": "设置",
-    "username": "登录账户 {{username}}",
-    "accountName": "用户名 {{accountName}}",
+    "username": "登录账户：{{username}}",
+    "accountName": "用户名：{{accountName}}",
     "english": "英文",
-    "chineseSimplified": "简中"
+    "chineseSimplified": "简中",
+    "name": "名称",
+    "tag": "标签",
+    "protocol": "协议",
+    "updatedAt": "更新时间"
   }
 }

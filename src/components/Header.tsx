@@ -31,7 +31,7 @@ import { LogoText } from '~/components/LogoText'
 
 const Header: FC = () => {
   const { t } = useTranslation()
-  const { setTheme } = useTheme()
+  const { theme: curTheme, setTheme } = useTheme()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const pathname = usePathname()
   const router = useRouter()
@@ -83,7 +83,7 @@ const Header: FC = () => {
               <DropdownItem
                 key="profile"
                 textValue="profile"
-                className="gap-2 py-2"
+                className="py-2"
                 onPress={() => {
                   console.log('account settings')
                 }}
@@ -99,9 +99,19 @@ const Header: FC = () => {
             <DropdownSection title={t('actions.switchTheme')} showDivider>
               <DropdownItem key="theme" textValue="theme">
                 <ButtonGroup>
-                  <Button onPress={() => setTheme('system')}>{t('actions.systemMode')}</Button>
-                  <Button onPress={() => setTheme('dark')}>{t('actions.darkMode')}</Button>
-                  <Button onPress={() => setTheme('light')}>{t('actions.lightMode')}</Button>
+                  {[
+                    ['system', t('actions.systemMode')],
+                    ['dark', t('actions.darkMode')],
+                    ['light', t('actions.lightMode')]
+                  ].map(([theme, title]) => (
+                    <Button
+                      key={theme}
+                      onPress={() => setTheme(theme)}
+                      color={theme === curTheme ? 'primary' : 'secondary'}
+                    >
+                      {title}
+                    </Button>
+                  ))}
                 </ButtonGroup>
               </DropdownItem>
             </DropdownSection>
@@ -109,8 +119,18 @@ const Header: FC = () => {
             <DropdownSection title={t('actions.switchLanguage')} showDivider>
               <DropdownItem key="language" textValue="language">
                 <ButtonGroup>
-                  <Button onPress={() => i18n.changeLanguage('en-US')}>{t('primitives.english')}</Button>
-                  <Button onPress={() => i18n.changeLanguage('zh-Hans')}>{t('primitives.chineseSimplified')}</Button>
+                  {[
+                    ['en-US', t('primitives.english')],
+                    ['zh-Hans', t('primitives.chineseSimplified')]
+                  ].map(([language, title]) => (
+                    <Button
+                      key={language}
+                      onPress={() => i18n.changeLanguage(language)}
+                      color={language === i18n.language ? 'primary' : 'secondary'}
+                    >
+                      {title}
+                    </Button>
+                  ))}
                 </ButtonGroup>
               </DropdownItem>
             </DropdownSection>

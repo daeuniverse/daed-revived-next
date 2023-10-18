@@ -1,2 +1,2 @@
-export const randomUnsplashImageURL = (sig: string) =>
-  `https://source.unsplash.com/random/1920x1080?animal+goose&sig=${sig}`
+export const randomUnsplashImageURL = (sig: string, width: number, height: number) =>
+  `https://source.unsplash.com/random/${width}x${height}?goose&sig=${sig}`

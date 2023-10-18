@@ -117,8 +117,8 @@ const CreateOrEditModal: FC<CreateOrEditModalContentProps & (CreateModalContentP
               />
             )}
 
-            <Accordion defaultValue={['software-options']} selectionMode="multiple">
-              <AccordionItem value="software-options" title={t('primitives.softwareOptions')}>
+            <Accordion defaultExpandedKeys={['software-options']} selectionMode="multiple">
+              <AccordionItem key="software-options" title={t('primitives.softwareOptions')}>
                 <div className="space-y-4 px-1">
                   <Input
                     type="number"
@@ -196,7 +196,7 @@ const CreateOrEditModal: FC<CreateOrEditModalContentProps & (CreateModalContentP
                 </div>
               </AccordionItem>
 
-              <AccordionItem value="interface-and-kernel-options" title={t('primitives.interfaceAndKernelOptions')}>
+              <AccordionItem key="interface-and-kernel-options" title={t('primitives.interfaceAndKernelOptions')}>
                 <div className="space-y-4 px-1">
                   <Controller
                     name="lanInterface"
@@ -256,7 +256,7 @@ const CreateOrEditModal: FC<CreateOrEditModalContentProps & (CreateModalContentP
                 </div>
               </AccordionItem>
 
-              <AccordionItem value="node-connectivity-check" title={t('primitives.nodeConnectivityCheck')}>
+              <AccordionItem key="node-connectivity-check" title={t('primitives.nodeConnectivityCheck')}>
                 <div className="space-y-4 px-1">
                   <Controller
                     name="tcpCheckUrl"
@@ -326,7 +326,7 @@ const CreateOrEditModal: FC<CreateOrEditModalContentProps & (CreateModalContentP
                 </div>
               </AccordionItem>
 
-              <AccordionItem value="connecting-options" title={t('primitives.connectingOptions')}>
+              <AccordionItem key="connecting-options" title={t('primitives.connectingOptions')}>
                 <div className="space-y-4 px-1">
                   <Controller
                     name="dialMode"
@@ -516,73 +516,77 @@ const DetailsCard: FC<{
         <RandomUnsplashImage sig={details.id} />
       </CardBody>
 
-      <CardFooter className="gap-2">
-        <Button isIconOnly onPress={onDetailsOpen}>
-          <IconCode />
-        </Button>
+      <CardFooter className="justify-between">
+        <div className="flex gap-2">
+          <Button isIconOnly onPress={onDetailsOpen}>
+            <IconCode />
+          </Button>
 
-        <DetailsModal details={details} isOpen={isDetailsOpen} onOpenChange={onDetailsOpenChange} />
+          <DetailsModal details={details} isOpen={isDetailsOpen} onOpenChange={onDetailsOpenChange} />
+        </div>
 
-        <Button
-          color="secondary"
-          isIconOnly
-          onPress={() => {
-            editForm.reset({
-              ...details.global,
-              checkIntervalSeconds: deriveTime(details.global.checkInterval, 's'),
-              sniffingTimeoutMS: deriveTime(details.global.sniffingTimeout, 'ms'),
-              checkToleranceMS: deriveTime(details.global.checkTolerance, 'ms')
-            })
-            onEditOpen()
-          }}
-        >
-          <IconEdit />
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            color="secondary"
+            isIconOnly
+            onPress={() => {
+              editForm.reset({
+                ...details.global,
+                checkIntervalSeconds: deriveTime(details.global.checkInterval, 's'),
+                sniffingTimeoutMS: deriveTime(details.global.sniffingTimeout, 'ms'),
+                checkToleranceMS: deriveTime(details.global.checkTolerance, 'ms')
+              })
+              onEditOpen()
+            }}
+          >
+            <IconEdit />
+          </Button>
 
-        <CreateOrEditModal
-          type="edit"
-          isOpen={isEditOpen}
-          onOpenChange={onEditOpenChange}
-          name={details.name}
-          id={details.id}
-          lanInterfaces={lanInterfaces}
-          wanInterfaces={wanInterfaces}
-          form={editForm}
-          onSubmit={onEditSubmit(details.id)}
-        />
+          <CreateOrEditModal
+            type="edit"
+            isOpen={isEditOpen}
+            onOpenChange={onEditOpenChange}
+            name={details.name}
+            id={details.id}
+            lanInterfaces={lanInterfaces}
+            wanInterfaces={wanInterfaces}
+            form={editForm}
+            onSubmit={onEditSubmit(details.id)}
+          />
 
-        {!isDefault && (
-          <Fragment>
-            <Button color="danger" isIconOnly isDisabled={details.selected} onPress={onRemoveOpen}>
-              <IconTrash />
-            </Button>
+          {!isDefault && (
+            <Fragment>
+              <Button color="danger" isIconOnly isDisabled={details.selected} onPress={onRemoveOpen}>
+                <IconTrash />
+              </Button>
 
-            <Modal isOpen={isRemoveOpen} onOpenChange={onRemoveOpenChange}>
-              <ModalContent>
-                <ModalHeader>{t('primitives.remove', { resourceName: t('primitives.config') })}</ModalHeader>
-                <ModalBody>{details.name}</ModalBody>
+              <Modal isOpen={isRemoveOpen} onOpenChange={onRemoveOpenChange}>
+                <ModalContent>
+                  <ModalHeader>{t('primitives.remove', { resourceName: t('primitives.config') })}</ModalHeader>
+                  <ModalBody>{details.name}</ModalBody>
 
-                <ModalFooter>
-                  <Button color="secondary" isLoading={removeMutation.isPending} onPress={onRemoveClose}>
-                    {t('actions.cancel')}
-                  </Button>
+                  <ModalFooter>
+                    <Button color="secondary" isLoading={removeMutation.isPending} onPress={onRemoveClose}>
+                      {t('actions.cancel')}
+                    </Button>
 
-                  <Button
-                    color="danger"
-                    isLoading={removeMutation.isPending}
-                    onPress={async () => {
-                      await removeMutation.mutateAsync({ id: details.id })
-                      await refetch()
-                      onRemoveClose()
-                    }}
-                  >
-                    {t('actions.confirm')}
-                  </Button>
-                </ModalFooter>
-              </ModalContent>
-            </Modal>
-          </Fragment>
-        )}
+                    <Button
+                      color="danger"
+                      isLoading={removeMutation.isPending}
+                      onPress={async () => {
+                        await removeMutation.mutateAsync({ id: details.id })
+                        await refetch()
+                        onRemoveClose()
+                      }}
+                    >
+                      {t('actions.confirm')}
+                    </Button>
+                  </ModalFooter>
+                </ModalContent>
+              </Modal>
+            </Fragment>
+          )}
+        </div>
       </CardFooter>
     </Card>
   )

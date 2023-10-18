@@ -96,9 +96,13 @@
     "autoDetect": "Auto Detect",
     "accountSettings": "Account Settings",
     "settings": "Settings",
-    "username": "Username {{username}}",
-    "accountName": "Account Name {{accountName}}",
+    "username": "Username: {{username}}",
+    "accountName": "Account Name: {{accountName}}",
     "english": "English",
-    "chineseSimplified": "Chinese Simplified"
+    "chineseSimplified": "Chinese Simplified",
+    "name": "Name",
+    "tag": "Tag",
+    "protocol": "Protocol",
+    "updatedAt": "Updated At"
   }
 }
