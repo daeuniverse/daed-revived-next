@@ -11,7 +11,7 @@ export const Providers: FC<SessionContextProps & { children: ReactNode }> = ({ e
       <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { refetchOnWindowFocus: false } } })}>
         {children}
 
-        <ReactQueryDevtools buttonPosition="bottom-right" />
+        <ReactQueryDevtools />
       </QueryClientProvider>
     </GraphqlClientProvider>
   </SessionProvider>

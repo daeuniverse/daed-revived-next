@@ -282,7 +282,7 @@ export default function RoutingPage() {
                   <AlertDialogContent>
                     <AlertDialogHeader>
                       <AlertDialogTitle>
-                        {t('primitives.remove', { resourceName: t('primitives.config') })}
+                        {t('primitives.remove', { resourceName: t('primitives.details') })}
                       </AlertDialogTitle>
 
                       <AlertDialogDescription>{routing.name}</AlertDialogDescription>

@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-export const editConfigFormSchema = z.object({
+export const configFormSchema = z.object({
   tproxyPort: z.number().min(0).max(65535),
   tproxyPortProtect: z.boolean(),
   soMarkFromDae: z.number().min(0),
@@ -21,9 +21,11 @@ export const editConfigFormSchema = z.object({
   utlsImitate: z.string()
 })
 
-export const createConfigFormSchema = editConfigFormSchema.extend({
-  name: z.string().min(4).max(20)
-})
+export const createConfigFormSchema = configFormSchema.merge(
+  z.object({
+    name: z.string().min(4).max(20)
+  })
+)
 
 export enum LogLevel {
   error = 'error',
@@ -97,7 +99,7 @@ export enum UTLSImitate {
   qq_11_1 = 'qq_11_1'
 }
 
-export const editConfigFormDefault: z.infer<typeof editConfigFormSchema> = {
+export const configFormDefault: z.infer<typeof configFormSchema> = {
   tproxyPort: 12345,
   tproxyPortProtect: true,
   soMarkFromDae: 80,
@@ -120,5 +122,5 @@ export const editConfigFormDefault: z.infer<typeof editConfigFormSchema> = {
 
 export const createConfigFormDefault: z.infer<typeof createConfigFormSchema> = {
   name: '',
-  ...editConfigFormDefault
+  ...configFormDefault
 }

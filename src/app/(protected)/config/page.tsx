@@ -2,22 +2,28 @@
 
 import { zodResolver } from '@hookform/resolvers/zod'
 import {
+  Accordion,
+  AccordionItem,
   Button,
   Card,
   CardBody,
   CardFooter,
   CardHeader,
-  Modal,
+  Input,
   ModalBody,
   ModalContent,
+  ModalFooter,
   ModalHeader,
+  Select,
+  SelectItem,
+  Switch,
+  cn,
   useDisclosure
 } from '@nextui-org/react'
-import { CheckIcon } from '@radix-ui/react-icons'
-import { IconCheck, IconPlus } from '@tabler/icons-react'
-import { CodeIcon, EditIcon, Trash2Icon } from 'lucide-react'
-import { FC, Fragment, useMemo, useState } from 'react'
-import { SubmitHandler, UseFormReturn, useForm } from 'react-hook-form'
+import { IconCheck, IconCode, IconEdit, IconPlus } from '@tabler/icons-react'
+import { Trash2Icon } from 'lucide-react'
+import { FC, Fragment, useEffect, useMemo } from 'react'
+import { Controller, SubmitHandler, UseFormReturn, useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { z } from 'zod'
 import { Config } from '~/apis/gql/graphql'
@@ -29,10 +35,11 @@ import {
 } from '~/apis/mutation'
 import { useConfigsQuery, useGeneralQuery, useGetJSONStorageRequest } from '~/apis/query'
 import { CodeBlock } from '~/components/CodeBlock'
+import { Description } from '~/components/Description'
 import { ListInput } from '~/components/ListInput'
+import { Modal } from '~/components/Modal'
 import { ResourcePage } from '~/components/ResourcePage'
-import { TagsInput, TagsInputOption } from '~/components/TagsInput'
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '~/components/ui/accordion'
+import { TagsInputOption } from '~/components/TagsInput'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -44,330 +51,256 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger
 } from '~/components/ui/alert-dialog'
-import {
-  Dialog,
-  DialogBody,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger
-} from '~/components/ui/dialog'
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '~/components/ui/form'
-import { Input } from '~/components/ui/input'
-import { ScrollArea } from '~/components/ui/scroll-area'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~/components/ui/select'
-import { Switch } from '~/components/ui/switch'
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '~/components/ui/form'
 import { deriveTime } from '~/lib/time'
-import { cn } from '~/lib/ui'
 import {
   TLSImplementation,
   TcpCheckHttpMethod,
   UTLSImitate,
+  configFormDefault,
+  configFormSchema,
   createConfigFormDefault,
-  createConfigFormSchema,
-  editConfigFormDefault,
-  editConfigFormSchema
+  createConfigFormSchema
 } from '~/schemas/config'
 
-type CreateOrEditDialogContentProps = {
+type CreateOrEditModalContentProps = {
+  isOpen: boolean
+  onOpenChange: () => void
   lanInterfaces: TagsInputOption[]
   wanInterfaces: TagsInputOption[]
-}
-
-type CreateDialogContentProps = {
-  type: 'create'
   form: UseFormReturn<z.infer<typeof createConfigFormSchema>>
   onSubmit: SubmitHandler<z.infer<typeof createConfigFormSchema>>
 }
 
-type EditDialogContentProps = {
+type CreateModalContentProps = {
+  type: 'create'
+}
+
+type EditModalContentProps = {
   type: 'edit'
   name: string
   id: string
-  form: UseFormReturn<z.infer<typeof editConfigFormSchema>>
-  onSubmit: SubmitHandler<z.infer<typeof editConfigFormSchema>>
 }
 
-const CreateOrEditDialogContent: FC<
-  CreateOrEditDialogContentProps & (CreateDialogContentProps | EditDialogContentProps)
-> = ({ lanInterfaces, wanInterfaces, ...createOrEditProps }) => {
+const CreateOrEditModalContent: FC<
+  CreateOrEditModalContentProps & (CreateModalContentProps | EditModalContentProps)
+> = ({ isOpen, onOpenChange, lanInterfaces, wanInterfaces, ...createOrEditProps }) => {
   const { t } = useTranslation()
   const { type, form, onSubmit } = createOrEditProps
+  const {
+    getValues,
+    register,
+    reset,
+    control,
+    formState: { errors }
+  } = form
   const dirty = Object.values(form.formState.dirtyFields).some((dirty) => dirty)
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (!isOpen) reset()
+    }, 100)
+
+    return () => timer && clearTimeout(timer)
+  }, [reset, isOpen])
+
   return (
-    <DialogContent size="medium">
-      {/* @ts-expect-error */}
-      <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit((values) => {
-            // just to make typescript happy
-            if (type === 'create') {
-              return onSubmit(values as z.infer<typeof createConfigFormSchema>)
-            } else if (type === 'edit') {
-              return onSubmit(values as z.infer<typeof editConfigFormSchema>)
-            }
-          })}
-        >
-          <DialogHeader>
-            {type === 'edit' && (
-              <Fragment>
-                <DialogTitle className="uppercase">{createOrEditProps.name}</DialogTitle>
-                <DialogDescription>{createOrEditProps.id}</DialogDescription>
-              </Fragment>
-            )}
+    <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="2xl">
+      <ModalContent>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)}>
+            <ModalHeader>
+              {type === 'edit' && (
+                <Fragment>
+                  {createOrEditProps.name}
+                  {createOrEditProps.id}
+                </Fragment>
+              )}
 
-            {type === 'create' && (
-              <Fragment>
-                <DialogTitle className="uppercase">
-                  {t('primitives.create', {
-                    resourceName: t('primitives.config')
-                  })}
-                </DialogTitle>
-              </Fragment>
-            )}
-          </DialogHeader>
+              {type === 'create' && t('primitives.create', { resourceName: t('primitives.config') })}
+            </ModalHeader>
 
-          <DialogBody className="flex flex-col gap-2">
-            {type === 'create' && (
-              <FormField
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('form.fields.name')}</FormLabel>
+            <ModalBody className="flex flex-col gap-2">
+              {type === 'create' && (
+                <Input
+                  label={t('form.fields.name')}
+                  placeholder={t('form.fields.name')}
+                  isRequired
+                  errorMessage={errors.name?.message}
+                  {...register('name')}
+                />
+              )}
 
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            )}
-
-            <Accordion type="multiple" defaultValue={['software-options']}>
-              <AccordionItem value="software-options">
-                <AccordionTrigger>{t('primitives.softwareOptions')}</AccordionTrigger>
-
-                <AccordionContent>
-                  <div className="space-y-4">
-                    <FormField
-                      name="tproxyPort"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>{t('form.fields.tproxyPort')}</FormLabel>
-
-                          <FormDescription>{t('form.descriptions.tproxyPort')}</FormDescription>
-
-                          <FormControl>
-                            <Input
-                              type="number"
-                              placeholder="12345"
-                              {...field}
-                              onChange={(e) => field.onChange(Number.parseInt(e.target.value || '0'))}
-                            />
-                          </FormControl>
-
-                          <FormMessage />
-                        </FormItem>
-                      )}
+              <Accordion defaultValue={['software-options']} selectionMode="multiple">
+                <AccordionItem value="software-options" title={t('primitives.softwareOptions')}>
+                  <div className="space-y-4 px-1">
+                    <Input
+                      type="number"
+                      placeholder="12345"
+                      label={t('form.fields.tproxyPort')}
+                      description={t('form.descriptions.tproxyPort')}
+                      isRequired
+                      errorMessage={errors.tproxyPort?.message}
+                      {...register('tproxyPort', { setValueAs: (value) => Number.parseInt(value) })}
                     />
 
-                    <FormField
+                    <Controller
                       name="tproxyPortProtect"
+                      control={control}
                       render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>{t('form.fields.tproxyPortProtect')}</FormLabel>
+                        <div>
+                          <Switch isSelected={field.value} onChange={field.onChange}>
+                            {t('form.fields.tproxyPortProtect')}
+                          </Switch>
 
-                          <FormDescription>{t('form.descriptions.tproxyPortProtect')}</FormDescription>
-
-                          <FormControl>
-                            <Switch checked={field.value} onCheckedChange={field.onChange} />
-                          </FormControl>
-
-                          <FormMessage />
-                        </FormItem>
+                          <Description>{t('form.descriptions.tproxyPortProtect')}</Description>
+                        </div>
                       )}
                     />
 
-                    <FormField
-                      name="soMarkFromDae"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>{t('form.fields.soMarkFromDae')}</FormLabel>
+                    <div>
+                      <Input
+                        type="number"
+                        label={t('form.fields.soMarkFromDae')}
+                        placeholder={t('form.descriptions.pleaseEnter', { fieldName: t('form.fields.soMarkFromDae') })}
+                        description={t('form.descriptions.soMarkFromDae')}
+                        errorMessage={errors.soMarkFromDae?.message}
+                        {...register('soMarkFromDae', { setValueAs: (value) => Number.parseInt(value) })}
+                      />
+                    </div>
 
-                          <FormDescription>{t('form.descriptions.soMarkFromDae')}</FormDescription>
-
-                          <FormControl>
-                            <Input
-                              type="number"
-                              {...field}
-                              onChange={(e) => field.onChange(Number.parseInt(e.target.value || '0'))}
-                            />
-                          </FormControl>
-
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
+                    <Controller
                       name="logLevel"
+                      control={control}
                       render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>{t('form.fields.logLevel')}</FormLabel>
-
-                          <Select value={field.value} onValueChange={field.onChange}>
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue />
-                              </SelectTrigger>
-                            </FormControl>
-
-                            <SelectContent>
-                              <SelectItem value="error">{t('form.fields.logLevels.error')}</SelectItem>
-                              <SelectItem value="warn">{t('form.fields.logLevels.warn')}</SelectItem>
-                              <SelectItem value="info">{t('form.fields.logLevels.info')}</SelectItem>
-                              <SelectItem value="debug">{t('form.fields.logLevels.debug')}</SelectItem>
-                              <SelectItem value="trace">{t('form.fields.logLevels.trace')}</SelectItem>
-                            </SelectContent>
-                          </Select>
-
-                          <FormMessage />
-                        </FormItem>
+                        <Select
+                          label={t('form.fields.logLevel')}
+                          selectedKeys={field.value ? [field.value] : []}
+                          onChange={field.onChange}
+                          disallowEmptySelection
+                        >
+                          {[
+                            ['error', t('form.fields.logLevels.error')],
+                            ['warn', t('form.fields.logLevels.warn')],
+                            ['info', t('form.fields.logLevels.info')],
+                            ['debug', t('form.fields.logLevels.debug')],
+                            ['trace', t('form.fields.logLevels.trace')]
+                          ].map(([value, label]) => (
+                            <SelectItem key={value} textValue={value}>
+                              {label}
+                            </SelectItem>
+                          ))}
+                        </Select>
                       )}
                     />
 
-                    <FormField
+                    <Controller
                       name="disableWaitingNetwork"
+                      control={control}
                       render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>{t('form.fields.disableWaitingNetwork')}</FormLabel>
+                        <div>
+                          <Switch isSelected={field.value} onChange={field.onChange}>
+                            {t('form.fields.disableWaitingNetwork')}
+                          </Switch>
 
-                          <FormDescription>{t('form.descriptions.disableWaitingNetwork')}</FormDescription>
-
-                          <FormControl>
-                            <Switch checked={field.value} onCheckedChange={field.onChange} />
-                          </FormControl>
-
-                          <FormMessage />
-                        </FormItem>
+                          <Description>{t('form.descriptions.disableWaitingNetwork')}</Description>
+                        </div>
                       )}
                     />
                   </div>
-                </AccordionContent>
-              </AccordionItem>
+                </AccordionItem>
 
-              <AccordionItem value="interface-and-kernel-options">
-                <AccordionTrigger>{t('primitives.interfaceAndKernelOptions')}</AccordionTrigger>
-
-                <AccordionContent>
-                  <div className="space-y-4">
-                    <FormField
+                <AccordionItem value="interface-and-kernel-options" title={t('primitives.interfaceAndKernelOptions')}>
+                  <div className="space-y-4 px-1">
+                    <Controller
                       name="lanInterface"
+                      control={control}
                       render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>{t('form.fields.lanInterface')}</FormLabel>
-
-                          <FormDescription>{t('form.descriptions.lanInterface')}</FormDescription>
-
-                          <FormControl>
-                            <TagsInput options={lanInterfaces} {...field} />
-                          </FormControl>
-
-                          <FormMessage />
-                        </FormItem>
+                        <Select
+                          label={t('form.fields.lanInterface')}
+                          description={t('form.descriptions.lanInterface')}
+                          selectionMode="multiple"
+                          selectedKeys={field.value}
+                          onSelectionChange={field.onChange}
+                        >
+                          {lanInterfaces.map(({ title, value, description }) => (
+                            <SelectItem key={value} textValue={value}>
+                              {title || value}
+                              {description}
+                            </SelectItem>
+                          ))}
+                        </Select>
                       )}
                     />
 
-                    <FormField
+                    <Controller
                       name="wanInterface"
+                      control={control}
                       render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>{t('form.fields.wanInterface')}</FormLabel>
-
-                          <FormDescription>{t('form.descriptions.wanInterface')}</FormDescription>
-
-                          <FormControl>
-                            <TagsInput options={wanInterfaces} {...field} />
-                          </FormControl>
-
-                          <FormMessage />
-                        </FormItem>
+                        <Select
+                          label={t('form.fields.wanInterface')}
+                          description={t('form.descriptions.wanInterface')}
+                          selectionMode="multiple"
+                          selectedKeys={field.value}
+                          onSelectionChange={field.onChange}
+                        >
+                          {wanInterfaces.map(({ title, value, description }) => (
+                            <SelectItem key={value} textValue={value}>
+                              {title || value}
+                              {description}
+                            </SelectItem>
+                          ))}
+                        </Select>
                       )}
                     />
 
-                    <FormField
+                    <Controller
                       name="autoConfigKernelParameter"
+                      control={control}
                       render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>{t('form.fields.autoConfigKernelParameter')}</FormLabel>
+                        <div>
+                          <Switch isSelected={field.value} onChange={field.onChange}>
+                            {t('form.fields.autoConfigKernelParameter')}
+                          </Switch>
 
-                          <FormDescription>{t('form.descriptions.autoConfigKernelParameter')}</FormDescription>
-
-                          <FormControl>
-                            <Switch checked={field.value} onCheckedChange={field.onChange} />
-                          </FormControl>
-
-                          <FormMessage />
-                        </FormItem>
+                          <Description>{t('form.descriptions.autoConfigKernelParameter')}</Description>
+                        </div>
                       )}
                     />
                   </div>
-                </AccordionContent>
-              </AccordionItem>
+                </AccordionItem>
 
-              <AccordionItem value="node-connectivity-check">
-                <AccordionTrigger>{t('primitives.nodeConnectivityCheck')}</AccordionTrigger>
-
-                <AccordionContent>
-                  <div className="space-y-4">
-                    <FormField
+                <AccordionItem value="node-connectivity-check" title={t('primitives.nodeConnectivityCheck')}>
+                  <div className="space-y-4 px-1">
+                    <Controller
                       name="tcpCheckUrl"
+                      control={control}
                       render={({ field }) => (
-                        <FormItem>
+                        <div>
                           <FormLabel dangling>{t('form.fields.tcpCheckUrl')}</FormLabel>
-
-                          <FormDescription>{t('form.descriptions.tcpCheckUrl')}</FormDescription>
-
-                          <FormControl>
-                            <ListInput name={field.name} />
-                          </FormControl>
-
-                          <FormMessage />
-                        </FormItem>
+                          <ListInput name={field.name} />
+                          <Description>{t('form.descriptions.tcpCheckUrl')}</Description>
+                        </div>
                       )}
                     />
 
-                    <FormField
+                    <Controller
                       name="tcpCheckHttpMethod"
+                      control={control}
                       render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>{t('form.fields.tcpCheckHttpMethod')}</FormLabel>
-
-                          <FormDescription>{t('form.descriptions.tcpCheckHttpMethod')}</FormDescription>
-
-                          <Select value={field.value} onValueChange={field.onChange}>
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue />
-                              </SelectTrigger>
-                            </FormControl>
-
-                            <SelectContent>
-                              {Object.values(TcpCheckHttpMethod).map((tcpCheckHttpMethod) => (
-                                <SelectItem key={tcpCheckHttpMethod} value={tcpCheckHttpMethod}>
-                                  {tcpCheckHttpMethod}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-
-                          <FormMessage />
-                        </FormItem>
+                        <Select
+                          label={t('form.fields.tcpCheckHttpMethod')}
+                          description={t('form.descriptions.tcpCheckHttpMethod')}
+                          disallowEmptySelection
+                          selectedKeys={field.value ? [field.value] : []}
+                          onChange={field.onChange}
+                        >
+                          {Object.values(TcpCheckHttpMethod).map((tcpCheckHttpMethod) => (
+                            <SelectItem key={tcpCheckHttpMethod} value={tcpCheckHttpMethod}>
+                              {tcpCheckHttpMethod}
+                            </SelectItem>
+                          ))}
+                        </Select>
                       )}
                     />
 
@@ -377,7 +310,7 @@ const CreateOrEditDialogContent: FC<
                         <FormItem>
                           <FormLabel dangling>{t('form.fields.udpCheckDns')}</FormLabel>
 
-                          <FormDescription>{t('form.descriptions.udpCheckDns')}</FormDescription>
+                          <Description>{t('form.descriptions.udpCheckDns')}</Description>
 
                           <FormControl>
                             <ListInput name={field.name} />
@@ -388,227 +321,270 @@ const CreateOrEditDialogContent: FC<
                       )}
                     />
 
-                    <FormField
-                      name="checkIntervalSeconds"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>
-                            {t('form.fields.checkInterval')} ({t('primitives.second')})
-                          </FormLabel>
-
-                          <FormControl>
-                            <Input
-                              type="number"
-                              {...field}
-                              onChange={(e) => field.onChange(Number.parseInt(e.target.value || '0'))}
-                            />
-                          </FormControl>
-
-                          <FormMessage />
-                        </FormItem>
-                      )}
+                    <Input
+                      type="number"
+                      label={`${t('form.fields.checkInterval')} (${t('primitives.second')})`}
+                      placeholder="30"
+                      errorMessage={errors.checkIntervalSeconds?.message}
+                      {...register('checkIntervalSeconds', { setValueAs: (value) => Number.parseInt(value) })}
                     />
 
-                    <FormField
-                      name="checkToleranceMS"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>
-                            {t('form.fields.checkTolerance')} ({t('primitives.millisecond')})
-                          </FormLabel>
-
-                          <FormDescription>{t('form.descriptions.checkTolerance')}</FormDescription>
-
-                          <FormControl>
-                            <Input
-                              type="number"
-                              {...field}
-                              onChange={(e) => field.onChange(Number.parseInt(e.target.value || '0'))}
-                            />
-                          </FormControl>
-
-                          <FormMessage />
-                        </FormItem>
-                      )}
+                    <Input
+                      type="number"
+                      label={`${t('form.fields.checkTolerance')} (${t('primitives.millisecond')})`}
+                      placeholder="0"
+                      description={t('form.descriptions.checkTolerance')}
+                      errorMessage={errors.checkToleranceMS?.message}
+                      {...register('checkToleranceMS', { setValueAs: (value) => Number.parseInt(value) })}
                     />
                   </div>
-                </AccordionContent>
-              </AccordionItem>
+                </AccordionItem>
 
-              <AccordionItem value="connecting-options">
-                <AccordionTrigger>{t('primitives.connectingOptions')}</AccordionTrigger>
-
-                <AccordionContent>
-                  <div className="space-y-4">
-                    <FormField
+                <AccordionItem value="connecting-options" title={t('primitives.connectingOptions')}>
+                  <div className="space-y-4 px-1">
+                    <Controller
                       name="dialMode"
+                      control={control}
                       render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>{t('form.fields.dialMode')}</FormLabel>
-
-                          <Select value={field.value} onValueChange={field.onChange}>
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue />
-                              </SelectTrigger>
-                            </FormControl>
-
-                            <SelectContent>
-                              <SelectItem value="ip">ip</SelectItem>
-                              <SelectItem value="domain">domain</SelectItem>
-                              <SelectItem value="domain+">domain+</SelectItem>
-                              <SelectItem value="domain++">domain++</SelectItem>
-                            </SelectContent>
-                          </Select>
-
-                          <FormMessage />
-                        </FormItem>
+                        <Select
+                          label={t('form.fields.dialMode')}
+                          selectedKeys={field.value ? [field.value] : []}
+                          onChange={field.onChange}
+                          disallowEmptySelection
+                        >
+                          {['ip', 'domain', 'domain+', 'domain++'].map((value) => (
+                            <SelectItem key={value} textValue={value}>
+                              {value}
+                            </SelectItem>
+                          ))}
+                        </Select>
                       )}
                     />
 
-                    <FormField
+                    <Controller
                       name="allowInsecure"
+                      control={control}
                       render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>{t('form.fields.allowInsecure')}</FormLabel>
+                        <div>
+                          <Switch isSelected={field.value} onChange={field.onChange}>
+                            {t('form.fields.allowInsecure')}
+                          </Switch>
 
-                          <FormDescription>{t('form.descriptions.allowInsecure')}</FormDescription>
-
-                          <FormControl>
-                            <Switch checked={field.value} onCheckedChange={field.onChange} />
-                          </FormControl>
-
-                          <FormMessage />
-                        </FormItem>
+                          <Description>{t('form.descriptions.allowInsecure')}</Description>
+                        </div>
                       )}
                     />
 
-                    <FormField
-                      name="sniffingTimeoutMS"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>
-                            {t('form.fields.sniffingTimeout')} ({t('primitives.millisecond')})
-                          </FormLabel>
-
-                          <FormDescription>{t('form.descriptions.sniffingTimeout')}</FormDescription>
-
-                          <FormControl>
-                            <Input
-                              type="number"
-                              {...field}
-                              onChange={(e) => field.onChange(Number.parseInt(e.target.value || '0'))}
-                            />
-                          </FormControl>
-
-                          <FormMessage />
-                        </FormItem>
-                      )}
+                    <Input
+                      type="number"
+                      label={`${t('form.fields.sniffingTimeout')} (${t('primitives.millisecond')})`}
+                      description={t('form.descriptions.sniffingTimeout')}
+                      placeholder={t('form.descriptions.pleaseEnter', { fieldName: t('form.fields.sniffingTimeout') })}
+                      {...register('sniffingTimeoutMS', { setValueAs: (value) => Number.parseInt(value) })}
                     />
 
-                    <FormField
+                    <Controller
                       name="tlsImplementation"
+                      control={control}
                       render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>{t('form.fields.tlsImplementation')}</FormLabel>
-
-                          <FormDescription>{t('form.descriptions.tlsImplementation')}</FormDescription>
-
-                          <Select value={field.value} onValueChange={field.onChange}>
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue />
-                              </SelectTrigger>
-                            </FormControl>
-
-                            <SelectContent>
-                              {Object.values(TLSImplementation).map((tlsImplementation) => (
-                                <SelectItem key={tlsImplementation} value={tlsImplementation}>
-                                  {tlsImplementation}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-
-                          <FormMessage />
-                        </FormItem>
+                        <Select
+                          label={t('form.fields.tlsImplementation')}
+                          description={t('form.descriptions.tlsImplementation')}
+                          selectedKeys={field.value ? [field.value] : []}
+                          onChange={field.onChange}
+                          disallowEmptySelection
+                        >
+                          {Object.values(TLSImplementation).map((tlsImplementation) => (
+                            <SelectItem key={tlsImplementation} value={tlsImplementation}>
+                              {tlsImplementation}
+                            </SelectItem>
+                          ))}
+                        </Select>
                       )}
                     />
 
-                    {form.getValues().tlsImplementation === TLSImplementation.utls && (
-                      <FormField
+                    {getValues().tlsImplementation === TLSImplementation.utls && (
+                      <Controller
                         name="utlsImitate"
+                        control={control}
                         render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>{t('form.fields.utlsImitate')}</FormLabel>
-
-                            <FormDescription>{t('form.descriptions.utlsImitate')}</FormDescription>
-
-                            <Select value={field.value} onValueChange={field.onChange}>
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue />
-                                </SelectTrigger>
-                              </FormControl>
-
-                              <SelectContent>
-                                <ScrollArea className="h-64">
-                                  {Object.values(UTLSImitate).map((utlsImitate) => (
-                                    <SelectItem key={utlsImitate} value={utlsImitate}>
-                                      {utlsImitate}
-                                    </SelectItem>
-                                  ))}
-                                </ScrollArea>
-                              </SelectContent>
-                            </Select>
-
-                            <FormMessage />
-                          </FormItem>
+                          <Select
+                            label={t('form.fields.utlsImitate')}
+                            description={t('form.descriptions.utlsImitate')}
+                            selectedKeys={field.value ? [field.value] : []}
+                            onChange={field.onChange}
+                          >
+                            {Object.values(UTLSImitate).map((utlsImitate) => (
+                              <SelectItem key={utlsImitate} value={utlsImitate}>
+                                {utlsImitate}
+                              </SelectItem>
+                            ))}
+                          </Select>
                         )}
                       />
                     )}
                   </div>
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
-          </DialogBody>
+                </AccordionItem>
+              </Accordion>
+            </ModalBody>
 
-          <DialogFooter>
-            <Button type="reset" color="secondary" disabled={!dirty} onClick={() => form.reset()}>
-              {t('actions.reset')}
-            </Button>
+            <ModalFooter>
+              <Button type="reset" color="secondary" isDisabled={!dirty} onPress={() => form.reset()}>
+                {t('actions.reset')}
+              </Button>
 
-            <Button type="submit" disabled={type === 'edit' && !dirty} isLoading={form.formState.isSubmitting}>
-              {t('actions.submit')}
-            </Button>
-          </DialogFooter>
-        </form>
-      </Form>
-    </DialogContent>
+              <Button type="submit" isDisabled={type === 'edit' && !dirty} isLoading={form.formState.isSubmitting}>
+                {t('actions.submit')}
+              </Button>
+            </ModalFooter>
+          </form>
+        </Form>
+      </ModalContent>
+    </Modal>
   )
 }
 
-const ConfigDetailModalTrigger: FC<{
+const DetailsModal: FC<{
   config: Config
-}> = ({ config }) => {
-  const { isOpen, onOpen, onOpenChange } = useDisclosure()
+  isOpen: boolean
+  onOpenChange: () => void
+}> = ({ config, isOpen, onOpenChange }) => (
+  <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+    <ModalContent>
+      <ModalHeader>{config.id}</ModalHeader>
+
+      <ModalBody>
+        <CodeBlock language="json">{JSON.stringify(config, null, 2)}</CodeBlock>
+      </ModalBody>
+    </ModalContent>
+  </Modal>
+)
+
+const DetailsCard: FC<{
+  details: Config
+  isDefault?: boolean
+  refetch: () => Promise<unknown>
+  lanInterfaces: TagsInputOption[]
+  wanInterfaces: TagsInputOption[]
+}> = ({ details, isDefault, refetch, lanInterfaces, wanInterfaces }) => {
+  const { t } = useTranslation()
+  const { isOpen: isDetailsOpen, onOpen: onDetailsOpen, onOpenChange: onDetailsOpenChange } = useDisclosure()
+  const {
+    isOpen: isEditOpen,
+    onOpen: onEditOpen,
+    onClose: onEditClose,
+    onOpenChange: onEditOpenChange
+  } = useDisclosure()
+  const editForm = useForm<z.infer<typeof createConfigFormSchema>>({
+    shouldFocusError: true,
+    resolver: zodResolver(configFormSchema),
+    defaultValues: configFormDefault
+  })
+  const selectMutation = useSelectConfigMutation()
+  const updateMutation = useUpdateConfigMutation()
+  const removeMutation = useRemoveConfigMutation()
+
+  const onEditSubmit: (id: string) => CreateOrEditModalContentProps['onSubmit'] = (id) => async (values) => {
+    const { checkIntervalSeconds, checkToleranceMS, sniffingTimeoutMS, ...global } = values
+
+    await updateMutation.mutateAsync({
+      id,
+      global: {
+        ...global,
+        checkInterval: `${checkIntervalSeconds}s`,
+        checkTolerance: `${checkToleranceMS}ms`,
+        sniffingTimeout: `${sniffingTimeoutMS}ms`
+      }
+    })
+    await refetch()
+    onEditClose()
+  }
 
   return (
-    <Fragment>
-      <Button isIconOnly onClick={onOpen}>
-        <CodeIcon className="w-4" />
-      </Button>
+    <Card className={cn(details.selected && 'border-primary')}>
+      <CardHeader>
+        <div className="flex w-full items-center justify-between">
+          <h3>{details.name}</h3>
 
-      <Modal className="mx-0" isOpen={isOpen} onOpenChange={onOpenChange} backdrop="blur" scrollBehavior="inside">
-        <ModalContent>
-          <ModalHeader>{config.id}</ModalHeader>
+          {!isDefault && (
+            <Button isIconOnly color="success" onPress={() => selectMutation.mutate({ id: details.id })}>
+              <IconCheck />
+            </Button>
+          )}
+        </div>
+      </CardHeader>
 
-          <ModalBody>
-            <CodeBlock language="json">{JSON.stringify(config, null, 2)}</CodeBlock>
-          </ModalBody>
-        </ModalContent>
-      </Modal>
-    </Fragment>
+      <CardBody>{details.id}</CardBody>
+
+      <CardFooter className="gap-2">
+        <Button isIconOnly onPress={onDetailsOpen}>
+          <IconCode />
+        </Button>
+
+        <DetailsModal config={details} isOpen={isDetailsOpen} onOpenChange={onDetailsOpenChange} />
+
+        <Button
+          color="secondary"
+          isIconOnly
+          onPress={() => {
+            editForm.reset({
+              ...details.global,
+              checkIntervalSeconds: deriveTime(details.global.checkInterval, 's'),
+              sniffingTimeoutMS: deriveTime(details.global.sniffingTimeout, 'ms'),
+              checkToleranceMS: deriveTime(details.global.checkTolerance, 'ms')
+            })
+            onEditOpen()
+          }}
+        >
+          <IconEdit />
+        </Button>
+
+        <CreateOrEditModalContent
+          type="edit"
+          isOpen={isEditOpen}
+          onOpenChange={onEditOpenChange}
+          name={details.name}
+          id={details.id}
+          lanInterfaces={lanInterfaces}
+          wanInterfaces={wanInterfaces}
+          form={editForm}
+          onSubmit={onEditSubmit(details.id)}
+        />
+
+        {!isDefault && (
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button color="danger" isDisabled={details.selected} isIconOnly>
+                <Trash2Icon className="w-4" />
+              </Button>
+            </AlertDialogTrigger>
+
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>{t('primitives.remove', { resourceName: t('primitives.config') })}</AlertDialogTitle>
+
+                <AlertDialogDescription>{details.name}</AlertDialogDescription>
+              </AlertDialogHeader>
+
+              <AlertDialogFooter>
+                <AlertDialogCancel>{t('actions.cancel')}</AlertDialogCancel>
+                <AlertDialogAction asChild>
+                  <Button
+                    isLoading={removeMutation.isPending}
+                    onPress={async () => {
+                      await removeMutation.mutateAsync({ id: details.id })
+                      await refetch()
+                    }}
+                  >
+                    {t('actions.confirm')}
+                  </Button>
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        )}
+      </CardFooter>
+    </Card>
   )
 }
 
@@ -619,23 +595,20 @@ export default function ConfigPage() {
     resolver: zodResolver(createConfigFormSchema),
     defaultValues: createConfigFormDefault
   })
-  const editForm = useForm<z.infer<typeof editConfigFormSchema>>({
-    shouldFocusError: true,
-    resolver: zodResolver(editConfigFormSchema),
-    defaultValues: editConfigFormDefault
-  })
   const defaultConfigIDQuery = useGetJSONStorageRequest(['defaultConfigID'] as const)
+  const isDefault = (id: string) => id === defaultConfigIDQuery.data?.defaultConfigID
   const generalQuery = useGeneralQuery()
   const listQuery = useConfigsQuery()
-  const isDefault = (id: string) => id === defaultConfigIDQuery.data?.defaultConfigID
-  const [createDialogOpened, setCreateDialogOpened] = useState(false)
-  const [editDialogOpened, setEditDialogOpened] = useState(false)
-  const selectMutation = useSelectConfigMutation()
-  const createMutation = useCreateConfigMutation()
-  const updateMutation = useUpdateConfigMutation()
-  const removeMutation = useRemoveConfigMutation()
+  const {
+    isOpen: isCreateOpen,
+    onOpenChange: onCreateOpenChange,
+    onOpen: onCreateOpen,
+    onClose: onCreateClose
+  } = useDisclosure()
 
-  const onCreateSubmit: CreateDialogContentProps['onSubmit'] = async (values) => {
+  const createMutation = useCreateConfigMutation()
+
+  const onCreateSubmit: CreateOrEditModalContentProps['onSubmit'] = async (values) => {
     const { name, checkIntervalSeconds, checkToleranceMS, sniffingTimeoutMS, ...global } = values
 
     await createMutation.mutateAsync({
@@ -648,23 +621,7 @@ export default function ConfigPage() {
       }
     })
     await listQuery.refetch()
-    setCreateDialogOpened(false)
-  }
-
-  const onEditSubmit: (id: string) => EditDialogContentProps['onSubmit'] = (id) => async (values) => {
-    const { checkIntervalSeconds, checkToleranceMS, sniffingTimeoutMS, ...global } = values
-
-    await updateMutation.mutateAsync({
-      id,
-      global: {
-        ...global,
-        checkInterval: `${checkIntervalSeconds}s`,
-        checkTolerance: `${checkToleranceMS}ms`,
-        sniffingTimeout: `${sniffingTimeoutMS}ms`
-      }
-    })
-    await listQuery.refetch()
-    setEditDialogOpened(false)
+    onCreateClose()
   }
 
   const lanInterfaces: TagsInputOption[] = useMemo(() => {
@@ -712,121 +669,33 @@ export default function ConfigPage() {
     <ResourcePage
       name={t('primitives.config')}
       creation={
-        <Dialog open={createDialogOpened} onOpenChange={setCreateDialogOpened}>
-          <DialogTrigger asChild>
-            <Button color="primary" isIconOnly>
-              <IconPlus />
-            </Button>
-          </DialogTrigger>
+        <Fragment>
+          <Button color="primary" isIconOnly onPress={onCreateOpen}>
+            <IconPlus />
+          </Button>
 
-          <CreateOrEditDialogContent
+          <CreateOrEditModalContent
+            isOpen={isCreateOpen}
+            onOpenChange={onCreateOpenChange}
             type="create"
             lanInterfaces={lanInterfaces}
             wanInterfaces={wanInterfaces}
             form={createForm}
             onSubmit={onCreateSubmit}
           />
-        </Dialog>
+        </Fragment>
       }
     >
-      <div className="grid grid-cols-1 gap-2">
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
         {listQuery.data?.configs.map((config, index) => (
-          <Card key={index} className={cn(config.selected && 'border-primary')}>
-            <CardHeader>
-              <div className="flex w-full items-center justify-between">
-                <h3>{config.name}</h3>
-
-                {!isDefault(config.id) && (
-                  <Button isIconOnly color="success" onClick={() => selectMutation.mutate({ id: config.id })}>
-                    <IconCheck />
-                  </Button>
-                )}
-              </div>
-            </CardHeader>
-
-            <CardBody>{config.id}</CardBody>
-
-            <CardFooter className="gap-2">
-              {!config.selected && (
-                <Button
-                  isIconOnly
-                  isLoading={selectMutation.isPending}
-                  onClick={() => selectMutation.mutate({ id: config.id })}
-                >
-                  <CheckIcon className="w-4" />
-                </Button>
-              )}
-
-              <ConfigDetailModalTrigger config={config} />
-
-              <Dialog
-                open={editDialogOpened}
-                onOpenChange={(opened) => {
-                  if (opened) {
-                    editForm.reset({
-                      ...config.global,
-                      checkIntervalSeconds: deriveTime(config.global.checkInterval, 's'),
-                      sniffingTimeoutMS: deriveTime(config.global.sniffingTimeout, 'ms'),
-                      checkToleranceMS: deriveTime(config.global.checkTolerance, 'ms')
-                    })
-                  }
-
-                  setEditDialogOpened(opened)
-                }}
-              >
-                <DialogTrigger asChild>
-                  <Button color="secondary" isIconOnly>
-                    <EditIcon className="w-4" />
-                  </Button>
-                </DialogTrigger>
-
-                <CreateOrEditDialogContent
-                  type="edit"
-                  name={config.name}
-                  id={config.id}
-                  lanInterfaces={lanInterfaces}
-                  wanInterfaces={wanInterfaces}
-                  form={editForm}
-                  onSubmit={onEditSubmit(config.id)}
-                />
-              </Dialog>
-
-              {!isDefault(config.id) && (
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button color="danger" disabled={config.selected} isIconOnly>
-                      <Trash2Icon className="w-4" />
-                    </Button>
-                  </AlertDialogTrigger>
-
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>
-                        {t('primitives.remove', { resourceName: t('primitives.config') })}
-                      </AlertDialogTitle>
-
-                      <AlertDialogDescription>{config.name}</AlertDialogDescription>
-                    </AlertDialogHeader>
-
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>{t('actions.cancel')}</AlertDialogCancel>
-                      <AlertDialogAction asChild>
-                        <Button
-                          isLoading={removeMutation.isPending}
-                          onClick={async () => {
-                            await removeMutation.mutateAsync({ id: config.id })
-                            await listQuery.refetch()
-                          }}
-                        >
-                          {t('actions.confirm')}
-                        </Button>
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-              )}
-            </CardFooter>
-          </Card>
+          <DetailsCard
+            key={index}
+            details={config}
+            isDefault={isDefault(config.id)}
+            refetch={listQuery.refetch}
+            lanInterfaces={lanInterfaces}
+            wanInterfaces={wanInterfaces}
+          />
         ))}
       </div>
     </ResourcePage>

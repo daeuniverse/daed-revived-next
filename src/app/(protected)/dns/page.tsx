@@ -272,7 +272,7 @@ export default function DNSPage() {
                   <AlertDialogContent>
                     <AlertDialogHeader>
                       <AlertDialogTitle>
-                        {t('primitives.remove', { resourceName: t('primitives.config') })}
+                        {t('primitives.remove', { resourceName: t('primitives.details') })}
                       </AlertDialogTitle>
 
                       <AlertDialogDescription>{dns.name}</AlertDialogDescription>
