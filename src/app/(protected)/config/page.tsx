@@ -17,11 +17,9 @@ import {
   Select,
   SelectItem,
   Switch,
-  cn,
   useDisclosure
 } from '@nextui-org/react'
-import { IconCheck, IconCode, IconEdit, IconPlus } from '@tabler/icons-react'
-import { Trash2Icon } from 'lucide-react'
+import { IconCode, IconEdit, IconPlus, IconSquare, IconSquareCheck, IconTrash } from '@tabler/icons-react'
 import { FC, Fragment, useEffect, useMemo } from 'react'
 import { Controller, SubmitHandler, UseFormReturn, useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
@@ -40,17 +38,6 @@ import { ListInput } from '~/components/ListInput'
 import { Modal } from '~/components/Modal'
 import { ResourcePage } from '~/components/ResourcePage'
 import { TagsInputOption } from '~/components/TagsInput'
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger
-} from '~/components/ui/alert-dialog'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '~/components/ui/form'
 import { deriveTime } from '~/lib/time'
 import {
@@ -110,12 +97,7 @@ const CreateOrEditModalContent: FC<
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <ModalHeader>
-              {type === 'edit' && (
-                <Fragment>
-                  {createOrEditProps.name}
-                  {createOrEditProps.id}
-                </Fragment>
-              )}
+              {type === 'edit' && <span className="uppercase">{createOrEditProps.name}</span>}
 
               {type === 'create' && t('primitives.create', { resourceName: t('primitives.config') })}
             </ModalHeader>
@@ -475,6 +457,12 @@ const DetailsCard: FC<{
     onClose: onEditClose,
     onOpenChange: onEditOpenChange
   } = useDisclosure()
+  const {
+    isOpen: isRemoveOpen,
+    onOpen: onRemoveOpen,
+    onClose: onRemoveClose,
+    onOpenChange: onRemoveOpenChange
+  } = useDisclosure()
   const editForm = useForm<z.infer<typeof createConfigFormSchema>>({
     shouldFocusError: true,
     resolver: zodResolver(configFormSchema),
@@ -501,16 +489,23 @@ const DetailsCard: FC<{
   }
 
   return (
-    <Card className={cn(details.selected && 'border-primary')}>
+    <Card>
       <CardHeader>
         <div className="flex w-full items-center justify-between">
-          <h3>{details.name}</h3>
+          <h3 className="uppercase">{details.name}</h3>
 
-          {!isDefault && (
-            <Button isIconOnly color="success" onPress={() => selectMutation.mutate({ id: details.id })}>
-              <IconCheck />
-            </Button>
-          )}
+          <Button
+            isIconOnly
+            color={details.selected ? 'success' : 'default'}
+            isLoading={selectMutation.isPending}
+            onPress={async () => {
+              if (details.selected) return
+              await selectMutation.mutateAsync({ id: details.id })
+              await refetch()
+            }}
+          >
+            {details.selected ? <IconSquareCheck /> : <IconSquare />}
+          </Button>
         </div>
       </CardHeader>
 
@@ -552,36 +547,36 @@ const DetailsCard: FC<{
         />
 
         {!isDefault && (
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button color="danger" isDisabled={details.selected} isIconOnly>
-                <Trash2Icon className="w-4" />
-              </Button>
-            </AlertDialogTrigger>
+          <Fragment>
+            <Button color="danger" isIconOnly isDisabled={details.selected} onPress={onRemoveOpen}>
+              <IconTrash />
+            </Button>
 
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>{t('primitives.remove', { resourceName: t('primitives.config') })}</AlertDialogTitle>
+            <Modal isOpen={isRemoveOpen} onOpenChange={onRemoveOpenChange}>
+              <ModalContent>
+                <ModalHeader>{t('primitives.remove', { resourceName: t('primitives.config') })}</ModalHeader>
+                <ModalBody>{details.name}</ModalBody>
 
-                <AlertDialogDescription>{details.name}</AlertDialogDescription>
-              </AlertDialogHeader>
+                <ModalFooter>
+                  <Button color="secondary" isLoading={removeMutation.isPending} onPress={onRemoveClose}>
+                    {t('actions.cancel')}
+                  </Button>
 
-              <AlertDialogFooter>
-                <AlertDialogCancel>{t('actions.cancel')}</AlertDialogCancel>
-                <AlertDialogAction asChild>
                   <Button
+                    color="danger"
                     isLoading={removeMutation.isPending}
                     onPress={async () => {
                       await removeMutation.mutateAsync({ id: details.id })
                       await refetch()
+                      onRemoveClose()
                     }}
                   >
                     {t('actions.confirm')}
                   </Button>
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+                </ModalFooter>
+              </ModalContent>
+            </Modal>
+          </Fragment>
         )}
       </CardFooter>
     </Card>
