@@ -20,7 +20,7 @@ import {
 } from '@nextui-org/react'
 import { IconCode, IconEdit, IconPlus, IconSquare, IconSquareCheck, IconTrash } from '@tabler/icons-react'
 import { FC, Fragment, useEffect, useMemo } from 'react'
-import { Controller, SubmitHandler, UseFormReturn, useForm } from 'react-hook-form'
+import { Controller, FormProvider, SubmitHandler, UseFormReturn, useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { z } from 'zod'
 import { Config } from '~/apis/gql/graphql'
@@ -34,12 +34,12 @@ import { useConfigsQuery, useGeneralQuery, useGetJSONStorageRequest } from '~/ap
 import { Button } from '~/components/Button'
 import { CodeBlock } from '~/components/CodeBlock'
 import { Description } from '~/components/Description'
+import { Label } from '~/components/Label'
 import { ListInput } from '~/components/ListInput'
 import { Modal } from '~/components/Modal'
 import { RandomUnsplashImage } from '~/components/RandomUnsplashImage'
 import { ResourcePage } from '~/components/ResourcePage'
 import { TagsInputOption } from '~/components/TagsInput'
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '~/components/ui/form'
 import { deriveTime } from '~/lib/time'
 import {
   TLSImplementation,
@@ -99,331 +99,332 @@ const CreateOrEditModal: FC<CreateOrEditModalContentProps & (CreateModalContentP
   return (
     <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="2xl">
       <ModalContent>
-        <form onSubmit={form.handleSubmit(onSubmit)}>
-          <ModalHeader>
-            {type === 'edit' && <span className="uppercase">{createOrEditProps.name}</span>}
+        <FormProvider {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)}>
+            <ModalHeader>
+              {type === 'edit' && <span className="uppercase">{createOrEditProps.name}</span>}
 
-            {type === 'create' && t('primitives.create', { resourceName: t('primitives.config') })}
-          </ModalHeader>
+              {type === 'create' && t('primitives.create', { resourceName: t('primitives.config') })}
+            </ModalHeader>
 
-          <ModalBody className="flex flex-col gap-2">
-            {type === 'create' && (
-              <Input
-                label={t('form.fields.name')}
-                placeholder={t('form.fields.name')}
-                isRequired
-                errorMessage={errors.name?.message}
-                {...register('name')}
-              />
-            )}
+            <ModalBody className="flex flex-col gap-2">
+              {type === 'create' && (
+                <Input
+                  label={t('form.fields.name')}
+                  placeholder={t('form.fields.name')}
+                  isRequired
+                  errorMessage={errors.name?.message}
+                  {...register('name')}
+                />
+              )}
 
-            <Accordion defaultExpandedKeys={['software-options']} selectionMode="multiple">
-              <AccordionItem key="software-options" title={t('primitives.softwareOptions')}>
-                <div className="space-y-4 px-1">
-                  <Input
-                    type="number"
-                    placeholder="12345"
-                    label={t('form.fields.tproxyPort')}
-                    description={t('form.descriptions.tproxyPort')}
-                    isRequired
-                    errorMessage={errors.tproxyPort?.message}
-                    {...register('tproxyPort', { setValueAs: (value) => Number.parseInt(value) })}
-                  />
-
-                  <Controller
-                    name="tproxyPortProtect"
-                    control={control}
-                    render={({ field }) => (
-                      <div>
-                        <Switch isSelected={field.value} onChange={field.onChange}>
-                          {t('form.fields.tproxyPortProtect')}
-                        </Switch>
-
-                        <Description>{t('form.descriptions.tproxyPortProtect')}</Description>
-                      </div>
-                    )}
-                  />
-
-                  <div>
+              <Accordion defaultExpandedKeys={['software-options']} selectionMode="multiple">
+                <AccordionItem key="software-options" title={t('primitives.softwareOptions')}>
+                  <div className="space-y-4 px-1">
                     <Input
                       type="number"
-                      label={t('form.fields.soMarkFromDae')}
-                      placeholder={t('form.descriptions.pleaseEnter', { fieldName: t('form.fields.soMarkFromDae') })}
-                      description={t('form.descriptions.soMarkFromDae')}
-                      errorMessage={errors.soMarkFromDae?.message}
-                      {...register('soMarkFromDae', { setValueAs: (value) => Number.parseInt(value) })}
+                      placeholder="12345"
+                      label={t('form.fields.tproxyPort')}
+                      description={t('form.descriptions.tproxyPort')}
+                      isRequired
+                      errorMessage={errors.tproxyPort?.message}
+                      {...register('tproxyPort', { setValueAs: (value) => Number.parseInt(value) })}
                     />
-                  </div>
 
-                  <Controller
-                    name="logLevel"
-                    control={control}
-                    render={({ field }) => (
-                      <Select
-                        label={t('form.fields.logLevel')}
-                        selectedKeys={field.value ? [field.value] : []}
-                        onChange={field.onChange}
-                        disallowEmptySelection
-                      >
-                        {[
-                          ['error', t('form.fields.logLevels.error')],
-                          ['warn', t('form.fields.logLevels.warn')],
-                          ['info', t('form.fields.logLevels.info')],
-                          ['debug', t('form.fields.logLevels.debug')],
-                          ['trace', t('form.fields.logLevels.trace')]
-                        ].map(([value, label]) => (
-                          <SelectItem key={value} textValue={value}>
-                            {label}
-                          </SelectItem>
-                        ))}
-                      </Select>
-                    )}
-                  />
-
-                  <Controller
-                    name="disableWaitingNetwork"
-                    control={control}
-                    render={({ field }) => (
-                      <div>
-                        <Switch isSelected={field.value} onChange={field.onChange}>
-                          {t('form.fields.disableWaitingNetwork')}
-                        </Switch>
-
-                        <Description>{t('form.descriptions.disableWaitingNetwork')}</Description>
-                      </div>
-                    )}
-                  />
-                </div>
-              </AccordionItem>
-
-              <AccordionItem key="interface-and-kernel-options" title={t('primitives.interfaceAndKernelOptions')}>
-                <div className="space-y-4 px-1">
-                  <Controller
-                    name="lanInterface"
-                    control={control}
-                    render={({ field }) => (
-                      <Select
-                        label={t('form.fields.lanInterface')}
-                        description={t('form.descriptions.lanInterface')}
-                        selectionMode="multiple"
-                        selectedKeys={field.value}
-                        onSelectionChange={field.onChange}
-                      >
-                        {lanInterfaces.map(({ title, value, description }) => (
-                          <SelectItem key={value} textValue={value}>
-                            {title || value}
-                            {description}
-                          </SelectItem>
-                        ))}
-                      </Select>
-                    )}
-                  />
-
-                  <Controller
-                    name="wanInterface"
-                    control={control}
-                    render={({ field }) => (
-                      <Select
-                        label={t('form.fields.wanInterface')}
-                        description={t('form.descriptions.wanInterface')}
-                        selectionMode="multiple"
-                        selectedKeys={field.value}
-                        onSelectionChange={field.onChange}
-                      >
-                        {wanInterfaces.map(({ title, value, description }) => (
-                          <SelectItem key={value} textValue={value}>
-                            {title || value}
-                            {description}
-                          </SelectItem>
-                        ))}
-                      </Select>
-                    )}
-                  />
-
-                  <Controller
-                    name="autoConfigKernelParameter"
-                    control={control}
-                    render={({ field }) => (
-                      <div>
-                        <Switch isSelected={field.value} onChange={field.onChange}>
-                          {t('form.fields.autoConfigKernelParameter')}
-                        </Switch>
-
-                        <Description>{t('form.descriptions.autoConfigKernelParameter')}</Description>
-                      </div>
-                    )}
-                  />
-                </div>
-              </AccordionItem>
-
-              <AccordionItem key="node-connectivity-check" title={t('primitives.nodeConnectivityCheck')}>
-                <div className="space-y-4 px-1">
-                  <Controller
-                    name="tcpCheckUrl"
-                    control={control}
-                    render={({ field }) => (
-                      <div>
-                        <FormLabel dangling>{t('form.fields.tcpCheckUrl')}</FormLabel>
-                        <ListInput name={field.name} />
-                        <Description>{t('form.descriptions.tcpCheckUrl')}</Description>
-                      </div>
-                    )}
-                  />
-
-                  <Controller
-                    name="tcpCheckHttpMethod"
-                    control={control}
-                    render={({ field }) => (
-                      <Select
-                        label={t('form.fields.tcpCheckHttpMethod')}
-                        description={t('form.descriptions.tcpCheckHttpMethod')}
-                        disallowEmptySelection
-                        selectedKeys={field.value ? [field.value] : []}
-                        onChange={field.onChange}
-                      >
-                        {Object.values(TcpCheckHttpMethod).map((tcpCheckHttpMethod) => (
-                          <SelectItem key={tcpCheckHttpMethod} value={tcpCheckHttpMethod}>
-                            {tcpCheckHttpMethod}
-                          </SelectItem>
-                        ))}
-                      </Select>
-                    )}
-                  />
-
-                  <FormField
-                    name="udpCheckDns"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel dangling>{t('form.fields.udpCheckDns')}</FormLabel>
-
-                        <Description>{t('form.descriptions.udpCheckDns')}</Description>
-
-                        <FormControl>
-                          <ListInput name={field.name} />
-                        </FormControl>
-
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <Input
-                    type="number"
-                    label={`${t('form.fields.checkInterval')} (${t('primitives.second')})`}
-                    placeholder="30"
-                    errorMessage={errors.checkIntervalSeconds?.message}
-                    {...register('checkIntervalSeconds', { setValueAs: (value) => Number.parseInt(value) })}
-                  />
-
-                  <Input
-                    type="number"
-                    label={`${t('form.fields.checkTolerance')} (${t('primitives.millisecond')})`}
-                    placeholder="0"
-                    description={t('form.descriptions.checkTolerance')}
-                    errorMessage={errors.checkToleranceMS?.message}
-                    {...register('checkToleranceMS', { setValueAs: (value) => Number.parseInt(value) })}
-                  />
-                </div>
-              </AccordionItem>
-
-              <AccordionItem key="connecting-options" title={t('primitives.connectingOptions')}>
-                <div className="space-y-4 px-1">
-                  <Controller
-                    name="dialMode"
-                    control={control}
-                    render={({ field }) => (
-                      <Select
-                        label={t('form.fields.dialMode')}
-                        selectedKeys={field.value ? [field.value] : []}
-                        onChange={field.onChange}
-                        disallowEmptySelection
-                      >
-                        {['ip', 'domain', 'domain+', 'domain++'].map((value) => (
-                          <SelectItem key={value} textValue={value}>
-                            {value}
-                          </SelectItem>
-                        ))}
-                      </Select>
-                    )}
-                  />
-
-                  <Controller
-                    name="allowInsecure"
-                    control={control}
-                    render={({ field }) => (
-                      <div>
-                        <Switch isSelected={field.value} onChange={field.onChange}>
-                          {t('form.fields.allowInsecure')}
-                        </Switch>
-
-                        <Description>{t('form.descriptions.allowInsecure')}</Description>
-                      </div>
-                    )}
-                  />
-
-                  <Input
-                    type="number"
-                    label={`${t('form.fields.sniffingTimeout')} (${t('primitives.millisecond')})`}
-                    description={t('form.descriptions.sniffingTimeout')}
-                    placeholder={t('form.descriptions.pleaseEnter', { fieldName: t('form.fields.sniffingTimeout') })}
-                    {...register('sniffingTimeoutMS', { setValueAs: (value) => Number.parseInt(value) })}
-                  />
-
-                  <Controller
-                    name="tlsImplementation"
-                    control={control}
-                    render={({ field }) => (
-                      <Select
-                        label={t('form.fields.tlsImplementation')}
-                        description={t('form.descriptions.tlsImplementation')}
-                        selectedKeys={field.value ? [field.value] : []}
-                        onChange={field.onChange}
-                        disallowEmptySelection
-                      >
-                        {Object.values(TLSImplementation).map((tlsImplementation) => (
-                          <SelectItem key={tlsImplementation} value={tlsImplementation}>
-                            {tlsImplementation}
-                          </SelectItem>
-                        ))}
-                      </Select>
-                    )}
-                  />
-
-                  {getValues().tlsImplementation === TLSImplementation.utls && (
                     <Controller
-                      name="utlsImitate"
+                      name="tproxyPortProtect"
+                      control={control}
+                      render={({ field }) => (
+                        <div>
+                          <Switch isSelected={field.value} onChange={field.onChange}>
+                            {t('form.fields.tproxyPortProtect')}
+                          </Switch>
+
+                          <Description>{t('form.descriptions.tproxyPortProtect')}</Description>
+                        </div>
+                      )}
+                    />
+
+                    <div>
+                      <Input
+                        type="number"
+                        label={t('form.fields.soMarkFromDae')}
+                        placeholder={t('form.descriptions.pleaseEnter', { fieldName: t('form.fields.soMarkFromDae') })}
+                        description={t('form.descriptions.soMarkFromDae')}
+                        errorMessage={errors.soMarkFromDae?.message}
+                        {...register('soMarkFromDae', { setValueAs: (value) => Number.parseInt(value) })}
+                      />
+                    </div>
+
+                    <Controller
+                      name="logLevel"
                       control={control}
                       render={({ field }) => (
                         <Select
-                          label={t('form.fields.utlsImitate')}
-                          description={t('form.descriptions.utlsImitate')}
+                          label={t('form.fields.logLevel')}
                           selectedKeys={field.value ? [field.value] : []}
                           onChange={field.onChange}
+                          disallowEmptySelection
                         >
-                          {Object.values(UTLSImitate).map((utlsImitate) => (
-                            <SelectItem key={utlsImitate} value={utlsImitate}>
-                              {utlsImitate}
+                          {[
+                            ['error', t('form.fields.logLevels.error')],
+                            ['warn', t('form.fields.logLevels.warn')],
+                            ['info', t('form.fields.logLevels.info')],
+                            ['debug', t('form.fields.logLevels.debug')],
+                            ['trace', t('form.fields.logLevels.trace')]
+                          ].map(([value, label]) => (
+                            <SelectItem key={value} textValue={value}>
+                              {label}
                             </SelectItem>
                           ))}
                         </Select>
                       )}
                     />
-                  )}
-                </div>
-              </AccordionItem>
-            </Accordion>
-          </ModalBody>
 
-          <ModalFooter>
-            <Button type="reset" color="secondary" isDisabled={!dirty} onPress={() => form.reset()}>
-              {t('actions.reset')}
-            </Button>
+                    <Controller
+                      name="disableWaitingNetwork"
+                      control={control}
+                      render={({ field }) => (
+                        <div>
+                          <Switch isSelected={field.value} onChange={field.onChange}>
+                            {t('form.fields.disableWaitingNetwork')}
+                          </Switch>
 
-            <Button type="submit" isDisabled={type === 'edit' && !dirty} isLoading={form.formState.isSubmitting}>
-              {t('actions.submit')}
-            </Button>
-          </ModalFooter>
-        </form>
+                          <Description>{t('form.descriptions.disableWaitingNetwork')}</Description>
+                        </div>
+                      )}
+                    />
+                  </div>
+                </AccordionItem>
+
+                <AccordionItem key="interface-and-kernel-options" title={t('primitives.interfaceAndKernelOptions')}>
+                  <div className="space-y-4 px-1">
+                    <Controller
+                      name="lanInterface"
+                      control={control}
+                      render={({ field }) => (
+                        <Select
+                          label={t('form.fields.lanInterface')}
+                          description={t('form.descriptions.lanInterface')}
+                          selectionMode="multiple"
+                          selectedKeys={field.value}
+                          onSelectionChange={field.onChange}
+                        >
+                          {lanInterfaces.map(({ title, value, description }) => (
+                            <SelectItem key={value} textValue={value}>
+                              {title || value}
+                              {description}
+                            </SelectItem>
+                          ))}
+                        </Select>
+                      )}
+                    />
+
+                    <Controller
+                      name="wanInterface"
+                      control={control}
+                      render={({ field }) => (
+                        <Select
+                          label={t('form.fields.wanInterface')}
+                          description={t('form.descriptions.wanInterface')}
+                          selectionMode="multiple"
+                          selectedKeys={field.value}
+                          onSelectionChange={field.onChange}
+                        >
+                          {wanInterfaces.map(({ title, value, description }) => (
+                            <SelectItem key={value} textValue={value}>
+                              {title || value}
+                              {description}
+                            </SelectItem>
+                          ))}
+                        </Select>
+                      )}
+                    />
+
+                    <Controller
+                      name="autoConfigKernelParameter"
+                      control={control}
+                      render={({ field }) => (
+                        <div>
+                          <Switch isSelected={field.value} onChange={field.onChange}>
+                            {t('form.fields.autoConfigKernelParameter')}
+                          </Switch>
+
+                          <Description>{t('form.descriptions.autoConfigKernelParameter')}</Description>
+                        </div>
+                      )}
+                    />
+                  </div>
+                </AccordionItem>
+
+                <AccordionItem key="node-connectivity-check" title={t('primitives.nodeConnectivityCheck')}>
+                  <div className="space-y-4 px-1">
+                    <Controller
+                      name="tcpCheckUrl"
+                      control={control}
+                      render={({ field }) => (
+                        <div className="flex flex-col gap-2">
+                          <Label>{t('form.fields.tcpCheckUrl')}</Label>
+
+                          <ListInput name={field.name} />
+
+                          <Description>{t('form.descriptions.tcpCheckUrl')}</Description>
+                        </div>
+                      )}
+                    />
+
+                    <Controller
+                      name="tcpCheckHttpMethod"
+                      control={control}
+                      render={({ field }) => (
+                        <Select
+                          label={t('form.fields.tcpCheckHttpMethod')}
+                          description={t('form.descriptions.tcpCheckHttpMethod')}
+                          disallowEmptySelection
+                          selectedKeys={field.value ? [field.value] : []}
+                          onChange={field.onChange}
+                        >
+                          {Object.values(TcpCheckHttpMethod).map((tcpCheckHttpMethod) => (
+                            <SelectItem key={tcpCheckHttpMethod} value={tcpCheckHttpMethod}>
+                              {tcpCheckHttpMethod}
+                            </SelectItem>
+                          ))}
+                        </Select>
+                      )}
+                    />
+
+                    <Controller
+                      name="udpCheckDns"
+                      control={control}
+                      render={({ field }) => (
+                        <div className="flex flex-col gap-2">
+                          <Label>{t('form.fields.udpCheckDns')}</Label>
+
+                          <Description>{t('form.descriptions.udpCheckDns')}</Description>
+
+                          <ListInput name={field.name} />
+                        </div>
+                      )}
+                    />
+
+                    <Input
+                      type="number"
+                      label={`${t('form.fields.checkInterval')} (${t('primitives.second')})`}
+                      placeholder="30"
+                      errorMessage={errors.checkIntervalSeconds?.message}
+                      {...register('checkIntervalSeconds', { setValueAs: (value) => Number.parseInt(value) })}
+                    />
+
+                    <Input
+                      type="number"
+                      label={`${t('form.fields.checkTolerance')} (${t('primitives.millisecond')})`}
+                      placeholder="0"
+                      description={t('form.descriptions.checkTolerance')}
+                      errorMessage={errors.checkToleranceMS?.message}
+                      {...register('checkToleranceMS', { setValueAs: (value) => Number.parseInt(value) })}
+                    />
+                  </div>
+                </AccordionItem>
+
+                <AccordionItem key="connecting-options" title={t('primitives.connectingOptions')}>
+                  <div className="space-y-4 px-1">
+                    <Controller
+                      name="dialMode"
+                      control={control}
+                      render={({ field }) => (
+                        <Select
+                          label={t('form.fields.dialMode')}
+                          selectedKeys={field.value ? [field.value] : []}
+                          onChange={field.onChange}
+                          disallowEmptySelection
+                        >
+                          {['ip', 'domain', 'domain+', 'domain++'].map((value) => (
+                            <SelectItem key={value} textValue={value}>
+                              {value}
+                            </SelectItem>
+                          ))}
+                        </Select>
+                      )}
+                    />
+
+                    <Controller
+                      name="allowInsecure"
+                      control={control}
+                      render={({ field }) => (
+                        <div>
+                          <Switch isSelected={field.value} onChange={field.onChange}>
+                            {t('form.fields.allowInsecure')}
+                          </Switch>
+
+                          <Description>{t('form.descriptions.allowInsecure')}</Description>
+                        </div>
+                      )}
+                    />
+
+                    <Input
+                      type="number"
+                      label={`${t('form.fields.sniffingTimeout')} (${t('primitives.millisecond')})`}
+                      description={t('form.descriptions.sniffingTimeout')}
+                      placeholder={t('form.descriptions.pleaseEnter', { fieldName: t('form.fields.sniffingTimeout') })}
+                      {...register('sniffingTimeoutMS', { setValueAs: (value) => Number.parseInt(value) })}
+                    />
+
+                    <Controller
+                      name="tlsImplementation"
+                      control={control}
+                      render={({ field }) => (
+                        <Select
+                          label={t('form.fields.tlsImplementation')}
+                          description={t('form.descriptions.tlsImplementation')}
+                          selectedKeys={field.value ? [field.value] : []}
+                          onChange={field.onChange}
+                          disallowEmptySelection
+                        >
+                          {Object.values(TLSImplementation).map((tlsImplementation) => (
+                            <SelectItem key={tlsImplementation} value={tlsImplementation}>
+                              {tlsImplementation}
+                            </SelectItem>
+                          ))}
+                        </Select>
+                      )}
+                    />
+
+                    {getValues().tlsImplementation === TLSImplementation.utls && (
+                      <Controller
+                        name="utlsImitate"
+                        control={control}
+                        render={({ field }) => (
+                          <Select
+                            label={t('form.fields.utlsImitate')}
+                            description={t('form.descriptions.utlsImitate')}
+                            selectedKeys={field.value ? [field.value] : []}
+                            onChange={field.onChange}
+                          >
+                            {Object.values(UTLSImitate).map((utlsImitate) => (
+                              <SelectItem key={utlsImitate} value={utlsImitate}>
+                                {utlsImitate}
+                              </SelectItem>
+                            ))}
+                          </Select>
+                        )}
+                      />
+                    )}
+                  </div>
+                </AccordionItem>
+              </Accordion>
+            </ModalBody>
+
+            <ModalFooter>
+              <Button type="reset" color="secondary" isDisabled={!dirty} onPress={() => form.reset()}>
+                {t('actions.reset')}
+              </Button>
+
+              <Button type="submit" isDisabled={type === 'edit' && !dirty} isLoading={form.formState.isSubmitting}>
+                {t('actions.submit')}
+              </Button>
+            </ModalFooter>
+          </form>
+        </FormProvider>
       </ModalContent>
     </Modal>
   )

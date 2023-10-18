@@ -1,11 +1,10 @@
 'use client'
 
-import { PlusIcon, XIcon } from 'lucide-react'
+import { Input } from '@nextui-org/react'
+import { IconPlus, IconTrash } from '@tabler/icons-react'
 import { FC } from 'react'
-import { useFieldArray } from 'react-hook-form'
-import { Button } from '~/components/ui/button'
-import { FormField, FormItem, FormMessage } from '~/components/ui/form'
-import { Input } from '~/components/ui/input'
+import { Controller, useFieldArray } from 'react-hook-form'
+import { Button } from '~/components/Button'
 
 const ListInput: FC<{ name: string }> = ({ name }) => {
   const { fields, append, remove } = useFieldArray({ name })
@@ -14,31 +13,28 @@ const ListInput: FC<{ name: string }> = ({ name }) => {
     <div className="flex flex-col gap-2">
       {fields.map((item, index) => {
         return (
-          <FormField
+          <Controller
             key={item.id}
             name={`${name}.${index}`}
             render={({ field }) => (
-              <FormItem>
+              <div>
                 <div className="flex items-center gap-2">
                   <Input {...field} />
 
-                  <Button
-                    className="h-fit w-fit p-2"
-                    variant="destructive"
-                    icon={<XIcon className="h-3 w-3" />}
-                    onClick={() => remove(index)}
-                  />
+                  <Button color="danger" onPress={() => remove(index)} isIconOnly>
+                    <IconTrash />
+                  </Button>
                 </div>
-
-                <FormMessage />
-              </FormItem>
+              </div>
             )}
           />
         )
       })}
 
       <div className="self-end">
-        <Button className="h-fit w-fit p-2" onClick={() => append('')} icon={<PlusIcon className="h-3 w-3" />} />
+        <Button color="primary" onPress={() => append('')} isIconOnly>
+          <IconPlus />
+        </Button>
       </div>
     </div>
   )
