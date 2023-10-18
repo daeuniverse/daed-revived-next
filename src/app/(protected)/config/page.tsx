@@ -4,7 +4,6 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import {
   Accordion,
   AccordionItem,
-  Button,
   Card,
   CardBody,
   CardFooter,
@@ -32,6 +31,7 @@ import {
   useUpdateConfigMutation
 } from '~/apis/mutation'
 import { useConfigsQuery, useGeneralQuery, useGetJSONStorageRequest } from '~/apis/query'
+import { Button } from '~/components/Button'
 import { CodeBlock } from '~/components/CodeBlock'
 import { Description } from '~/components/Description'
 import { ListInput } from '~/components/ListInput'

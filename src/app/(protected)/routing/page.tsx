@@ -2,7 +2,6 @@
 
 import { zodResolver } from '@hookform/resolvers/zod'
 import {
-  Button,
   Card,
   CardBody,
   CardFooter,
@@ -26,6 +25,7 @@ import {
   useUpdateRoutingMutation
 } from '~/apis/mutation'
 import { useGetJSONStorageRequest, useRoutingsQuery } from '~/apis/query'
+import { Button } from '~/components/Button'
 import { CodeBlock } from '~/components/CodeBlock'
 import { Editor } from '~/components/Editor'
 import { Modal } from '~/components/Modal'

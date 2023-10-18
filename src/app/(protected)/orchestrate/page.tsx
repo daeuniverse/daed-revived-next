@@ -3,7 +3,6 @@
 import {
   Accordion,
   AccordionItem,
-  Button,
   Listbox,
   ListboxItem,
   Popover,
@@ -29,6 +28,7 @@ import {
   useUpdateSubscriptionsMutation
 } from '~/apis/mutation'
 import { useGroupsQuery, useNodesQuery, useSubscriptionsQuery } from '~/apis/query'
+import { Button } from '~/components/Button'
 import { NodeCard } from '~/components/NodeCard'
 import { ResourcePage } from '~/components/ResourcePage'
 

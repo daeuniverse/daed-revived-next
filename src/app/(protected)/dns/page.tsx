@@ -2,7 +2,6 @@
 
 import { zodResolver } from '@hookform/resolvers/zod'
 import {
-  Button,
   Card,
   CardBody,
   CardFooter,
@@ -21,6 +20,7 @@ import { useTranslation } from 'react-i18next'
 import { z } from 'zod'
 import { useCreateDNSMutation, useRemoveDNSMutation, useSelectDNSMutation, useUpdateDNSMutation } from '~/apis/mutation'
 import { useDNSsQuery, useGetJSONStorageRequest } from '~/apis/query'
+import { Button } from '~/components/Button'
 import { CodeBlock } from '~/components/CodeBlock'
 import { Editor } from '~/components/Editor'
 import { Modal } from '~/components/Modal'
