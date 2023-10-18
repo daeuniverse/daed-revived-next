@@ -10,9 +10,14 @@ import zodZhHans from 'zod-i18n-map/locales/zh-CN/zod.json'
 import enUS from '~/i18n/locales/en-US.json'
 import zhHans from '~/i18n/locales/zh-Hans.json'
 
+export enum LANG {
+  enUS = 'en-US',
+  zhHans = 'zh-Hans'
+}
+
 export const resources = {
-  'en-US': { translation: enUS, zod: zodEn },
-  'zh-Hans': { translation: zhHans, zod: zodZhHans }
+  [LANG.enUS]: { translation: enUS, zod: zodEn },
+  [LANG.zhHans]: { translation: zhHans, zod: zodZhHans }
 } as const
 
 export const initializeI18n = async () => {

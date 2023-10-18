@@ -36,6 +36,7 @@ import { CodeBlock } from '~/components/CodeBlock'
 import { Description } from '~/components/Description'
 import { ListInput } from '~/components/ListInput'
 import { Modal } from '~/components/Modal'
+import { RandomUnsplashImage } from '~/components/RandomUnsplashImage'
 import { ResourcePage } from '~/components/ResourcePage'
 import { TagsInputOption } from '~/components/TagsInput'
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '~/components/ui/form'
@@ -511,7 +512,9 @@ const DetailsCard: FC<{
         </div>
       </CardHeader>
 
-      <CardBody>{details.id}</CardBody>
+      <CardBody>
+        <RandomUnsplashImage sig={details.id} />
+      </CardBody>
 
       <CardFooter className="gap-2">
         <Button isIconOnly onPress={onDetailsOpen}>

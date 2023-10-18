@@ -2,9 +2,12 @@
 
 import {
   Avatar,
+  Button,
+  ButtonGroup,
   Dropdown,
   DropdownItem,
   DropdownMenu,
+  DropdownSection,
   DropdownTrigger,
   Link,
   Navbar,
@@ -15,8 +18,10 @@ import {
   NavbarMenuItem,
   NavbarMenuToggle
 } from '@nextui-org/react'
+import i18n from 'i18next'
 import ky from 'ky'
 import { ActivityIcon, CogIcon, GlobeIcon, NetworkIcon } from 'lucide-react'
+import { useTheme } from 'next-themes'
 import NextLink from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { FC, useState } from 'react'
@@ -26,6 +31,7 @@ import { LogoText } from '~/components/LogoText'
 
 const Header: FC = () => {
   const { t } = useTranslation()
+  const { setTheme } = useTheme()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const pathname = usePathname()
   const router = useRouter()
@@ -73,16 +79,41 @@ const Header: FC = () => {
           </DropdownTrigger>
 
           <DropdownMenu aria-label="Profile Actions" variant="flat">
-            <DropdownItem key="profile" className="h-14 gap-2">
-              <p className="font-semibold">Signed in as</p>
-              <p className="font-semibold">zoey@example.com</p>
-            </DropdownItem>
-            <DropdownItem key="settings">My Settings</DropdownItem>
-            <DropdownItem key="team_settings">Team Settings</DropdownItem>
-            <DropdownItem key="analytics">Analytics</DropdownItem>
-            <DropdownItem key="system">System</DropdownItem>
-            <DropdownItem key="configurations">Configurations</DropdownItem>
-            <DropdownItem key="help_and_feedback">Help & Feedback</DropdownItem>
+            <DropdownSection title={t('primitives.accountSettings')} showDivider>
+              <DropdownItem
+                key="profile"
+                textValue="profile"
+                className="gap-2 py-2"
+                onPress={() => {
+                  console.log('account settings')
+                }}
+              >
+                <p className="font-semibold">{t('primitives.username', { username: userQuery.data?.user.username })}</p>
+
+                <p className="font-semibold">
+                  {t('primitives.accountName', { accountName: userQuery.data?.user.name })}
+                </p>
+              </DropdownItem>
+            </DropdownSection>
+
+            <DropdownSection title={t('actions.switchTheme')} showDivider>
+              <DropdownItem key="theme" textValue="theme">
+                <ButtonGroup>
+                  <Button onPress={() => setTheme('system')}>{t('actions.systemMode')}</Button>
+                  <Button onPress={() => setTheme('dark')}>{t('actions.darkMode')}</Button>
+                  <Button onPress={() => setTheme('light')}>{t('actions.lightMode')}</Button>
+                </ButtonGroup>
+              </DropdownItem>
+            </DropdownSection>
+
+            <DropdownSection title={t('actions.switchLanguage')} showDivider>
+              <DropdownItem key="language" textValue="language">
+                <ButtonGroup>
+                  <Button onPress={() => i18n.changeLanguage('en-US')}>{t('primitives.english')}</Button>
+                  <Button onPress={() => i18n.changeLanguage('zh-Hans')}>{t('primitives.chineseSimplified')}</Button>
+                </ButtonGroup>
+              </DropdownItem>
+            </DropdownSection>
 
             <DropdownItem
               key="logout"

@@ -72,7 +72,8 @@
     "confirm": "Confirm",
     "reset": "Reset",
     "submit": "Submit",
-    "refresh": "Refresh"
+    "refresh": "Refresh",
+    "loading": "Loading {{resourceName}}..."
   },
   "primitives": {
     "create": "Create {{resourceName}}",
@@ -92,6 +93,12 @@
     "connectingOptions": "Connecting Options",
     "millisecond": "ms",
     "second": "s",
-    "autoDetect": "Auto Detect"
+    "autoDetect": "Auto Detect",
+    "accountSettings": "Account Settings",
+    "settings": "Settings",
+    "username": "Username {{username}}",
+    "accountName": "Account Name {{accountName}}",
+    "english": "English",
+    "chineseSimplified": "Chinese Simplified"
   }
 }

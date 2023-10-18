@@ -24,6 +24,7 @@ import { useDNSsQuery, useGetJSONStorageRequest } from '~/apis/query'
 import { CodeBlock } from '~/components/CodeBlock'
 import { Editor } from '~/components/Editor'
 import { Modal } from '~/components/Modal'
+import { RandomUnsplashImage } from '~/components/RandomUnsplashImage'
 import { ResourcePage } from '~/components/ResourcePage'
 import { DNSFormDefault, DNSFormSchema, createDNSFormDefault, createDNSFormSchema } from '~/schemas/dns'
 
@@ -198,7 +199,9 @@ const DetailsCard: FC<{
         </div>
       </CardHeader>
 
-      <CardBody>{details.id}</CardBody>
+      <CardBody>
+        <RandomUnsplashImage sig={details.id} />
+      </CardBody>
 
       <CardFooter className="gap-2">
         <Button isIconOnly onPress={onDetailsOpen}>
