@@ -88,7 +88,7 @@ const documents = {
     types.GroupsDocument,
   '\n          query Routings {\n            routings {\n              id\n              name\n              selected\n              routing {\n                string\n              }\n            }\n          }\n        ':
     types.RoutingsDocument,
-  '\n          query DNSs {\n            dnss {\n              id\n              name\n              dns {\n                string\n\n                routing {\n                  request {\n                    string\n                  }\n                  response {\n                    string\n                  }\n                }\n              }\n              selected\n            }\n          }\n        ':
+  '\n          query DNSs {\n            dnss {\n              id\n              name\n              selected\n              dns {\n                string\n\n                upstream {\n                  key\n                  val\n                }\n\n                routing {\n                  request {\n                    string\n                  }\n\n                  response {\n                    string\n                  }\n                }\n              }\n            }\n          }\n        ':
     types.DnSsDocument,
   '\n          query User {\n            user {\n              username\n              name\n              avatar\n            }\n          }\n        ':
     types.UserDocument,
@@ -344,8 +344,8 @@ export function graphql(
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(
-  source: '\n          query DNSs {\n            dnss {\n              id\n              name\n              dns {\n                string\n\n                routing {\n                  request {\n                    string\n                  }\n                  response {\n                    string\n                  }\n                }\n              }\n              selected\n            }\n          }\n        '
-): (typeof documents)['\n          query DNSs {\n            dnss {\n              id\n              name\n              dns {\n                string\n\n                routing {\n                  request {\n                    string\n                  }\n                  response {\n                    string\n                  }\n                }\n              }\n              selected\n            }\n          }\n        ']
+  source: '\n          query DNSs {\n            dnss {\n              id\n              name\n              selected\n              dns {\n                string\n\n                upstream {\n                  key\n                  val\n                }\n\n                routing {\n                  request {\n                    string\n                  }\n\n                  response {\n                    string\n                  }\n                }\n              }\n            }\n          }\n        '
+): (typeof documents)['\n          query DNSs {\n            dnss {\n              id\n              name\n              selected\n              dns {\n                string\n\n                upstream {\n                  key\n                  val\n                }\n\n                routing {\n                  request {\n                    string\n                  }\n\n                  response {\n                    string\n                  }\n                }\n              }\n            }\n          }\n        ']
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

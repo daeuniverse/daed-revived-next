@@ -102,7 +102,7 @@ const Header: FC = () => {
       <NavbarMenu>
         {navigationMenus.map((menu, index) => (
           <NavbarMenuItem key={index}>
-            <Link as={NextLink} className="w-full" href={menu.route} size="lg">
+            <Link as={NextLink} className="w-full" href={menu.route} size="lg" onPress={() => setIsMenuOpen(false)}>
               {menu.name}
             </Link>
           </NavbarMenuItem>

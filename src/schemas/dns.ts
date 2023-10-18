@@ -1,14 +1,16 @@
 import { z } from 'zod'
 
-export const editDNSFormSchema = z.object({
-  text: z.string().min(0)
+export const DNSFormSchema = z.object({
+  text: z.string().min(1)
 })
 
-export const createDNSFormSchema = editDNSFormSchema.extend({
-  name: z.string().min(4).max(20)
-})
+export const createDNSFormSchema = DNSFormSchema.merge(
+  z.object({
+    name: z.string().min(4).max(20)
+  })
+)
 
-export const editDNSFormDefault: z.infer<typeof editDNSFormSchema> = {
+export const DNSFormDefault: z.infer<typeof DNSFormSchema> = {
   text: `
 upstream {
   alidns: 'udp://223.5.5.5:53'
@@ -25,6 +27,6 @@ routing {
 }
 
 export const createDNSFormDefault: z.infer<typeof createDNSFormSchema> = {
-  ...editDNSFormDefault,
+  ...DNSFormDefault,
   name: ''
 }

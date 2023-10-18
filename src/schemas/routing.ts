@@ -1,14 +1,14 @@
 import { z } from 'zod'
 
-export const editRoutingFormSchema = z.object({
-  text: z.string().min(0)
+export const routingFormSchema = z.object({
+  text: z.string().min(1)
 })
 
-export const createRoutingFormSchema = editRoutingFormSchema.extend({
+export const createRoutingFormSchema = routingFormSchema.extend({
   name: z.string().min(4).max(20)
 })
 
-export const editRoutingFormDefault: z.infer<typeof editRoutingFormSchema> = {
+export const routingFormDefault: z.infer<typeof routingFormSchema> = {
   text: `
 pname(NetworkManager, systemd-resolved, dnsmasq) -> must_direct
 dip(geoip:private) -> direct
@@ -19,6 +19,6 @@ fallback: proxy
 }
 
 export const createRoutingFormDefault: z.infer<typeof createRoutingFormSchema> = {
-  ...editRoutingFormDefault,
+  ...routingFormDefault,
   name: ''
 }

@@ -263,19 +263,25 @@ export const useDNSsQuery = () => {
             dnss {
               id
               name
+              selected
               dns {
                 string
+
+                upstream {
+                  key
+                  val
+                }
 
                 routing {
                   request {
                     string
                   }
+
                   response {
                     string
                   }
                 }
               }
-              selected
             }
           }
         `)

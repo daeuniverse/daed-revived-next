@@ -46,7 +46,7 @@ export type ConfigFlatDesc = {
 
 export type Dae = {
   __typename?: 'Dae'
-  /** modified indicates whether the running details has been modified. */
+  /** modified indicates whether the running config has been modified. */
   modified: Scalars['Boolean']['output']
   running: Scalars['Boolean']['output']
   version: Scalars['String']['output']
@@ -164,13 +164,13 @@ export type InterfaceFlag = {
 
 export type Mutation = {
   __typename?: 'Mutation'
-  /** createConfig creates a global details. Null arguments will be converted to default value. */
+  /** createConfig creates a global config. Null arguments will be converted to default value. */
   createConfig: Config
-  /** createConfig creates a dns details. Null arguments will be converted to default value. */
+  /** createConfig creates a dns config. Null arguments will be converted to default value. */
   createDns: Dns
   /** createGroup is to create a group. */
   createGroup: Group
-  /** createConfig creates a routing details. Null arguments will be converted to default value. */
+  /** createConfig creates a routing config. Null arguments will be converted to default value. */
   createRouting: Routing
   /** createUser creates a user if there is no user. */
   createUser: Scalars['String']['output']
@@ -188,9 +188,9 @@ export type Mutation = {
   importNodes: Array<NodeImportResult>
   /** importSubscription is to fetch and resolve the subscription into nodes. */
   importSubscription: SubscriptionImportResult
-  /** removeConfig is to remove a details with given details ID. */
+  /** removeConfig is to remove a config with given config ID. */
   removeConfig: Scalars['Int']['output']
-  /** removeDns is to remove a dns details with given dns ID. */
+  /** removeDns is to remove a dns config with given dns ID. */
   removeDns: Scalars['Int']['output']
   /** removeGroup is to remove a group. */
   removeGroup: Scalars['Int']['output']
@@ -198,25 +198,25 @@ export type Mutation = {
   removeJsonStorage: Scalars['Int']['output']
   /** removeNodes is to remove nodes that have no subscription ID. */
   removeNodes: Scalars['Int']['output']
-  /** removeRouting is to remove a routing details with given routing ID. */
+  /** removeRouting is to remove a routing config with given routing ID. */
   removeRouting: Scalars['Int']['output']
   /** removeSubscriptions is to remove subscriptions with given ID list. */
   removeSubscriptions: Scalars['Int']['output']
-  /** renameConfig is to give the details a new name. */
+  /** renameConfig is to give the config a new name. */
   renameConfig: Scalars['Int']['output']
-  /** renameDns is to give the dns details a new name. */
+  /** renameDns is to give the dns config a new name. */
   renameDns: Scalars['Int']['output']
   /** renameGroup is to rename a group. */
   renameGroup: Scalars['Int']['output']
-  /** renameRouting is to give the routing details a new name. */
+  /** renameRouting is to give the routing config a new name. */
   renameRouting: Scalars['Int']['output']
-  /** run proxy with selected details+dns+routing. Dry-run can be used to stop the proxy. */
+  /** run proxy with selected config+dns+routing. Dry-run can be used to stop the proxy. */
   run: Scalars['Int']['output']
-  /** selectConfig is to select a details as the current details. */
+  /** selectConfig is to select a config as the current config. */
   selectConfig: Scalars['Int']['output']
-  /** selectConfig is to select a dns details as the current dns. */
+  /** selectConfig is to select a dns config as the current dns. */
   selectDns: Scalars['Int']['output']
-  /** selectConfig is to select a routing details as the current routing. */
+  /** selectConfig is to select a routing config as the current routing. */
   selectRouting: Scalars['Int']['output']
   /** setJsonStorage set given paths to values in user related json storage. Refer to https://github.com/tidwall/sjson */
   setJsonStorage: Scalars['Int']['output']
@@ -226,9 +226,9 @@ export type Mutation = {
   tagSubscription: Scalars['Int']['output']
   /** updateAvatar update avatar for current user. Remove avatar if avatar is null. Blob base64 encoded image is recommended. */
   updateAvatar: Scalars['Int']['output']
-  /** updateConfig allows to partially update global details with given id. */
+  /** updateConfig allows to partially update global config with given id. */
   updateConfig: Config
-  /** updateDns is to update dns details with given id. */
+  /** updateDns is to update dns config with given id. */
   updateDns: Dns
   /** updateName update name for current user. Remove name if name is null. */
   updateName: Scalars['Int']['output']
@@ -236,7 +236,7 @@ export type Mutation = {
   updateNode: Node
   /** updatePassword update password for current user. currentPassword is needed to authenticate. Return new token. */
   updatePassword: Scalars['String']['output']
-  /** updateRouting is to update routing details with given id. */
+  /** updateRouting is to update routing config with given id. */
   updateRouting: Routing
   /** updateSubscription is to re-fetch subscription and resolve subscription into nodes. Old nodes that independently belong to any groups will not be removed. */
   updateSubscription: Subscription
@@ -1028,6 +1028,7 @@ export type DnSsQuery = {
     dns: {
       __typename?: 'DaeDns'
       string: string
+      upstream: Array<{ __typename?: 'Param'; key: string; val: string }>
       routing: {
         __typename?: 'DnsRouting'
         request: { __typename?: 'DaeRouting'; string: string }
@@ -2792,6 +2793,7 @@ export const DnSsDocument = {
               selections: [
                 { kind: 'Field', name: { kind: 'Name', value: 'id' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'selected' } },
                 {
                   kind: 'Field',
                   name: { kind: 'Name', value: 'dns' },
@@ -2799,6 +2801,17 @@ export const DnSsDocument = {
                     kind: 'SelectionSet',
                     selections: [
                       { kind: 'Field', name: { kind: 'Name', value: 'string' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'upstream' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            { kind: 'Field', name: { kind: 'Name', value: 'key' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'val' } }
+                          ]
+                        }
+                      },
                       {
                         kind: 'Field',
                         name: { kind: 'Name', value: 'routing' },
@@ -2826,8 +2839,7 @@ export const DnSsDocument = {
                       }
                     ]
                   }
-                },
-                { kind: 'Field', name: { kind: 'Name', value: 'selected' } }
+                }
               ]
             }
           }
