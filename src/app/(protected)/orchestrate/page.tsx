@@ -25,7 +25,8 @@ import {
   useGroupAddNodesMutation,
   useGroupAddSubscriptionsMutation,
   useGroupDelNodesMutation,
-  useGroupDelSubscriptionsMutation
+  useGroupDelSubscriptionsMutation,
+  useUpdateSubscriptionsMutation
 } from '~/apis/mutation'
 import { useGroupsQuery, useNodesQuery, useSubscriptionsQuery } from '~/apis/query'
 import { NodeCard } from '~/components/NodeCard'
@@ -118,7 +119,7 @@ const GroupTable: FC<{
 
       switch (columnKey) {
         case 'updatedAt':
-          return dayjs(cellValue as string).format('YYYY-MM-DD mm:ss')
+          return dayjs(cellValue as string).format('YYYY-MM-DD hh:mm:ss')
 
         case 'node':
           return subscription.nodes.edges.length
@@ -423,6 +424,7 @@ export default function OrchestratePage() {
   const groupsQuery = useGroupsQuery()
   const subscriptionsQuery = useSubscriptionsQuery()
   const nodesQuery = useNodesQuery()
+  const updateSubscriptionsMutation = useUpdateSubscriptionsMutation()
 
   return (
     <ResourcePage name={t('primitives.orchestrate')}>
@@ -467,15 +469,25 @@ export default function OrchestratePage() {
                   <AccordionItem
                     key={subscription.id}
                     title={`${subscription.tag} (${subscription.nodes.edges.length})`}
-                    subtitle={dayjs(subscription.updatedAt).format('YYYY-MM-DD mm:ss')}
+                    subtitle={dayjs(subscription.updatedAt).format('YYYY-MM-DD hh:mm:ss')}
                     startContent={
-                      <div className="flex flex-col gap-2">
-                        <Button color="success" isIconOnly as="div">
-                          <IconRefresh />
-                        </Button>
-
+                      <div className="flex gap-2">
                         <Button color="danger" isIconOnly as="div">
                           <IconTrash />
+                        </Button>
+
+                        <Button
+                          color="success"
+                          as="div"
+                          isLoading={updateSubscriptionsMutation.isPending}
+                          isIconOnly
+                          onPress={() =>
+                            updateSubscriptionsMutation.mutate({
+                              subscriptionIDs: [subscription.id]
+                            })
+                          }
+                        >
+                          <IconRefresh />
                         </Button>
                       </div>
                     }

@@ -685,9 +685,9 @@ export const useUpdateSubscriptionsMutation = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (ids: string[]) =>
+    mutationFn: ({ subscriptionIDs }: { subscriptionIDs: string[] }) =>
       Promise.all(
-        ids.map((id) =>
+        subscriptionIDs.map((id) =>
           gqlClient.request(
             graphql(`
               mutation UpdateSubscription($id: ID!) {
