@@ -8,15 +8,15 @@ import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { z } from 'zod'
 import { toast } from '~/components/ui/use-toast'
-import { setupFormDefault, setupFormSchema } from '~/schemas/setup'
+import { loginFormDefault, loginSchema } from '~/schemas/login'
 
-export default function SetupPage() {
+export default function LoginPage() {
   const { t } = useTranslation()
   const router = useRouter()
 
-  const form = useForm<z.infer<typeof setupFormSchema>>({
-    resolver: zodResolver(setupFormSchema),
-    defaultValues: setupFormDefault
+  const form = useForm<z.infer<typeof loginSchema>>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: loginFormDefault
   })
 
   return (
