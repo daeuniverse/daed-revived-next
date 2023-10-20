@@ -20,7 +20,6 @@ import {
 } from '@nextui-org/react'
 import i18n from 'i18next'
 import ky from 'ky'
-import { ActivityIcon, CogIcon, GlobeIcon, NetworkIcon } from 'lucide-react'
 import { useTheme } from 'next-themes'
 import NextLink from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
@@ -38,10 +37,10 @@ const Header: FC = () => {
   const userQuery = useUserQuery()
 
   const navigationMenus = [
-    { name: t('primitives.orchestrate'), route: '/orchestrate', Icon: ActivityIcon },
-    { name: t('primitives.routing'), route: '/routing', Icon: NetworkIcon },
-    { name: t('primitives.dns'), route: '/dns', Icon: GlobeIcon },
-    { name: t('primitives.config'), route: '/config', Icon: CogIcon }
+    { name: t('primitives.orchestrate'), route: '/orchestrate' },
+    { name: t('primitives.routing'), route: '/routing' },
+    { name: t('primitives.dns'), route: '/dns' },
+    { name: t('primitives.config'), route: '/config' }
   ]
 
   return (

@@ -1,10 +1,10 @@
+import { cn } from '@nextui-org/react'
 import { Metadata } from 'next'
 import { Noto_Sans_SC, Ubuntu_Mono } from 'next/font/google'
 import localFont from 'next/font/local'
 import { ReactNode } from 'react'
 import { Bootstrap } from '~/app/bootstrap'
 import { Providers } from '~/app/providers'
-import { cn } from '~/lib/ui'
 
 import '~/styles/globals.css'
 
