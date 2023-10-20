@@ -12,6 +12,7 @@ import {
   ModalHeader,
   Select,
   SelectItem,
+  Snippet,
   Table,
   TableBody,
   TableCell,
@@ -20,9 +21,10 @@ import {
   TableRow,
   useDisclosure
 } from '@nextui-org/react'
-import { IconPlus, IconRefresh, IconTrash } from '@tabler/icons-react'
+import { IconPlus, IconQrcode, IconRefresh, IconTrash } from '@tabler/icons-react'
 import dayjs from 'dayjs'
 import { differenceWith } from 'lodash'
+import { QRCodeSVG } from 'qrcode.react'
 import { FC, Fragment, Key, useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
@@ -44,6 +46,7 @@ type Node = {
   name: string
   tag?: string | null
   protocol: string
+  link: string
   subscriptionID?: string | null
 }
 
@@ -226,6 +229,35 @@ const GroupContent: FC<{
   )
 }
 
+const CheckNodeQRCodeButton: FC<{ name: string; link: string }> = ({ name, link }) => {
+  const {
+    isOpen: isCheckNodeQRCodeOpen,
+    onOpenChange: onCheckNodeQRCodeOpenChange,
+    onOpen: onCheckNodeQRCodeOpen
+  } = useDisclosure()
+
+  return (
+    <Fragment>
+      <Button color="primary" isIconOnly onPress={onCheckNodeQRCodeOpen}>
+        <IconQrcode />
+      </Button>
+
+      <Modal isOpen={isCheckNodeQRCodeOpen} onOpenChange={onCheckNodeQRCodeOpenChange}>
+        <ModalContent>
+          <ModalHeader>{name}</ModalHeader>
+          <ModalBody className="flex flex-col items-center gap-8 p-8">
+            <QRCodeSVG className="h-64 w-64" value={link} />
+
+            <Snippet symbol={false} variant="bordered">
+              <span className="whitespace-break-spaces break-all">{link}</span>
+            </Snippet>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+    </Fragment>
+  )
+}
+
 const RemoveNodeButton: FC<{ id: string; name: string; refetch: () => Promise<unknown> }> = ({ id, name, refetch }) => {
   const { t } = useTranslation()
 
@@ -297,7 +329,13 @@ const NodeTable: FC<{
           return item.tag || item.name
 
         case 'action':
-          return <RemoveNodeButton id={item.id} name={item.tag || item.name} refetch={refetch} />
+          return (
+            <div className="flex items-center gap-2">
+              <CheckNodeQRCodeButton name={item.tag || item.name} link={item.link} />
+
+              <RemoveNodeButton id={item.id} name={item.tag || item.name} refetch={refetch} />
+            </div>
+          )
 
         default:
           return getKeyValue(item, columnKey)
