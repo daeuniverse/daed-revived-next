@@ -11,7 +11,7 @@ export default function Error({ error, reset }: { error: Error & { digest?: stri
     <div className="container flex h-screen flex-col items-center justify-center gap-4">
       <div className="text-center font-bold">{error.message}</div>
 
-      <Button onPress={() => reset()} startContent={<IconRefresh />}>
+      <Button startContent={<IconRefresh />} onPress={reset}>
         {t('actions.refresh')}
       </Button>
     </div>

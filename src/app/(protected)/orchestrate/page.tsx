@@ -3,6 +3,7 @@
 import { Accordion, AccordionItem, Chip, Select, SelectItem } from '@nextui-org/react'
 import { IconPlus, IconRefresh, IconTrash } from '@tabler/icons-react'
 import dayjs from 'dayjs'
+import { differenceWith } from 'lodash'
 import { FC, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
@@ -72,25 +73,17 @@ const GroupTable: FC<{
   const { t } = useTranslation()
 
   // subscriptions
-  const allSubscriptions = useMemo(
+  const allSubscriptions = useMemo(() => subscriptions.map(({ id }) => id), [subscriptions])
+  const selectedSubscriptions = useMemo(
     () => group.subscriptions.map((subscription) => subscription.id),
     [group.subscriptions]
   )
-  const selectableSubscriptions = useMemo(() => {
-    const selectedSubscriptionIDs = group.subscriptions.map((subscription) => subscription.id)
-
-    return subscriptions.filter((subscription) => !selectedSubscriptionIDs.includes(subscription.id))
-  }, [group.subscriptions, subscriptions])
   const groupAddSubscriptionsMutation = useGroupAddSubscriptionsMutation()
   const groupDelSubscriptionsMutation = useGroupDelSubscriptionsMutation()
 
   // nodes
-  const allNodes = useMemo(() => group.nodes.map((node) => node.id), [group.nodes])
-  const selectableNodes = useMemo(() => {
-    const selectedNodeIDs = group.nodes.map((node) => node.id)
-
-    return nodes.filter((node) => !selectedNodeIDs.includes(node.id))
-  }, [group.nodes, nodes])
+  const allNodes = useMemo(() => nodes.map(({ id }) => id), [nodes])
+  const selectedNodes = useMemo(() => group.nodes.map((node) => node.id), [group.nodes])
   const groupAddNodesMutation = useGroupAddNodesMutation()
   const groupDelNodesMutation = useGroupDelNodesMutation()
 
@@ -104,6 +97,27 @@ const GroupTable: FC<{
         selectionMode="multiple"
         labelPlacement="outside"
         classNames={{ trigger: 'py-2' }}
+        selectedKeys={selectedSubscriptions}
+        onSelectionChange={async (selected) => {
+          const subscriptionsToAdd = differenceWith(
+            selected === 'all' ? allSubscriptions : (Array.from(selected) as string[]),
+            selectedSubscriptions
+          )
+          const subscriptionsToRemove = differenceWith(
+            selectedSubscriptions,
+            selected === 'all' ? allSubscriptions : (Array.from(selected) as string[])
+          )
+
+          if (subscriptionsToAdd.length > 0) {
+            await groupAddSubscriptionsMutation.mutateAsync({ id: group.id, subscriptionIDs: subscriptionsToAdd })
+          }
+
+          if (subscriptionsToRemove.length > 0) {
+            await groupDelSubscriptionsMutation.mutateAsync({ id: group.id, subscriptionIDs: subscriptionsToRemove })
+          }
+
+          await refetch()
+        }}
         items={subscriptions}
         renderValue={(items) => (
           <div className="flex flex-wrap gap-2">
@@ -113,7 +127,10 @@ const GroupTable: FC<{
                 classNames={{
                   content: 'block truncate'
                 }}
-                onClose={() => groupDelSubscriptionsMutation.mutate({ id: group.id, subscriptionIDs: [item.data!.id] })}
+                onClose={async () => {
+                  await groupDelSubscriptionsMutation.mutateAsync({ id: group.id, subscriptionIDs: [item.data!.id] })
+                  await refetch()
+                }}
               >
                 {item.data!.tag}
               </Chip>
@@ -122,7 +139,7 @@ const GroupTable: FC<{
         )}
       >
         {(subscription) => (
-          <SelectItem key={subscription.id} textValue={subscription.id}>
+          <SelectItem key={subscription.id} value={subscription.id} textValue={subscription.id}>
             {subscription.tag}
           </SelectItem>
         )}
@@ -149,6 +166,27 @@ const GroupTable: FC<{
               )
               .flatMap((node) => node)
           )}
+        selectedKeys={selectedNodes}
+        onSelectionChange={async (selected) => {
+          const nodesToAdd = differenceWith(
+            selected === 'all' ? allNodes : (Array.from(selected) as string[]),
+            selectedNodes
+          )
+          const nodesToRemove = differenceWith(
+            selectedNodes,
+            selected === 'all' ? allNodes : (Array.from(selected) as string[])
+          )
+
+          if (nodesToAdd.length > 0) {
+            await groupAddNodesMutation.mutateAsync({ id: group.id, nodeIDs: nodesToAdd })
+          }
+
+          if (nodesToRemove.length > 0) {
+            await groupDelNodesMutation.mutateAsync({ id: group.id, nodeIDs: nodesToRemove })
+          }
+
+          await refetch()
+        }}
         renderValue={(items) => (
           <div className="flex flex-wrap gap-2">
             {items.map((item) => {
@@ -159,7 +197,10 @@ const GroupTable: FC<{
                 <Chip
                   key={item.key}
                   classNames={{ base: 'max-w-full', content: 'truncate' }}
-                  onClose={() => groupDelNodesMutation.mutate({ id: group.id, nodeIDs: [nodeID] })}
+                  onClose={async () => {
+                    await groupDelNodesMutation.mutateAsync({ id: group.id, nodeIDs: [nodeID] })
+                    await refetch()
+                  }}
                 >
                   {nodeName} {item.data?.subscription && `(${item.data.subscription})`}
                 </Chip>

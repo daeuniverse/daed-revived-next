@@ -9,6 +9,7 @@ import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { z } from 'zod'
+import { LogoText } from '~/components/LogoText'
 import { loginFormDefault, loginSchema } from '~/schemas/login'
 
 export default function LoginPage() {
@@ -21,12 +22,14 @@ export default function LoginPage() {
   })
 
   return (
-    <div className="container mx-auto grid w-full grid-cols-6 gap-12 pt-20">
-      <div className="col-span-4">
+    <div className="mx-auto flex w-full max-w-screen-sm flex-col items-center gap-4 px-4 sm:pt-32">
+      <div className="h-64 w-full">
         <RiveComponent src="/569-6666-blue-planet.riv" />
       </div>
 
-      <div className="col-span-2 flex flex-col gap-4">
+      <LogoText />
+
+      <div className="flex w-full flex-col gap-2">
         <form
           onSubmit={form.handleSubmit(async ({ endpointURL, username, password }) => {
             try {
