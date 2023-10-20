@@ -4,7 +4,6 @@ import localFont from 'next/font/local'
 import { ReactNode } from 'react'
 import { Bootstrap } from '~/app/bootstrap'
 import { Providers } from '~/app/providers'
-import { Toaster } from '~/components/ui/toaster'
 import { cn } from '~/lib/ui'
 
 import '~/styles/globals.css'
@@ -45,8 +44,6 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
               {children}
             </main>
           </Bootstrap>
-
-          <Toaster />
         </Providers>
       </body>
     </html>

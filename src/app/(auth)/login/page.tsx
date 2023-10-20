@@ -2,12 +2,13 @@
 
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button, Input } from '@nextui-org/react'
+import RiveComponent from '@rive-app/react-canvas'
 import ky from 'ky'
 import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
+import { toast } from 'sonner'
 import { z } from 'zod'
-import { toast } from '~/components/ui/use-toast'
 import { loginFormDefault, loginSchema } from '~/schemas/login'
 
 export default function LoginPage() {
@@ -20,10 +21,12 @@ export default function LoginPage() {
   })
 
   return (
-    <div className="mx-auto flex w-full max-w-md flex-col gap-12 pt-20">
-      <h1 className="text-center text-2xl font-bold">Welcome to daed</h1>
+    <div className="container mx-auto grid w-full grid-cols-6 gap-12 pt-20">
+      <div className="col-span-4">
+        <RiveComponent src="/569-6666-blue-planet.riv" />
+      </div>
 
-      <div className="flex flex-col gap-4">
+      <div className="col-span-2 flex flex-col gap-4">
         <form
           onSubmit={form.handleSubmit(async ({ endpointURL, username, password }) => {
             try {
@@ -31,7 +34,7 @@ export default function LoginPage() {
 
               router.replace('/orchestrate')
             } catch (err) {
-              toast({ variant: 'destructive', description: (err as Error).message })
+              toast.error((err as Error).message)
             }
           })}
         >
