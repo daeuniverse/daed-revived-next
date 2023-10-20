@@ -118,7 +118,7 @@
     "address": "地址",
     "action": "动作",
     "policy": "策略",
-    "oldPassword": "旧密码",
+    "currentPassword": "当前密码",
     "newPassword": "新密码",
     "confirmPassword": "确认密码"
   }

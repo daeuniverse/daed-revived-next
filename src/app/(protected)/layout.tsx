@@ -1,16 +1,15 @@
-import jwt from 'jsonwebtoken'
-import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { ReactNode } from 'react'
 import { Providers } from '~/app/(protected)/providers'
 import { Header } from '~/components/Header'
+import { decodeJWTFromCookie } from '~/helpers'
 
 export default function ProtectedLayout({ children }: { children: ReactNode }) {
-  const jwtToken = cookies().get('jwtToken')
+  const jwtPayload = decodeJWTFromCookie()
 
-  if (!jwtToken) redirect('/login')
+  if (!jwtPayload) redirect('/login')
 
-  const { endpointURL, token } = jwt.decode(jwtToken.value, { json: true })!
+  const { endpointURL, token } = jwtPayload
 
   return (
     <Providers endpointURL={endpointURL} token={token}>

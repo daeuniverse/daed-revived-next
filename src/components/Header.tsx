@@ -34,13 +34,12 @@ import { FC, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { z } from 'zod'
-import { useUpdatePasswordMutation } from '~/apis/mutation'
 import { useUserQuery } from '~/apis/query'
 import { LogoText } from '~/components/LogoText'
 import { ModalConfirmFormFooter } from '~/components/Modal'
 import { updatePasswordFormDefault, useUpdatePasswordSchemaWithRefine } from '~/schemas/account'
 
-const Header: FC = () => {
+export const Header: FC = () => {
   const { t } = useTranslation()
   const { theme: curTheme, setTheme } = useTheme()
 
@@ -52,8 +51,6 @@ const Header: FC = () => {
     onClose: onUpdatePasswordClose,
     onOpenChange: onUpdatePasswordOpenChange
   } = useDisclosure()
-
-  const updatePasswordMutation = useUpdatePasswordMutation()
 
   const updatePasswordSchemaWithRefine = useUpdatePasswordSchemaWithRefine()()
 
@@ -204,9 +201,8 @@ const Header: FC = () => {
         <form
           onSubmit={updatePasswordForm.handleSubmit(async (values) => {
             try {
-              await updatePasswordMutation.mutateAsync({
-                currentPassword: values.oldPassword,
-                newPassword: values.newPassword
+              await ky.post('/api/update-password', {
+                json: { currentPassword: values.currentPassword, newPassword: values.newPassword }
               })
 
               onUpdatePasswordClose()
@@ -220,10 +216,10 @@ const Header: FC = () => {
               <div className="flex flex-col gap-4">
                 <Input
                   type="password"
-                  label={t('primitives.oldPassword')}
-                  placeholder={t('primitives.oldPassword')}
-                  errorMessage={updatePasswordForm.formState.errors.oldPassword?.message}
-                  {...updatePasswordForm.register('oldPassword')}
+                  label={t('primitives.currentPassword')}
+                  placeholder={t('primitives.currentPassword')}
+                  errorMessage={updatePasswordForm.formState.errors.currentPassword?.message}
+                  {...updatePasswordForm.register('currentPassword')}
                 />
 
                 <Input
@@ -255,5 +251,3 @@ const Header: FC = () => {
   )
 }
 Header.displayName = 'Header'
-
-export { Header }

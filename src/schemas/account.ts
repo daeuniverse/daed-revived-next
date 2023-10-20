@@ -15,7 +15,7 @@ export const loginFormDefault: z.infer<typeof loginSchema> = {
 }
 
 export const updatePasswordSchema = z.object({
-  oldPassword: z.string().min(6).max(20),
+  currentPassword: z.string().min(6).max(20),
   newPassword: z.string().min(6).max(20),
   confirmPassword: z.string().min(6).max(20)
 })
@@ -35,7 +35,7 @@ export const useUpdatePasswordSchemaWithRefine = () => {
 }
 
 export const updatePasswordFormDefault: z.infer<typeof updatePasswordSchema> = {
-  oldPassword: '',
+  currentPassword: '',
   newPassword: '',
   confirmPassword: ''
 }

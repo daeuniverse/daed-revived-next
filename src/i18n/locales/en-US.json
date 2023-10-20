@@ -118,7 +118,7 @@
     "address": "Address",
     "action": "Action",
     "policy": "Policy",
-    "oldPassword": "Old Password",
+    "currentPassword": "Current Password",
     "newPassword": "New Password",
     "confirmPassword": "Confirm Password"
   }

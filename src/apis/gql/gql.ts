@@ -74,7 +74,7 @@ const documents = {
     types.UpdateAvatarDocument,
   '\n          mutation UpdateName($name: String) {\n            updateName(name: $name)\n          }\n        ':
     types.UpdateNameDocument,
-  '\n          mutation UpdatePassword($currentPassword: String!, $newPassword: String!) {\n            updatePassword(currentPassword: $currentPassword, newPassword: $newPassword)\n          }\n        ':
+  '\n  mutation UpdatePassword($currentPassword: String!, $newPassword: String!) {\n    updatePassword(currentPassword: $currentPassword, newPassword: $newPassword)\n  }\n':
     types.UpdatePasswordDocument,
   '\n          query JsonStorage($paths: [String!]) {\n            jsonStorage(paths: $paths)\n          }\n        ':
     types.JsonStorageDocument,
@@ -304,8 +304,8 @@ export function graphql(
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(
-  source: '\n          mutation UpdatePassword($currentPassword: String!, $newPassword: String!) {\n            updatePassword(currentPassword: $currentPassword, newPassword: $newPassword)\n          }\n        '
-): (typeof documents)['\n          mutation UpdatePassword($currentPassword: String!, $newPassword: String!) {\n            updatePassword(currentPassword: $currentPassword, newPassword: $newPassword)\n          }\n        ']
+  source: '\n  mutation UpdatePassword($currentPassword: String!, $newPassword: String!) {\n    updatePassword(currentPassword: $currentPassword, newPassword: $newPassword)\n  }\n'
+): (typeof documents)['\n  mutation UpdatePassword($currentPassword: String!, $newPassword: String!) {\n    updatePassword(currentPassword: $currentPassword, newPassword: $newPassword)\n  }\n']
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
