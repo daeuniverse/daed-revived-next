@@ -45,7 +45,7 @@ const documents = {
     types.RenameDnsDocument,
   '\n          mutation CreateGroup($name: String!, $policy: Policy!, $policyParams: [PolicyParam!]) {\n            createGroup(name: $name, policy: $policy, policyParams: $policyParams) {\n              id\n            }\n          }\n        ':
     types.CreateGroupDocument,
-  '\n          mutation RemoveGroup($id: ID!) {\n            removeGroup(id: $id)\n          }\n        ':
+  '\n              mutation RemoveGroup($id: ID!) {\n                removeGroup(id: $id)\n              }\n            ':
     types.RemoveGroupDocument,
   '\n          mutation GroupSetPolicy($id: ID!, $policy: Policy!, $policyParams: [PolicyParam!]) {\n            groupSetPolicy(id: $id, policy: $policy, policyParams: $policyParams)\n          }\n        ':
     types.GroupSetPolicyDocument,
@@ -212,8 +212,8 @@ export function graphql(
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(
-  source: '\n          mutation RemoveGroup($id: ID!) {\n            removeGroup(id: $id)\n          }\n        '
-): (typeof documents)['\n          mutation RemoveGroup($id: ID!) {\n            removeGroup(id: $id)\n          }\n        ']
+  source: '\n              mutation RemoveGroup($id: ID!) {\n                removeGroup(id: $id)\n              }\n            '
+): (typeof documents)['\n              mutation RemoveGroup($id: ID!) {\n                removeGroup(id: $id)\n              }\n            ']
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

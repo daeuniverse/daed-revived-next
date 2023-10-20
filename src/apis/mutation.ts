@@ -414,21 +414,25 @@ export const useCreateGroupMutation = () => {
   })
 }
 
-export const useRemoveGroupMutation = () => {
+export const useRemoveGroupsMutation = () => {
   const gqlClient = useGraphqlClient()
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (id: string) => {
-      return gqlClient.request(
-        graphql(`
-          mutation RemoveGroup($id: ID!) {
-            removeGroup(id: $id)
-          }
-        `),
-        {
-          id
-        }
+    mutationFn: ({ groupIDs }: { groupIDs: string[] }) => {
+      return Promise.all(
+        groupIDs.map((id) =>
+          gqlClient.request(
+            graphql(`
+              mutation RemoveGroup($id: ID!) {
+                removeGroup(id: $id)
+              }
+            `),
+            {
+              id
+            }
+          )
+        )
       )
     },
     onSuccess: () => {

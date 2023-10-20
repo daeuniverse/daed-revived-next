@@ -54,7 +54,13 @@
       "allowInsecure": "允许使用不安全的TLS证书。除非迫不得已，否则不建议打开它",
       "sniffingTimeout": "等待第一次发送数据以进行嗅探时超时。如果拨号模式为 ip，则始终为 0。将其设置得更高在高延迟局域网网络中很有用",
       "tlsImplementation": "TLS 实现。tls 是使用 GO 的 crypto/tls。utls 是使用 utls，它可以模仿浏览器的客户端 Hello",
-      "utlsImitate": "要模仿的 uTLS 的客户端 Hello ID。只有当 TLS 实现 为 utls 时，此操作才会生效"
+      "utlsImitate": "要模仿的 uTLS 的客户端 Hello ID。只有当 TLS 实现 为 utls 时，此操作才会生效",
+      "group": {
+        "Min": "从组中为每个连接选择最后延迟最小的节点",
+        "MinAvg10": "从组中为每个连接选择最近 10 个延迟的最小平均值的节点",
+        "MinMovingAvg": "从组中为每个连接选择具有最小移动平均延迟的节点",
+        "Random": "为每个连接从组中随机选择一个节点"
+      }
     }
   },
   "actions": {
@@ -106,6 +112,7 @@
     "protocol": "协议",
     "updatedAt": "更新时间",
     "address": "地址",
-    "action": "动作"
+    "action": "动作",
+    "policy": "策略"
   }
 }

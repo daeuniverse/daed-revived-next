@@ -1,11 +1,13 @@
 'use client'
 
+import { zodResolver } from '@hookform/resolvers/zod'
 import {
   Accordion,
   AccordionItem,
   Avatar,
   Chip,
   getKeyValue,
+  Input,
   ModalBody,
   ModalContent,
   ModalFooter,
@@ -26,12 +28,17 @@ import dayjs from 'dayjs'
 import { differenceWith } from 'lodash'
 import { QRCodeSVG } from 'qrcode.react'
 import { FC, Fragment, Key, useCallback, useMemo } from 'react'
+import { Controller, useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
+import { z } from 'zod'
+import { Policy } from '~/apis/gql/graphql'
 import {
+  useCreateGroupMutation,
   useGroupAddNodesMutation,
   useGroupAddSubscriptionsMutation,
   useGroupDelNodesMutation,
   useGroupDelSubscriptionsMutation,
+  useRemoveGroupsMutation,
   useRemoveNodesMutation,
   useRemoveSubscriptionsMutation,
   useUpdateSubscriptionsMutation
@@ -40,6 +47,7 @@ import { useGroupsQuery, useNodesQuery, useSubscriptionsQuery } from '~/apis/que
 import { Button } from '~/components/Button'
 import { Modal } from '~/components/Modal'
 import { ResourcePage } from '~/components/ResourcePage'
+import { createGroupFormDefault, createGroupFormSchema } from '~/schemas/group'
 
 type Node = {
   id: string
@@ -393,17 +401,60 @@ export default function NetworkPage() {
   const { t } = useTranslation()
 
   const {
-    isOpen: isRemoveOpen,
-    onOpen: onRemoveOpen,
-    onClose: onRemoveClose,
-    onOpenChange: onRemoveOpenChange
+    isOpen: isRemoveGroupOpen,
+    onOpen: onRemoveGroupOpen,
+    onClose: onRemoveGroupClose,
+    onOpenChange: onRemoveGroupOpenChange
   } = useDisclosure()
 
+  const {
+    isOpen: isRemoveSubscriptionOpen,
+    onOpen: onRemoveSubscriptionOpen,
+    onClose: onRemoveSubscriptionClose,
+    onOpenChange: onRemoveSubscriptionOpenChange
+  } = useDisclosure()
+
+  const { isOpen: isAddOpen, onOpen: onAddOpen, onClose: onAddClose, onOpenChange: onAddOpenChange } = useDisclosure()
+
   const groupsQuery = useGroupsQuery()
+  const removeGroupsMutation = useRemoveGroupsMutation()
+
   const subscriptionsQuery = useSubscriptionsQuery()
   const nodesQuery = useNodesQuery()
   const removeSubscriptionsMutation = useRemoveSubscriptionsMutation()
   const updateSubscriptionsMutation = useUpdateSubscriptionsMutation()
+
+  const createGroupForm = useForm<z.infer<typeof createGroupFormSchema>>({
+    shouldFocusError: true,
+    resolver: zodResolver(createGroupFormSchema),
+    defaultValues: createGroupFormDefault
+  })
+  const createGroupFormDirty = Object.values(createGroupForm.formState.dirtyFields).some((dirty) => dirty)
+
+  const createGroupMutation = useCreateGroupMutation()
+
+  const policies = [
+    {
+      label: Policy.MinMovingAvg,
+      value: Policy.MinMovingAvg,
+      description: t('form.descriptions.group.MinMovingAvg')
+    },
+    {
+      label: Policy.MinAvg10,
+      value: Policy.MinAvg10,
+      description: t('form.descriptions.group.MinAvg10')
+    },
+    {
+      label: Policy.Min,
+      value: Policy.Min,
+      description: t('form.descriptions.group.Min')
+    },
+    {
+      label: Policy.Random,
+      value: Policy.Random,
+      description: t('form.descriptions.group.Random')
+    }
+  ]
 
   return (
     <ResourcePage name={t('primitives.network')}>
@@ -412,15 +463,124 @@ export default function NetworkPage() {
           <div className="flex items-center justify-between rounded">
             <h3 className="text-xl font-bold">{t('primitives.group')}</h3>
 
-            <Button color="primary" isIconOnly>
-              <IconPlus />
-            </Button>
+            <Fragment>
+              <Button color="primary" isIconOnly onPress={onAddOpen}>
+                <IconPlus />
+              </Button>
+
+              <Modal isOpen={isAddOpen} onOpenChange={onAddOpenChange}>
+                <form
+                  onSubmit={createGroupForm.handleSubmit(async (values) => {
+                    await createGroupMutation.mutateAsync({
+                      name: values.name,
+                      policy: values.policy,
+                      policyParams: []
+                    })
+                    await groupsQuery.refetch()
+
+                    onAddClose()
+                  })}
+                >
+                  <ModalContent>
+                    <ModalHeader>{t('primitives.group')}</ModalHeader>
+                    <ModalBody>
+                      <Input
+                        label={t('form.fields.name')}
+                        placeholder={t('form.fields.name')}
+                        isRequired
+                        errorMessage={createGroupForm.formState.errors.name?.message}
+                        {...createGroupForm.register('name')}
+                      />
+
+                      <Controller
+                        name="policy"
+                        control={createGroupForm.control}
+                        render={({ field }) => (
+                          <Select
+                            label={t('primitives.policy')}
+                            placeholder={t('primitives.policy')}
+                            items={policies}
+                            disallowEmptySelection
+                            selectedKeys={field.value ? [field.value] : []}
+                            onChange={field.onChange}
+                          >
+                            {(item) => (
+                              <SelectItem
+                                key={item.value}
+                                value={item.value}
+                                textValue={item.value}
+                                description={item.description}
+                              >
+                                {item.label}
+                              </SelectItem>
+                            )}
+                          </Select>
+                        )}
+                      />
+                    </ModalBody>
+
+                    <ModalFooter>
+                      <Button
+                        type="reset"
+                        color="secondary"
+                        isDisabled={!createGroupFormDirty}
+                        onPress={() => createGroupForm.reset()}
+                      >
+                        {t('actions.reset')}
+                      </Button>
+
+                      <Button type="submit" color="primary" isLoading={createGroupMutation.isPending}>
+                        {t('actions.confirm')}
+                      </Button>
+                    </ModalFooter>
+                  </ModalContent>
+                </form>
+              </Modal>
+            </Fragment>
           </div>
 
           {groupsQuery.data &&
             groupsQuery.data.groups.map((group) => (
               <Accordion key={group.id} variant="shadow">
-                <AccordionItem title={group.name} subtitle={group.policy}>
+                <AccordionItem
+                  title={group.name}
+                  subtitle={group.policy}
+                  startContent={
+                    <Fragment>
+                      <Button color="danger" as="div" isIconOnly onPress={onRemoveGroupOpen}>
+                        <IconTrash />
+                      </Button>
+
+                      <Modal isOpen={isRemoveGroupOpen} onOpenChange={onRemoveGroupOpenChange}>
+                        <ModalContent>
+                          <ModalHeader>{t('primitives.remove', { resourceName: t('primitives.group') })}</ModalHeader>
+                          <ModalBody>{group.name}</ModalBody>
+
+                          <ModalFooter>
+                            <Button color="secondary" onPress={onRemoveGroupClose}>
+                              {t('actions.cancel')}
+                            </Button>
+
+                            <Button
+                              color="danger"
+                              isLoading={removeGroupsMutation.isPending}
+                              onPress={async () => {
+                                await removeGroupsMutation.mutateAsync({
+                                  groupIDs: [group.id]
+                                })
+                                await groupsQuery.refetch()
+
+                                onRemoveGroupClose()
+                              }}
+                            >
+                              {t('actions.confirm')}
+                            </Button>
+                          </ModalFooter>
+                        </ModalContent>
+                      </Modal>
+                    </Fragment>
+                  }
+                >
                   <GroupContent
                     group={group}
                     subscriptions={subscriptionsQuery.data?.subscriptions || []}
@@ -482,11 +642,11 @@ export default function NetworkPage() {
                       </Button>
 
                       <Fragment>
-                        <Button color="danger" as="div" isIconOnly onPress={onRemoveOpen}>
+                        <Button color="danger" as="div" isIconOnly onPress={onRemoveSubscriptionOpen}>
                           <IconTrash />
                         </Button>
 
-                        <Modal isOpen={isRemoveOpen} onOpenChange={onRemoveOpenChange}>
+                        <Modal isOpen={isRemoveSubscriptionOpen} onOpenChange={onRemoveSubscriptionOpenChange}>
                           <ModalContent>
                             <ModalHeader>
                               {t('primitives.remove', { resourceName: t('primitives.subscription') })}
@@ -494,7 +654,7 @@ export default function NetworkPage() {
                             <ModalBody>{subscription.tag}</ModalBody>
 
                             <ModalFooter>
-                              <Button color="secondary" onPress={onRemoveClose}>
+                              <Button color="secondary" onPress={onRemoveSubscriptionClose}>
                                 {t('actions.cancel')}
                               </Button>
 
@@ -505,7 +665,7 @@ export default function NetworkPage() {
                                   await removeSubscriptionsMutation.mutateAsync({ subscriptionIDs: [subscription.id] })
                                   await subscriptionsQuery.refetch()
 
-                                  onRemoveClose()
+                                  onRemoveSubscriptionClose()
                                 }}
                               >
                                 {t('actions.confirm')}
