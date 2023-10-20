@@ -8,7 +8,7 @@ export const ResourceRadio = forwardRef<ElementRef<typeof Radio>, RadioProps>((p
       classNames={{
         base: 'm-0 gap-4 rounded-lg border-2 border-transparent bg-content1 p-4 hover:bg-content2 data-[selected=true]:border-primary',
         labelWrapper: 'gap-2',
-        label: 'inline-flex items-center gap-2 uppercase'
+        label: 'inline-flex items-center gap-2'
       }}
       {...props}
     />

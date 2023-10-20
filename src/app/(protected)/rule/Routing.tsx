@@ -71,7 +71,7 @@ const CreateOrEditModal: FC<CreateOrEditModalContentProps & (CreateModalContentP
       <ModalContent>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <ModalHeader>
-            {type === 'edit' && <span className="uppercase">{createOrEditProps.name}</span>}
+            {type === 'edit' && <span>{createOrEditProps.name}</span>}
 
             {type === 'create' && t('primitives.create', { resourceName: t('primitives.routing') })}
           </ModalHeader>
