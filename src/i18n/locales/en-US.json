@@ -61,6 +61,9 @@
         "MinMovingAvg": "Select the node with min moving average of latencies from the group for every connection",
         "Random": "Randomly select a node from the group for every connection"
       }
+    },
+    "errors": {
+      "passwordDontMatch": "密码不匹配"
     }
   },
   "actions": {
@@ -79,7 +82,8 @@
     "reset": "Reset",
     "submit": "Submit",
     "refresh": "Refresh",
-    "loading": "Loading {{resourceName}}..."
+    "loading": "Loading {{resourceName}}...",
+    "updatePassword": "Update Password"
   },
   "primitives": {
     "create": "Create {{resourceName}}",
@@ -113,6 +117,9 @@
     "updatedAt": "Updated At",
     "address": "Address",
     "action": "Action",
-    "policy": "Policy"
+    "policy": "Policy",
+    "oldPassword": "Old Password",
+    "newPassword": "New Password",
+    "confirmPassword": "Confirm Password"
   }
 }

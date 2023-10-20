@@ -1,5 +1,6 @@
 'use client'
 
+import { zodResolver } from '@hookform/resolvers/zod'
 import {
   Avatar,
   Button,
@@ -9,29 +10,58 @@ import {
   DropdownMenu,
   DropdownSection,
   DropdownTrigger,
+  Input,
   Link,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalHeader,
   Navbar,
   NavbarBrand,
   NavbarContent,
   NavbarItem,
   NavbarMenu,
   NavbarMenuItem,
-  NavbarMenuToggle
+  NavbarMenuToggle,
+  useDisclosure
 } from '@nextui-org/react'
 import i18n from 'i18next'
 import ky from 'ky'
 import { useTheme } from 'next-themes'
 import NextLink from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { FC, useState } from 'react'
+import { FC, useEffect, useState } from 'react'
+import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
+import { z } from 'zod'
+import { useUpdatePasswordMutation } from '~/apis/mutation'
 import { useUserQuery } from '~/apis/query'
 import { LogoText } from '~/components/LogoText'
+import { ModalConfirmFormFooter } from '~/components/Modal'
+import { updatePasswordFormDefault, useUpdatePasswordSchemaWithRefine } from '~/schemas/account'
 
 const Header: FC = () => {
   const { t } = useTranslation()
   const { theme: curTheme, setTheme } = useTheme()
+
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+
+  const {
+    isOpen: isUpdatePasswordOpen,
+    onOpen: onUpdatePasswordOpen,
+    onClose: onUpdatePasswordClose,
+    onOpenChange: onUpdatePasswordOpenChange
+  } = useDisclosure()
+
+  const updatePasswordMutation = useUpdatePasswordMutation()
+
+  const updatePasswordSchemaWithRefine = useUpdatePasswordSchemaWithRefine()()
+
+  const updatePasswordForm = useForm<z.infer<typeof updatePasswordSchemaWithRefine>>({
+    resolver: zodResolver(updatePasswordSchemaWithRefine),
+    defaultValues: updatePasswordFormDefault
+  })
+
   const pathname = usePathname()
   const router = useRouter()
   const userQuery = useUserQuery()
@@ -40,6 +70,14 @@ const Header: FC = () => {
     { name: t('primitives.network'), route: '/network' },
     { name: t('primitives.rule'), route: '/rule' }
   ]
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (!isUpdatePasswordOpen) updatePasswordForm.reset()
+    }, 150)
+
+    return () => timer && clearTimeout(timer)
+  }, [isUpdatePasswordOpen, updatePasswordForm])
 
   return (
     <Navbar isMenuOpen={isMenuOpen} onMenuOpenChange={setIsMenuOpen}>
@@ -77,21 +115,24 @@ const Header: FC = () => {
             />
           </DropdownTrigger>
 
-          <DropdownMenu aria-label="Profile Actions" variant="flat">
+          <DropdownMenu
+            aria-label="Profile Actions"
+            variant="flat"
+            onAction={(key) => {
+              if (key === 'update-password') onUpdatePasswordOpen()
+            }}
+          >
             <DropdownSection title={t('primitives.accountSettings')} showDivider>
-              <DropdownItem
-                key="profile"
-                textValue="profile"
-                className="py-2"
-                onPress={() => {
-                  console.log('account settings')
-                }}
-              >
+              <DropdownItem key="profile" textValue="profile" className="py-2">
                 <p className="font-semibold">{t('primitives.username', { username: userQuery.data?.user.username })}</p>
 
                 <p className="font-semibold">
                   {t('primitives.accountName', { accountName: userQuery.data?.user.name })}
                 </p>
+              </DropdownItem>
+
+              <DropdownItem key="update-password" textValue="update-password">
+                {t('actions.updatePassword')}
               </DropdownItem>
             </DropdownSection>
 
@@ -158,6 +199,58 @@ const Header: FC = () => {
           </NavbarMenuItem>
         ))}
       </NavbarMenu>
+
+      <Modal isOpen={isUpdatePasswordOpen} onOpenChange={onUpdatePasswordOpenChange}>
+        <form
+          onSubmit={updatePasswordForm.handleSubmit(async (values) => {
+            try {
+              await updatePasswordMutation.mutateAsync({
+                currentPassword: values.oldPassword,
+                newPassword: values.newPassword
+              })
+
+              onUpdatePasswordClose()
+            } catch {}
+          })}
+        >
+          <ModalContent>
+            <ModalHeader>{t('actions.updatePassword')}</ModalHeader>
+
+            <ModalBody>
+              <div className="flex flex-col gap-4">
+                <Input
+                  type="password"
+                  label={t('primitives.oldPassword')}
+                  placeholder={t('primitives.oldPassword')}
+                  errorMessage={updatePasswordForm.formState.errors.oldPassword?.message}
+                  {...updatePasswordForm.register('oldPassword')}
+                />
+
+                <Input
+                  type="password"
+                  label={t('primitives.newPassword')}
+                  placeholder={t('primitives.newPassword')}
+                  errorMessage={updatePasswordForm.formState.errors.newPassword?.message}
+                  {...updatePasswordForm.register('newPassword')}
+                />
+
+                <Input
+                  type="password"
+                  label={t('primitives.confirmPassword')}
+                  placeholder={t('primitives.confirmPassword')}
+                  errorMessage={updatePasswordForm.formState.errors.confirmPassword?.message}
+                  {...updatePasswordForm.register('confirmPassword')}
+                />
+              </div>
+            </ModalBody>
+
+            <ModalConfirmFormFooter
+              onCancel={onUpdatePasswordClose}
+              isSubmitting={updatePasswordForm.formState.isSubmitting}
+            />
+          </ModalContent>
+        </form>
+      </Modal>
     </Navbar>
   )
 }

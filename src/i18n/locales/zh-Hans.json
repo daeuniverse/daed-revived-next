@@ -61,6 +61,9 @@
         "MinMovingAvg": "从组中为每个连接选择具有最小移动平均延迟的节点",
         "Random": "为每个连接从组中随机选择一个节点"
       }
+    },
+    "errors": {
+      "passwordDontMatch": "密码不匹配"
     }
   },
   "actions": {
@@ -79,7 +82,8 @@
     "reset": "重置",
     "submit": "提交",
     "refresh": "刷新",
-    "loading": "正在加载{{resourceName}}..."
+    "loading": "正在加载{{resourceName}}...",
+    "updatePassword": "修改密码"
   },
   "primitives": {
     "create": "创建{{resourceName}}",
@@ -113,6 +117,9 @@
     "updatedAt": "更新时间",
     "address": "地址",
     "action": "动作",
-    "policy": "策略"
+    "policy": "策略",
+    "oldPassword": "旧密码",
+    "newPassword": "新密码",
+    "confirmPassword": "确认密码"
   }
 }

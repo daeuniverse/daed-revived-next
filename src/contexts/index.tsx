@@ -3,6 +3,7 @@
 import { ClientError, GraphQLClient } from 'graphql-request'
 import { useRouter } from 'next/navigation'
 import { FC, ReactNode, createContext, useContext, useMemo } from 'react'
+import { toast } from 'sonner'
 
 export type SessionContextProps = { endpointURL: string; token: string }
 
@@ -41,11 +42,15 @@ export const GraphqlClientProvider: FC<{ children: ReactNode }> = ({ children })
         responseMiddleware: (response) => {
           const error = (response as ClientError).response?.errors?.[0]
 
-          if (error?.message === 'access denied') {
-            router.replace('/login')
+          if (!error) {
+            return response
           }
 
-          return response
+          if (error.message === 'access denied') {
+            router.replace('/login')
+          } else {
+            toast.error(error?.message)
+          }
         }
       }),
     [endpointURL, token, router]

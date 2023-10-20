@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { z } from 'zod'
 import { LogoText } from '~/components/LogoText'
-import { loginFormDefault, loginSchema } from '~/schemas/login'
+import { loginFormDefault, loginSchema } from '~/schemas/account'
 
 export default function LoginPage() {
   const { t } = useTranslation()

@@ -7,7 +7,6 @@ import {
   Input,
   ModalBody,
   ModalContent,
-  ModalFooter,
   ModalHeader,
   Select,
   SelectItem,
@@ -33,7 +32,7 @@ import { CodeBlock } from '~/components/CodeBlock'
 import { Description } from '~/components/Description'
 import { Label } from '~/components/Label'
 import { ListInput } from '~/components/ListInput'
-import { Modal } from '~/components/Modal'
+import { Modal, ModalConfirmFormFooter, ModalSubmitFormFooter } from '~/components/Modal'
 import { ResourceRadio, ResourceRadioGroup } from '~/components/ResourceRadioGroup'
 import { deriveTime } from '~/lib/time'
 import {
@@ -79,14 +78,14 @@ const CreateOrEditModal: FC<CreateOrEditModalContentProps & (CreateModalContentP
     register,
     reset,
     control,
-    formState: { errors }
+    formState: { errors, isSubmitting }
   } = form
   const dirty = Object.values(form.formState.dirtyFields).some((dirty) => dirty)
 
   useEffect(() => {
     const timer = setTimeout(() => {
       if (!isOpen) reset()
-    }, 100)
+    }, 150)
 
     return () => timer && clearTimeout(timer)
   }, [reset, isOpen])
@@ -415,15 +414,12 @@ const CreateOrEditModal: FC<CreateOrEditModalContentProps & (CreateModalContentP
               </Accordion>
             </ModalBody>
 
-            <ModalFooter>
-              <Button type="reset" color="secondary" isDisabled={!dirty} onPress={() => form.reset()}>
-                {t('actions.reset')}
-              </Button>
-
-              <Button type="submit" isDisabled={type === 'edit' && !dirty} isLoading={form.formState.isSubmitting}>
-                {t('actions.submit')}
-              </Button>
-            </ModalFooter>
+            <ModalSubmitFormFooter
+              reset={form.reset}
+              isResetDisabled={!dirty}
+              isSubmitDisabled={type === 'edit' && !dirty}
+              isSubmitting={isSubmitting}
+            />
           </form>
         </FormProvider>
       </ModalContent>
@@ -542,23 +538,15 @@ const DetailsRadio: FC<{
                     <ModalHeader>{t('primitives.remove', { resourceName: t('primitives.config') })}</ModalHeader>
                     <ModalBody>{details.name}</ModalBody>
 
-                    <ModalFooter>
-                      <Button color="secondary" onPress={onRemoveClose}>
-                        {t('actions.cancel')}
-                      </Button>
-
-                      <Button
-                        color="danger"
-                        isLoading={removeMutation.isPending}
-                        onPress={async () => {
-                          await removeMutation.mutateAsync({ id: details.id })
-                          await refetch()
-                          onRemoveClose()
-                        }}
-                      >
-                        {t('actions.confirm')}
-                      </Button>
-                    </ModalFooter>
+                    <ModalConfirmFormFooter
+                      onCancel={onRemoveClose}
+                      isSubmitting={removeMutation.isPending}
+                      onConfirm={async () => {
+                        await removeMutation.mutateAsync({ id: details.id })
+                        await refetch()
+                        onRemoveClose()
+                      }}
+                    />
                   </ModalContent>
                 </Modal>
               </Fragment>

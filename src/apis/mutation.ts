@@ -806,3 +806,23 @@ export const useUpdateNameMutation = () => {
     }
   })
 }
+
+export const useUpdatePasswordMutation = () => {
+  const gqlClient = useGraphqlClient()
+
+  return useMutation({
+    mutationFn: ({ currentPassword, newPassword }: { currentPassword: string; newPassword: string }) => {
+      return gqlClient.request(
+        graphql(`
+          mutation UpdatePassword($currentPassword: String!, $newPassword: String!) {
+            updatePassword(currentPassword: $currentPassword, newPassword: $newPassword)
+          }
+        `),
+        {
+          currentPassword,
+          newPassword
+        }
+      )
+    }
+  })
+}

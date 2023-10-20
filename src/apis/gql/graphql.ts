@@ -854,6 +854,13 @@ export type UpdateNameMutationVariables = Exact<{
 
 export type UpdateNameMutation = { __typename?: 'Mutation'; updateName: number }
 
+export type UpdatePasswordMutationVariables = Exact<{
+  currentPassword: Scalars['String']['input']
+  newPassword: Scalars['String']['input']
+}>
+
+export type UpdatePasswordMutation = { __typename?: 'Mutation'; updatePassword: string }
+
 export type JsonStorageQueryVariables = Exact<{
   paths?: InputMaybe<Array<Scalars['String']['input']> | Scalars['String']['input']>
 }>
@@ -2380,6 +2387,49 @@ export const UpdateNameDocument = {
     }
   ]
 } as unknown as DocumentNode<UpdateNameMutation, UpdateNameMutationVariables>
+export const UpdatePasswordDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'UpdatePassword' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'currentPassword' } },
+          type: { kind: 'NonNullType', type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } } }
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'newPassword' } },
+          type: { kind: 'NonNullType', type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } } }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'updatePassword' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'currentPassword' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'currentPassword' } }
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'newPassword' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'newPassword' } }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<UpdatePasswordMutation, UpdatePasswordMutationVariables>
 export const JsonStorageDocument = {
   kind: 'Document',
   definitions: [

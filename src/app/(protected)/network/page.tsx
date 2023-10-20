@@ -4,7 +4,6 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import {
   Accordion,
   AccordionItem,
-  Avatar,
   Chip,
   getKeyValue,
   Input,
@@ -45,7 +44,7 @@ import {
 } from '~/apis/mutation'
 import { useGroupsQuery, useNodesQuery, useSubscriptionsQuery } from '~/apis/query'
 import { Button } from '~/components/Button'
-import { Modal } from '~/components/Modal'
+import { Modal, ModalConfirmFormFooter } from '~/components/Modal'
 import { ResourcePage } from '~/components/ResourcePage'
 import { createGroupFormDefault, createGroupFormSchema } from '~/schemas/group'
 
@@ -289,24 +288,16 @@ const RemoveNodeButton: FC<{ id: string; name: string; refetch: () => Promise<un
           <ModalHeader>{t('primitives.remove', { resourceName: t('primitives.node') })}</ModalHeader>
           <ModalBody>{name}</ModalBody>
 
-          <ModalFooter>
-            <Button color="secondary" onPress={onRemoveClose}>
-              {t('actions.cancel')}
-            </Button>
+          <ModalConfirmFormFooter
+            onCancel={onRemoveClose}
+            isSubmitting={removeNodesMutation.isPending}
+            onConfirm={async () => {
+              await removeNodesMutation.mutateAsync({ nodeIDs: [id] })
+              await refetch()
 
-            <Button
-              color="danger"
-              isLoading={removeNodesMutation.isPending}
-              onPress={async () => {
-                await removeNodesMutation.mutateAsync({ nodeIDs: [id] })
-                await refetch()
-
-                onRemoveClose()
-              }}
-            >
-              {t('actions.confirm')}
-            </Button>
-          </ModalFooter>
+              onRemoveClose()
+            }}
+          />
         </ModalContent>
       </Modal>
     </Fragment>
@@ -556,26 +547,18 @@ export default function NetworkPage() {
                           <ModalHeader>{t('primitives.remove', { resourceName: t('primitives.group') })}</ModalHeader>
                           <ModalBody>{group.name}</ModalBody>
 
-                          <ModalFooter>
-                            <Button color="secondary" onPress={onRemoveGroupClose}>
-                              {t('actions.cancel')}
-                            </Button>
+                          <ModalConfirmFormFooter
+                            onCancel={onRemoveGroupClose}
+                            isSubmitting={removeGroupsMutation.isPending}
+                            onConfirm={async () => {
+                              await removeGroupsMutation.mutateAsync({
+                                groupIDs: [group.id]
+                              })
+                              await groupsQuery.refetch()
 
-                            <Button
-                              color="danger"
-                              isLoading={removeGroupsMutation.isPending}
-                              onPress={async () => {
-                                await removeGroupsMutation.mutateAsync({
-                                  groupIDs: [group.id]
-                                })
-                                await groupsQuery.refetch()
-
-                                onRemoveGroupClose()
-                              }}
-                            >
-                              {t('actions.confirm')}
-                            </Button>
-                          </ModalFooter>
+                              onRemoveGroupClose()
+                            }}
+                          />
                         </ModalContent>
                       </Modal>
                     </Fragment>
@@ -625,8 +608,6 @@ export default function NetworkPage() {
                   subtitle={dayjs(subscription.updatedAt).format('YYYY-MM-DD hh:mm:ss')}
                   startContent={
                     <div className="flex gap-2">
-                      <Avatar name={subscription.tag!} />
-
                       <Button
                         color="success"
                         as="div"
@@ -653,24 +634,16 @@ export default function NetworkPage() {
                             </ModalHeader>
                             <ModalBody>{subscription.tag}</ModalBody>
 
-                            <ModalFooter>
-                              <Button color="secondary" onPress={onRemoveSubscriptionClose}>
-                                {t('actions.cancel')}
-                              </Button>
+                            <ModalConfirmFormFooter
+                              onCancel={onRemoveSubscriptionClose}
+                              isSubmitting={removeSubscriptionsMutation.isPending}
+                              onConfirm={async () => {
+                                await removeSubscriptionsMutation.mutateAsync({ subscriptionIDs: [subscription.id] })
+                                await subscriptionsQuery.refetch()
 
-                              <Button
-                                color="danger"
-                                isLoading={removeSubscriptionsMutation.isPending}
-                                onPress={async () => {
-                                  await removeSubscriptionsMutation.mutateAsync({ subscriptionIDs: [subscription.id] })
-                                  await subscriptionsQuery.refetch()
-
-                                  onRemoveSubscriptionClose()
-                                }}
-                              >
-                                {t('actions.confirm')}
-                              </Button>
-                            </ModalFooter>
+                                onRemoveSubscriptionClose()
+                              }}
+                            />
                           </ModalContent>
                         </Modal>
                       </Fragment>
