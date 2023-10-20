@@ -14,7 +14,6 @@
   },
   "dependencies": {
     "@commitlint/config-conventional": "^18.0.0",
-    "@dotlottie/react-player": "^1.6.3",
     "@graphql-codegen/cli": "^5.0.0",
     "@graphql-codegen/client-preset": "^4.1.0",
     "@graphql-codegen/introspection": "^4.0.0",
