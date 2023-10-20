@@ -105,6 +105,7 @@
     "tag": "标签",
     "protocol": "协议",
     "updatedAt": "更新时间",
-    "address": "地址"
+    "address": "地址",
+    "action": "动作"
   }
 }

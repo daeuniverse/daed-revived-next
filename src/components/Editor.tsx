@@ -8,7 +8,11 @@ import { options, themeDark, themeLight } from '~/editor/options'
 const Editor: FC<EditorProps> = (props) => {
   const { resolvedTheme } = useTheme()
 
-  return <BaseEditor theme={resolvedTheme === 'dark' ? themeDark : themeLight} options={options} {...props} />
+  return (
+    <div className="overflow-hidden rounded-lg">
+      <BaseEditor theme={resolvedTheme === 'dark' ? themeDark : themeLight} options={options} {...props} />
+    </div>
+  )
 }
 Editor.displayName = 'Editor'
 

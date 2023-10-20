@@ -27,10 +27,9 @@ export default function HomePage() {
 
   const [editorValue, setEditorValue] = useState(
     `
-pname(NetworkManager, systemd-resolved, dnsmasq) -> must_direct
-dip(geoip:private) -> direct
-dip(geoip:cn) -> direct
-domain(geosite:cn) -> direct 
+# Hello world
+
+this is a test message
 `.trim()
   )
 
@@ -50,7 +49,7 @@ domain(geosite:cn) -> direct
       <p>Name: {userQuery.data?.user.name}</p>
       <p>Username: {userQuery.data?.user.username}</p>
 
-      <Editor height="20vh" language="dae" value={editorValue} onChange={(value) => value && setEditorValue(value)} />
+      <Editor height="20vh" language="markdown" value={editorValue} onChange={(value) => setEditorValue(value || '')} />
     </div>
   )
 }

@@ -47,7 +47,9 @@ const Header: FC = () => {
         <NavbarMenuToggle className="sm:hidden" />
 
         <NavbarBrand>
-          <LogoText />
+          <NextLink href="/">
+            <LogoText />
+          </NextLink>
         </NavbarBrand>
       </NavbarContent>
 

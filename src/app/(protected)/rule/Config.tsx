@@ -436,7 +436,7 @@ const DetailsModal: FC<{
   isOpen: boolean
   onOpenChange: () => void
 }> = ({ details, isOpen, onOpenChange }) => (
-  <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+  <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="3xl">
     <ModalContent>
       <ModalHeader>{details.id}</ModalHeader>
 

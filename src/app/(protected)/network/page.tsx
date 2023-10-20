@@ -23,13 +23,14 @@ import {
 import { IconPlus, IconRefresh, IconTrash } from '@tabler/icons-react'
 import dayjs from 'dayjs'
 import { differenceWith } from 'lodash'
-import { FC, Fragment, useMemo } from 'react'
+import { FC, Fragment, Key, useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   useGroupAddNodesMutation,
   useGroupAddSubscriptionsMutation,
   useGroupDelNodesMutation,
   useGroupDelSubscriptionsMutation,
+  useRemoveNodesMutation,
   useRemoveSubscriptionsMutation,
   useUpdateSubscriptionsMutation
 } from '~/apis/mutation'
@@ -62,7 +63,7 @@ type Group = {
   }[]
 }
 
-const GroupTable: FC<{
+const GroupContent: FC<{
   group: Group
 
   subscriptions: {
@@ -225,7 +226,102 @@ const GroupTable: FC<{
   )
 }
 
+const RemoveNodeButton: FC<{ id: string; name: string; refetch: () => Promise<unknown> }> = ({ id, name, refetch }) => {
+  const { t } = useTranslation()
+
+  const {
+    isOpen: isRemoveOpen,
+    onOpen: onRemoveOpen,
+    onClose: onRemoveClose,
+    onOpenChange: onRemoveOpenChange
+  } = useDisclosure()
+
+  const removeNodesMutation = useRemoveNodesMutation()
+
+  return (
+    <Fragment>
+      <Button color="danger" as="div" isIconOnly onPress={onRemoveOpen}>
+        <IconTrash />
+      </Button>
+
+      <Modal isOpen={isRemoveOpen} onOpenChange={onRemoveOpenChange}>
+        <ModalContent>
+          <ModalHeader>{t('primitives.remove', { resourceName: t('primitives.node') })}</ModalHeader>
+          <ModalBody>{name}</ModalBody>
+
+          <ModalFooter>
+            <Button color="secondary" onPress={onRemoveClose}>
+              {t('actions.cancel')}
+            </Button>
+
+            <Button
+              color="danger"
+              isLoading={removeNodesMutation.isPending}
+              onPress={async () => {
+                await removeNodesMutation.mutateAsync({ nodeIDs: [id] })
+                await refetch()
+
+                onRemoveClose()
+              }}
+            >
+              {t('actions.confirm')}
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    </Fragment>
+  )
+}
+
 const NodeTable: FC<{
+  nodes: Node[]
+  refetch: () => Promise<unknown>
+  isLoading: boolean
+}> = ({ nodes, refetch, isLoading }) => {
+  const { t } = useTranslation()
+
+  const nodesTableColumns = useMemo(
+    () => [
+      { key: 'name', name: t('primitives.name') },
+      { key: 'protocol', name: t('primitives.protocol') },
+      { key: 'address', name: t('primitives.address') },
+      { key: 'action', name: t('primitives.action') }
+    ],
+    [t]
+  )
+
+  const renderCell = useCallback(
+    (item: Node, columnKey: Key) => {
+      switch (columnKey) {
+        case 'name':
+          return item.tag || item.name
+
+        case 'action':
+          return <RemoveNodeButton id={item.id} name={item.tag || item.name} refetch={refetch} />
+
+        default:
+          return getKeyValue(item, columnKey)
+      }
+    },
+    [refetch]
+  )
+
+  return (
+    <Table isCompact aria-label="nodes">
+      <TableHeader columns={nodesTableColumns}>
+        {(column) => <TableColumn key={column.key}>{column.name}</TableColumn>}
+      </TableHeader>
+
+      <TableBody items={nodes} isLoading={isLoading}>
+        {(item) => (
+          <TableRow key={item.id}>{(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}</TableRow>
+        )}
+      </TableBody>
+    </Table>
+  )
+}
+
+const SubscriptionNodeTable: FC<{
   nodes: Node[]
   isLoading?: boolean
 }> = ({ nodes, isLoading }) => {
@@ -234,7 +330,6 @@ const NodeTable: FC<{
   const nodesTableColumns = useMemo(
     () => [
       { key: 'name', name: t('primitives.name') },
-      { key: 'tag', name: t('primitives.tag') },
       { key: 'protocol', name: t('primitives.protocol') },
       { key: 'address', name: t('primitives.address') }
     ],
@@ -243,13 +338,7 @@ const NodeTable: FC<{
 
   return (
     <Table isCompact aria-label="nodes">
-      <TableHeader
-        columns={nodesTableColumns.map(({ key, name }) => ({
-          key,
-          name,
-          sortable: true
-        }))}
-      >
+      <TableHeader columns={nodesTableColumns}>
         {(column) => <TableColumn key={column.key}>{column.name}</TableColumn>}
       </TableHeader>
 
@@ -278,16 +367,6 @@ export default function NetworkPage() {
   const removeSubscriptionsMutation = useRemoveSubscriptionsMutation()
   const updateSubscriptionsMutation = useUpdateSubscriptionsMutation()
 
-  const nodesTableColumns = useMemo(
-    () => [
-      { key: 'name', name: t('primitives.name') },
-      { key: 'tag', name: t('primitives.tag') },
-      { key: 'protocol', name: t('primitives.protocol') },
-      { key: 'address', name: t('primitives.address') }
-    ],
-    [t]
-  )
-
   return (
     <ResourcePage name={t('primitives.network')}>
       <div className="flex flex-col gap-8">
@@ -304,7 +383,7 @@ export default function NetworkPage() {
             groupsQuery.data.groups.map((group) => (
               <Accordion key={group.id} variant="shadow">
                 <AccordionItem title={group.name} subtitle={group.policy}>
-                  <GroupTable
+                  <GroupContent
                     group={group}
                     subscriptions={subscriptionsQuery.data?.subscriptions || []}
                     nodes={nodesQuery.data?.nodes.edges || []}
@@ -323,7 +402,11 @@ export default function NetworkPage() {
             </Button>
           </div>
 
-          <NodeTable nodes={nodesQuery.data?.nodes.edges || []} isLoading={nodesQuery.isLoading} />
+          <NodeTable
+            nodes={nodesQuery.data?.nodes.edges || []}
+            refetch={nodesQuery.refetch}
+            isLoading={nodesQuery.isLoading}
+          />
         </div>
 
         <div className="flex flex-col gap-4">
@@ -361,7 +444,7 @@ export default function NetworkPage() {
                       </Button>
 
                       <Fragment>
-                        <Button color="danger" isIconOnly onPress={onRemoveOpen}>
+                        <Button color="danger" as="div" isIconOnly onPress={onRemoveOpen}>
                           <IconTrash />
                         </Button>
 
@@ -396,7 +479,7 @@ export default function NetworkPage() {
                     </div>
                   }
                 >
-                  <NodeTable nodes={subscription.nodes.edges} />
+                  <SubscriptionNodeTable nodes={subscription.nodes.edges} />
                 </AccordionItem>
               ))}
             </Accordion>

@@ -1,8 +1,8 @@
 'use client'
 
+import { DotLottiePlayer } from '@dotlottie/react-player'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button, Input } from '@nextui-org/react'
-import RiveComponent from '@rive-app/react-canvas'
 import ky from 'ky'
 import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
@@ -22,14 +22,14 @@ export default function LoginPage() {
   })
 
   return (
-    <div className="mx-auto flex w-full max-w-screen-sm flex-col items-center gap-4 px-4 sm:pt-32">
-      <div className="h-64 w-full">
-        <RiveComponent src="/569-6666-blue-planet.riv" />
+    <div className="mx-auto flex w-full max-w-screen-xl flex-col items-center gap-4 px-4 sm:flex-row sm:pt-32">
+      <div className="flex w-full flex-col items-center sm:w-2/5">
+        <DotLottiePlayer src="/animation_lny15oo1.lottie" autoplay loop />
+
+        <LogoText />
       </div>
 
-      <LogoText />
-
-      <div className="flex w-full flex-col gap-2">
+      <div className="flex w-full flex-col gap-2 sm:flex-1">
         <form
           onSubmit={form.handleSubmit(async ({ endpointURL, username, password }) => {
             try {

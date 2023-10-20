@@ -67,7 +67,7 @@ const CreateOrEditModal: FC<CreateOrEditModalContentProps & (CreateModalContentP
   }, [reset, isOpen])
 
   return (
-    <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="2xl">
+    <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="full">
       <ModalContent>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <ModalHeader>
@@ -91,7 +91,7 @@ const CreateOrEditModal: FC<CreateOrEditModalContentProps & (CreateModalContentP
               name="text"
               control={control}
               render={({ field }) => (
-                <Editor height="60vh" language="dae" value={field.value} onChange={field.onChange} />
+                <Editor height="80vh" language="dae" value={field.value} onChange={field.onChange} />
               )}
             />
           </ModalBody>
@@ -126,7 +126,7 @@ const DetailsModal: FC<{
   isOpen: boolean
   onOpenChange: () => void
 }> = ({ details, isOpen, onOpenChange }) => (
-  <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+  <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="3xl">
     <ModalContent>
       <ModalHeader>{details.id}</ModalHeader>
 

@@ -623,7 +623,7 @@ export const useRemoveNodesMutation = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (ids: string[]) => {
+    mutationFn: ({ nodeIDs }: { nodeIDs: string[] }) => {
       return gqlClient.request(
         graphql(`
           mutation RemoveNodes($ids: [ID!]!) {
@@ -631,7 +631,7 @@ export const useRemoveNodesMutation = () => {
           }
         `),
         {
-          ids
+          ids: nodeIDs
         }
       )
     },
