@@ -543,7 +543,7 @@ const DetailsRadio: FC<{
                     <ModalBody>{details.name}</ModalBody>
 
                     <ModalFooter>
-                      <Button color="secondary" isLoading={removeMutation.isPending} onPress={onRemoveClose}>
+                      <Button color="secondary" onPress={onRemoveClose}>
                         {t('actions.cancel')}
                       </Button>
 

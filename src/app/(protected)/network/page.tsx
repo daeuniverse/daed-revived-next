@@ -6,6 +6,10 @@ import {
   Avatar,
   Chip,
   getKeyValue,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
   Select,
   SelectItem,
   Table,
@@ -13,49 +17,47 @@ import {
   TableCell,
   TableColumn,
   TableHeader,
-  TableRow
+  TableRow,
+  useDisclosure
 } from '@nextui-org/react'
 import { IconPlus, IconRefresh, IconTrash } from '@tabler/icons-react'
 import dayjs from 'dayjs'
 import { differenceWith } from 'lodash'
-import { FC, useMemo } from 'react'
+import { FC, Fragment, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   useGroupAddNodesMutation,
   useGroupAddSubscriptionsMutation,
   useGroupDelNodesMutation,
   useGroupDelSubscriptionsMutation,
+  useRemoveSubscriptionsMutation,
   useUpdateSubscriptionsMutation
 } from '~/apis/mutation'
 import { useGroupsQuery, useNodesQuery, useSubscriptionsQuery } from '~/apis/query'
 import { Button } from '~/components/Button'
-import { NodeCard } from '~/components/NodeCard'
+import { Modal } from '~/components/Modal'
 import { ResourcePage } from '~/components/ResourcePage'
+
+type Node = {
+  id: string
+  name: string
+  tag?: string | null
+  protocol: string
+  subscriptionID?: string | null
+}
 
 type Group = {
   id: string
   name: string
   policy: string
-  nodes: {
-    id: string
-    name: string
-    tag?: string | null
-    protocol: string
-    subscriptionID?: string | null
-  }[]
+  nodes: Node[]
   subscriptions: {
     id: string
     tag?: string | null
     updatedAt: string
 
     nodes: {
-      edges: {
-        id: string
-        name: string
-        tag?: string | null
-        protocol: string
-        subscriptionID?: string | null
-      }[]
+      edges: Node[]
     }
   }[]
 }
@@ -67,20 +69,10 @@ const GroupTable: FC<{
     id: string
     tag?: string | null
 
-    nodes: {
-      edges: {
-        id: string
-        name: string
-        tag?: string | null
-      }[]
-    }
+    nodes: { edges: Node[] }
   }[]
 
-  nodes: {
-    id: string
-    name: string
-    tag?: string | null
-  }[]
+  nodes: Node[]
 
   refetch: () => Promise<unknown>
 }> = ({ group, subscriptions, nodes, refetch }) => {
@@ -233,11 +225,57 @@ const GroupTable: FC<{
   )
 }
 
+const NodeTable: FC<{
+  nodes: Node[]
+  isLoading?: boolean
+}> = ({ nodes, isLoading }) => {
+  const { t } = useTranslation()
+
+  const nodesTableColumns = useMemo(
+    () => [
+      { key: 'name', name: t('primitives.name') },
+      { key: 'tag', name: t('primitives.tag') },
+      { key: 'protocol', name: t('primitives.protocol') },
+      { key: 'address', name: t('primitives.address') }
+    ],
+    [t]
+  )
+
+  return (
+    <Table isCompact aria-label="nodes">
+      <TableHeader
+        columns={nodesTableColumns.map(({ key, name }) => ({
+          key,
+          name,
+          sortable: true
+        }))}
+      >
+        {(column) => <TableColumn key={column.key}>{column.name}</TableColumn>}
+      </TableHeader>
+
+      <TableBody items={nodes} isLoading={isLoading}>
+        {(item) => (
+          <TableRow key={item.name}>{(columnKey) => <TableCell>{getKeyValue(item, columnKey)}</TableCell>}</TableRow>
+        )}
+      </TableBody>
+    </Table>
+  )
+}
+
 export default function NetworkPage() {
   const { t } = useTranslation()
+
+  const {
+    isOpen: isRemoveOpen,
+    onOpen: onRemoveOpen,
+    onClose: onRemoveClose,
+    onOpenChange: onRemoveOpenChange
+  } = useDisclosure()
+
   const groupsQuery = useGroupsQuery()
   const subscriptionsQuery = useSubscriptionsQuery()
   const nodesQuery = useNodesQuery()
+  const removeSubscriptionsMutation = useRemoveSubscriptionsMutation()
   const updateSubscriptionsMutation = useUpdateSubscriptionsMutation()
 
   const nodesTableColumns = useMemo(
@@ -285,25 +323,7 @@ export default function NetworkPage() {
             </Button>
           </div>
 
-          <Table isCompact aria-label="nodes">
-            <TableHeader
-              columns={nodesTableColumns.map(({ key, name }) => ({
-                key,
-                name,
-                sortable: true
-              }))}
-            >
-              {(column) => <TableColumn key={column.key}>{column.name}</TableColumn>}
-            </TableHeader>
-
-            <TableBody items={nodesQuery.data?.nodes.edges || []} isLoading={nodesQuery.isLoading}>
-              {(item) => (
-                <TableRow key={item.name}>
-                  {(columnKey) => <TableCell>{getKeyValue(item, columnKey)}</TableCell>}
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
+          <NodeTable nodes={nodesQuery.data?.nodes.edges || []} isLoading={nodesQuery.isLoading} />
         </div>
 
         <div className="flex flex-col gap-4">
@@ -329,8 +349,8 @@ export default function NetworkPage() {
                       <Button
                         color="success"
                         as="div"
-                        isLoading={updateSubscriptionsMutation.isPending}
                         isIconOnly
+                        isLoading={updateSubscriptionsMutation.isPending}
                         onPress={() =>
                           updateSubscriptionsMutation.mutate({
                             subscriptionIDs: [subscription.id]
@@ -340,17 +360,43 @@ export default function NetworkPage() {
                         <IconRefresh />
                       </Button>
 
-                      <Button color="danger" isIconOnly as="div">
-                        <IconTrash />
-                      </Button>
+                      <Fragment>
+                        <Button color="danger" isIconOnly onPress={onRemoveOpen}>
+                          <IconTrash />
+                        </Button>
+
+                        <Modal isOpen={isRemoveOpen} onOpenChange={onRemoveOpenChange}>
+                          <ModalContent>
+                            <ModalHeader>
+                              {t('primitives.remove', { resourceName: t('primitives.subscription') })}
+                            </ModalHeader>
+                            <ModalBody>{subscription.tag}</ModalBody>
+
+                            <ModalFooter>
+                              <Button color="secondary" onPress={onRemoveClose}>
+                                {t('actions.cancel')}
+                              </Button>
+
+                              <Button
+                                color="danger"
+                                isLoading={removeSubscriptionsMutation.isPending}
+                                onPress={async () => {
+                                  await removeSubscriptionsMutation.mutateAsync({ subscriptionIDs: [subscription.id] })
+                                  await subscriptionsQuery.refetch()
+
+                                  onRemoveClose()
+                                }}
+                              >
+                                {t('actions.confirm')}
+                              </Button>
+                            </ModalFooter>
+                          </ModalContent>
+                        </Modal>
+                      </Fragment>
                     </div>
                   }
                 >
-                  <div className="grid grid-cols-2 gap-2">
-                    {subscription.nodes.edges.map((node) => (
-                      <NodeCard key={node.id} node={node} />
-                    ))}
-                  </div>
+                  <NodeTable nodes={subscription.nodes.edges} />
                 </AccordionItem>
               ))}
             </Accordion>

@@ -715,7 +715,7 @@ export const useRemoveSubscriptionsMutation = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (ids: string[]) =>
+    mutationFn: ({ subscriptionIDs }: { subscriptionIDs: string[] }) =>
       gqlClient.request(
         graphql(`
           mutation RemoveSubscriptions($ids: [ID!]!) {
@@ -723,7 +723,7 @@ export const useRemoveSubscriptionsMutation = () => {
           }
         `),
         {
-          ids
+          ids: subscriptionIDs
         }
       ),
     onSuccess: () => {
