@@ -84,7 +84,8 @@
     "routing": "Routing",
     "dns": "DNS",
     "config": "Config",
-    "orchestrate": "Orchestrate",
+    "network": "Network",
+    "rule": "Rule",
     "general": "General",
     "default": "Default",
     "softwareOptions": "Software Options",
@@ -103,6 +104,7 @@
     "name": "Name",
     "tag": "Tag",
     "protocol": "Protocol",
-    "updatedAt": "Updated At"
+    "updatedAt": "Updated At",
+    "address": "Address"
   }
 }

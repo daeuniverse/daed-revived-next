@@ -1,6 +1,20 @@
 'use client'
 
-import { Accordion, AccordionItem, Chip, Select, SelectItem } from '@nextui-org/react'
+import {
+  Accordion,
+  AccordionItem,
+  Avatar,
+  Chip,
+  getKeyValue,
+  Select,
+  SelectItem,
+  Table,
+  TableBody,
+  TableCell,
+  TableColumn,
+  TableHeader,
+  TableRow
+} from '@nextui-org/react'
 import { IconPlus, IconRefresh, IconTrash } from '@tabler/icons-react'
 import dayjs from 'dayjs'
 import { differenceWith } from 'lodash'
@@ -88,63 +102,7 @@ const GroupTable: FC<{
   const groupDelNodesMutation = useGroupDelNodesMutation()
 
   return (
-    <div className="grid grid-cols-1 gap-4 py-4 sm:grid-cols-2">
-      <Select
-        variant="bordered"
-        label={t('primitives.subscription')}
-        placeholder={t('primitives.subscription')}
-        isMultiline={true}
-        selectionMode="multiple"
-        labelPlacement="outside"
-        classNames={{ trigger: 'py-2' }}
-        selectedKeys={selectedSubscriptions}
-        onSelectionChange={async (selected) => {
-          const subscriptionsToAdd = differenceWith(
-            selected === 'all' ? allSubscriptions : (Array.from(selected) as string[]),
-            selectedSubscriptions
-          )
-          const subscriptionsToRemove = differenceWith(
-            selectedSubscriptions,
-            selected === 'all' ? allSubscriptions : (Array.from(selected) as string[])
-          )
-
-          if (subscriptionsToAdd.length > 0) {
-            await groupAddSubscriptionsMutation.mutateAsync({ id: group.id, subscriptionIDs: subscriptionsToAdd })
-          }
-
-          if (subscriptionsToRemove.length > 0) {
-            await groupDelSubscriptionsMutation.mutateAsync({ id: group.id, subscriptionIDs: subscriptionsToRemove })
-          }
-
-          await refetch()
-        }}
-        items={subscriptions}
-        renderValue={(items) => (
-          <div className="flex flex-wrap gap-2">
-            {items.map((item) => (
-              <Chip
-                key={item.key}
-                classNames={{
-                  content: 'block truncate'
-                }}
-                onClose={async () => {
-                  await groupDelSubscriptionsMutation.mutateAsync({ id: group.id, subscriptionIDs: [item.data!.id] })
-                  await refetch()
-                }}
-              >
-                {item.data!.tag}
-              </Chip>
-            ))}
-          </div>
-        )}
-      >
-        {(subscription) => (
-          <SelectItem key={subscription.id} value={subscription.id} textValue={subscription.id}>
-            {subscription.tag}
-          </SelectItem>
-        )}
-      </Select>
-
+    <div className="flex flex-col gap-4 py-4">
       <Select
         label={t('primitives.node')}
         placeholder={t('primitives.node')}
@@ -215,21 +173,87 @@ const GroupTable: FC<{
           </SelectItem>
         )}
       </Select>
+
+      <Select
+        variant="bordered"
+        label={t('primitives.subscription')}
+        placeholder={t('primitives.subscription')}
+        isMultiline={true}
+        selectionMode="multiple"
+        labelPlacement="outside"
+        classNames={{ trigger: 'py-2' }}
+        selectedKeys={selectedSubscriptions}
+        onSelectionChange={async (selected) => {
+          const subscriptionsToAdd = differenceWith(
+            selected === 'all' ? allSubscriptions : (Array.from(selected) as string[]),
+            selectedSubscriptions
+          )
+          const subscriptionsToRemove = differenceWith(
+            selectedSubscriptions,
+            selected === 'all' ? allSubscriptions : (Array.from(selected) as string[])
+          )
+
+          if (subscriptionsToAdd.length > 0) {
+            await groupAddSubscriptionsMutation.mutateAsync({ id: group.id, subscriptionIDs: subscriptionsToAdd })
+          }
+
+          if (subscriptionsToRemove.length > 0) {
+            await groupDelSubscriptionsMutation.mutateAsync({ id: group.id, subscriptionIDs: subscriptionsToRemove })
+          }
+
+          await refetch()
+        }}
+        items={subscriptions}
+        renderValue={(items) => (
+          <div className="flex flex-wrap gap-2">
+            {items.map((item) => (
+              <Chip
+                key={item.key}
+                classNames={{
+                  content: 'block truncate'
+                }}
+                onClose={async () => {
+                  await groupDelSubscriptionsMutation.mutateAsync({ id: group.id, subscriptionIDs: [item.data!.id] })
+                  await refetch()
+                }}
+              >
+                {item.data!.tag}
+              </Chip>
+            ))}
+          </div>
+        )}
+      >
+        {(subscription) => (
+          <SelectItem key={subscription.id} value={subscription.id} textValue={subscription.id}>
+            {subscription.tag}
+          </SelectItem>
+        )}
+      </Select>
     </div>
   )
 }
 
-export default function OrchestratePage() {
+export default function NetworkPage() {
   const { t } = useTranslation()
   const groupsQuery = useGroupsQuery()
   const subscriptionsQuery = useSubscriptionsQuery()
   const nodesQuery = useNodesQuery()
   const updateSubscriptionsMutation = useUpdateSubscriptionsMutation()
 
+  const nodesTableColumns = useMemo(
+    () => [
+      { key: 'name', name: t('primitives.name') },
+      { key: 'tag', name: t('primitives.tag') },
+      { key: 'protocol', name: t('primitives.protocol') },
+      { key: 'address', name: t('primitives.address') }
+    ],
+    [t]
+  )
+
   return (
-    <ResourcePage name={t('primitives.orchestrate')}>
+    <ResourcePage name={t('primitives.network')}>
       <div className="flex flex-col gap-8">
-        <div className="col-span-2 flex flex-col gap-4 rounded-lg">
+        <div className="flex flex-col gap-4 rounded-lg">
           <div className="flex items-center justify-between rounded">
             <h3 className="text-xl font-bold">{t('primitives.group')}</h3>
 
@@ -253,68 +277,84 @@ export default function OrchestratePage() {
             ))}
         </div>
 
-        <div className="col-span-2 grid grid-cols-2 gap-4">
-          <div className="col-span-2 flex flex-col gap-4 rounded-lg sm:col-span-1">
-            <div className="flex items-center justify-between">
-              <h3 className="text-xl font-bold">{t('primitives.subscription')}</h3>
+        <div className="flex flex-col gap-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-xl font-bold">{t('primitives.node')}</h3>
+            <Button color="primary" isIconOnly>
+              <IconPlus />
+            </Button>
+          </div>
 
-              <Button color="primary" isIconOnly>
-                <IconPlus />
-              </Button>
-            </div>
+          <Table isCompact aria-label="nodes">
+            <TableHeader
+              columns={nodesTableColumns.map(({ key, name }) => ({
+                key,
+                name,
+                sortable: true
+              }))}
+            >
+              {(column) => <TableColumn key={column.key}>{column.name}</TableColumn>}
+            </TableHeader>
 
-            {subscriptionsQuery.data && (
-              <Accordion selectionMode="multiple" variant="shadow" isCompact>
-                {subscriptionsQuery.data.subscriptions.map((subscription) => (
-                  <AccordionItem
-                    key={subscription.id}
-                    title={`${subscription.tag} (${subscription.nodes.edges.length})`}
-                    subtitle={dayjs(subscription.updatedAt).format('YYYY-MM-DD hh:mm:ss')}
-                    startContent={
-                      <div className="flex gap-2">
-                        <Button color="danger" isIconOnly as="div">
-                          <IconTrash />
-                        </Button>
+            <TableBody items={nodesQuery.data?.nodes.edges || []} isLoading={nodesQuery.isLoading}>
+              {(item) => (
+                <TableRow key={item.name}>
+                  {(columnKey) => <TableCell>{getKeyValue(item, columnKey)}</TableCell>}
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
 
-                        <Button
-                          color="success"
-                          as="div"
-                          isLoading={updateSubscriptionsMutation.isPending}
-                          isIconOnly
-                          onPress={() =>
-                            updateSubscriptionsMutation.mutate({
-                              subscriptionIDs: [subscription.id]
-                            })
-                          }
-                        >
-                          <IconRefresh />
-                        </Button>
-                      </div>
-                    }
-                  >
-                    <div className="grid grid-cols-2 gap-2">
-                      {subscription.nodes.edges.map((node) => (
-                        <NodeCard key={node.id} node={node} />
-                      ))}
+        <div className="flex flex-col gap-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-xl font-bold">{t('primitives.subscription')}</h3>
+
+            <Button color="primary" isIconOnly>
+              <IconPlus />
+            </Button>
+          </div>
+
+          {subscriptionsQuery.data && (
+            <Accordion selectionMode="multiple" variant="shadow" isCompact>
+              {subscriptionsQuery.data.subscriptions.map((subscription) => (
+                <AccordionItem
+                  key={subscription.id}
+                  title={`${subscription.tag} (${subscription.nodes.edges.length})`}
+                  subtitle={dayjs(subscription.updatedAt).format('YYYY-MM-DD hh:mm:ss')}
+                  startContent={
+                    <div className="flex gap-2">
+                      <Avatar name={subscription.tag!} />
+
+                      <Button
+                        color="success"
+                        as="div"
+                        isLoading={updateSubscriptionsMutation.isPending}
+                        isIconOnly
+                        onPress={() =>
+                          updateSubscriptionsMutation.mutate({
+                            subscriptionIDs: [subscription.id]
+                          })
+                        }
+                      >
+                        <IconRefresh />
+                      </Button>
+
+                      <Button color="danger" isIconOnly as="div">
+                        <IconTrash />
+                      </Button>
                     </div>
-                  </AccordionItem>
-                ))}
-              </Accordion>
-            )}
-          </div>
-
-          <div className="col-span-2 flex flex-col gap-4 rounded-lg sm:col-span-1">
-            <div className="flex items-center justify-between">
-              <h3 className="text-xl font-bold">{t('primitives.node')}</h3>
-              <Button color="primary" isIconOnly>
-                <IconPlus />
-              </Button>
-            </div>
-
-            <div className="grid grid-cols-2 gap-2">
-              {nodesQuery.data?.nodes.edges.map((node) => <NodeCard key={node.id} node={node} />)}
-            </div>
-          </div>
+                  }
+                >
+                  <div className="grid grid-cols-2 gap-2">
+                    {subscription.nodes.edges.map((node) => (
+                      <NodeCard key={node.id} node={node} />
+                    ))}
+                  </div>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          )}
         </div>
       </div>
     </ResourcePage>

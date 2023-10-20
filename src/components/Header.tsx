@@ -37,10 +37,8 @@ const Header: FC = () => {
   const userQuery = useUserQuery()
 
   const navigationMenus = [
-    { name: t('primitives.orchestrate'), route: '/orchestrate' },
-    { name: t('primitives.routing'), route: '/routing' },
-    { name: t('primitives.dns'), route: '/dns' },
-    { name: t('primitives.config'), route: '/config' }
+    { name: t('primitives.network'), route: '/network' },
+    { name: t('primitives.rule'), route: '/rule' }
   ]
 
   return (

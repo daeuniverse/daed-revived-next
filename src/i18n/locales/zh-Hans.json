@@ -84,7 +84,8 @@
     "routing": "路由",
     "dns": "域名解析",
     "config": "配置",
-    "orchestrate": "编排",
+    "network": "网络",
+    "rule": "规则",
     "general": "常规",
     "default": "默认",
     "softwareOptions": "软件选项",
@@ -103,6 +104,7 @@
     "name": "名称",
     "tag": "标签",
     "protocol": "协议",
-    "updatedAt": "更新时间"
+    "updatedAt": "更新时间",
+    "address": "地址"
   }
 }

@@ -35,7 +35,7 @@ export default function LoginPage() {
             try {
               await ky.post('/api/login', { json: { endpointURL, username, password } }).json<{ token: string }>()
 
-              router.replace('/orchestrate')
+              router.replace('/network')
             } catch (err) {
               toast.error((err as Error).message)
             }

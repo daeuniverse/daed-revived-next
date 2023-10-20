@@ -4,10 +4,6 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import {
   Accordion,
   AccordionItem,
-  Card,
-  CardBody,
-  CardFooter,
-  CardHeader,
   Input,
   ModalBody,
   ModalContent,
@@ -15,10 +11,11 @@ import {
   ModalHeader,
   Select,
   SelectItem,
+  SelectItemProps,
   Switch,
   useDisclosure
 } from '@nextui-org/react'
-import { IconCode, IconEdit, IconPlus, IconSquare, IconSquareCheck, IconTrash } from '@tabler/icons-react'
+import { IconCode, IconEdit, IconPlus, IconTrash } from '@tabler/icons-react'
 import { FC, Fragment, useEffect, useMemo } from 'react'
 import { Controller, FormProvider, SubmitHandler, UseFormReturn, useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
@@ -37,9 +34,7 @@ import { Description } from '~/components/Description'
 import { Label } from '~/components/Label'
 import { ListInput } from '~/components/ListInput'
 import { Modal } from '~/components/Modal'
-import { RandomUnsplashImage } from '~/components/RandomUnsplashImage'
-import { ResourcePage } from '~/components/ResourcePage'
-import { TagsInputOption } from '~/components/TagsInput'
+import { ResourceRadio, ResourceRadioGroup } from '~/components/ResourceRadioGroup'
 import { deriveTime } from '~/lib/time'
 import {
   TLSImplementation,
@@ -54,8 +49,8 @@ import {
 type CreateOrEditModalContentProps = {
   isOpen: boolean
   onOpenChange: () => void
-  lanInterfaces: TagsInputOption[]
-  wanInterfaces: TagsInputOption[]
+  lanInterfaces: SelectItemProps[]
+  wanInterfaces: SelectItemProps[]
   form: UseFormReturn<z.infer<typeof createConfigFormSchema>>
   onSubmit: SubmitHandler<z.infer<typeof createConfigFormSchema>>
 }
@@ -208,12 +203,15 @@ const CreateOrEditModal: FC<CreateOrEditModalContentProps & (CreateModalContentP
                           description={t('form.descriptions.lanInterface')}
                           selectionMode="multiple"
                           selectedKeys={field.value}
-                          onSelectionChange={field.onChange}
+                          onSelectionChange={(value) =>
+                            field.onChange(
+                              value === 'all' ? lanInterfaces.map(({ value }) => value) : Array.from(value)
+                            )
+                          }
                         >
-                          {lanInterfaces.map(({ title, value, description }) => (
-                            <SelectItem key={value} textValue={value}>
+                          {lanInterfaces.map(({ key, title, value, description }) => (
+                            <SelectItem key={key} value={value} description={description}>
                               {title || value}
-                              {description}
                             </SelectItem>
                           ))}
                         </Select>
@@ -229,12 +227,15 @@ const CreateOrEditModal: FC<CreateOrEditModalContentProps & (CreateModalContentP
                           description={t('form.descriptions.wanInterface')}
                           selectionMode="multiple"
                           selectedKeys={field.value}
-                          onSelectionChange={field.onChange}
+                          onSelectionChange={(value) =>
+                            field.onChange(
+                              value === 'all' ? wanInterfaces.map(({ value }) => value) : Array.from(value)
+                            )
+                          }
                         >
-                          {wanInterfaces.map(({ title, value, description }) => (
-                            <SelectItem key={value} textValue={value}>
+                          {wanInterfaces.map(({ key, title, value, description }) => (
+                            <SelectItem key={key} value={value} description={description}>
                               {title || value}
-                              {description}
                             </SelectItem>
                           ))}
                         </Select>
@@ -446,12 +447,12 @@ const DetailsModal: FC<{
   </Modal>
 )
 
-const DetailsCard: FC<{
+const DetailsRadio: FC<{
   details: Config
   isDefault?: boolean
   refetch: () => Promise<unknown>
-  lanInterfaces: TagsInputOption[]
-  wanInterfaces: TagsInputOption[]
+  lanInterfaces: SelectItemProps[]
+  wanInterfaces: SelectItemProps[]
 }> = ({ details, isDefault, refetch, lanInterfaces, wanInterfaces }) => {
   const { t } = useTranslation()
   const { isOpen: isDetailsOpen, onOpen: onDetailsOpen, onOpenChange: onDetailsOpenChange } = useDisclosure()
@@ -472,9 +473,18 @@ const DetailsCard: FC<{
     resolver: zodResolver(configFormSchema),
     defaultValues: configFormDefault
   })
-  const selectMutation = useSelectConfigMutation()
   const updateMutation = useUpdateConfigMutation()
   const removeMutation = useRemoveConfigMutation()
+
+  const onEditPress = () => {
+    editForm.reset({
+      ...details.global,
+      checkIntervalSeconds: deriveTime(details.global.checkInterval, 's'),
+      sniffingTimeoutMS: deriveTime(details.global.sniffingTimeout, 'ms'),
+      checkToleranceMS: deriveTime(details.global.checkTolerance, 'ms')
+    })
+    onEditOpen()
+  }
 
   const onEditSubmit: (id: string) => CreateOrEditModalContentProps['onSubmit'] = (id) => async (values) => {
     const { checkIntervalSeconds, checkToleranceMS, sniffingTimeoutMS, ...global } = values
@@ -493,107 +503,76 @@ const DetailsCard: FC<{
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex w-full items-center justify-between">
-          <h3 className="uppercase">{details.name}</h3>
-
-          <Button
-            isIconOnly
-            color={details.selected ? 'success' : 'default'}
-            isLoading={selectMutation.isPending}
-            isDisabled={details.selected}
-            onPress={async () => {
-              await selectMutation.mutateAsync({ id: details.id })
-              await refetch()
-            }}
-          >
-            {details.selected ? <IconSquareCheck /> : <IconSquare />}
-          </Button>
-        </div>
-      </CardHeader>
-
-      <CardBody>
-        <RandomUnsplashImage sig={details.id} />
-      </CardBody>
-
-      <CardFooter className="justify-between">
+    <ResourceRadio
+      key={details.id}
+      value={details.id}
+      description={
         <div className="flex gap-2">
           <Button isIconOnly onPress={onDetailsOpen}>
             <IconCode />
           </Button>
 
           <DetailsModal details={details} isOpen={isDetailsOpen} onOpenChange={onDetailsOpenChange} />
+
+          <div className="flex gap-2">
+            <Button color="secondary" isIconOnly onPress={onEditPress}>
+              <IconEdit />
+            </Button>
+
+            <CreateOrEditModal
+              type="edit"
+              isOpen={isEditOpen}
+              onOpenChange={onEditOpenChange}
+              name={details.name}
+              id={details.id}
+              lanInterfaces={lanInterfaces}
+              wanInterfaces={wanInterfaces}
+              form={editForm}
+              onSubmit={onEditSubmit(details.id)}
+            />
+
+            {!isDefault && (
+              <Fragment>
+                <Button color="danger" isIconOnly isDisabled={details.selected} onPress={onRemoveOpen}>
+                  <IconTrash />
+                </Button>
+
+                <Modal isOpen={isRemoveOpen} onOpenChange={onRemoveOpenChange}>
+                  <ModalContent>
+                    <ModalHeader>{t('primitives.remove', { resourceName: t('primitives.config') })}</ModalHeader>
+                    <ModalBody>{details.name}</ModalBody>
+
+                    <ModalFooter>
+                      <Button color="secondary" isLoading={removeMutation.isPending} onPress={onRemoveClose}>
+                        {t('actions.cancel')}
+                      </Button>
+
+                      <Button
+                        color="danger"
+                        isLoading={removeMutation.isPending}
+                        onPress={async () => {
+                          await removeMutation.mutateAsync({ id: details.id })
+                          await refetch()
+                          onRemoveClose()
+                        }}
+                      >
+                        {t('actions.confirm')}
+                      </Button>
+                    </ModalFooter>
+                  </ModalContent>
+                </Modal>
+              </Fragment>
+            )}
+          </div>
         </div>
-
-        <div className="flex gap-2">
-          <Button
-            color="secondary"
-            isIconOnly
-            onPress={() => {
-              editForm.reset({
-                ...details.global,
-                checkIntervalSeconds: deriveTime(details.global.checkInterval, 's'),
-                sniffingTimeoutMS: deriveTime(details.global.sniffingTimeout, 'ms'),
-                checkToleranceMS: deriveTime(details.global.checkTolerance, 'ms')
-              })
-              onEditOpen()
-            }}
-          >
-            <IconEdit />
-          </Button>
-
-          <CreateOrEditModal
-            type="edit"
-            isOpen={isEditOpen}
-            onOpenChange={onEditOpenChange}
-            name={details.name}
-            id={details.id}
-            lanInterfaces={lanInterfaces}
-            wanInterfaces={wanInterfaces}
-            form={editForm}
-            onSubmit={onEditSubmit(details.id)}
-          />
-
-          {!isDefault && (
-            <Fragment>
-              <Button color="danger" isIconOnly isDisabled={details.selected} onPress={onRemoveOpen}>
-                <IconTrash />
-              </Button>
-
-              <Modal isOpen={isRemoveOpen} onOpenChange={onRemoveOpenChange}>
-                <ModalContent>
-                  <ModalHeader>{t('primitives.remove', { resourceName: t('primitives.config') })}</ModalHeader>
-                  <ModalBody>{details.name}</ModalBody>
-
-                  <ModalFooter>
-                    <Button color="secondary" isLoading={removeMutation.isPending} onPress={onRemoveClose}>
-                      {t('actions.cancel')}
-                    </Button>
-
-                    <Button
-                      color="danger"
-                      isLoading={removeMutation.isPending}
-                      onPress={async () => {
-                        await removeMutation.mutateAsync({ id: details.id })
-                        await refetch()
-                        onRemoveClose()
-                      }}
-                    >
-                      {t('actions.confirm')}
-                    </Button>
-                  </ModalFooter>
-                </ModalContent>
-              </Modal>
-            </Fragment>
-          )}
-        </div>
-      </CardFooter>
-    </Card>
+      }
+    >
+      {details.name}
+    </ResourceRadio>
   )
 }
 
-export default function ConfigPage() {
+export default function Config() {
   const { t } = useTranslation()
   const createForm = useForm<z.infer<typeof createConfigFormSchema>>({
     shouldFocusError: true,
@@ -602,6 +581,7 @@ export default function ConfigPage() {
   })
   const defaultConfigIDQuery = useGetJSONStorageRequest(['defaultConfigID'] as const)
   const isDefault = (id: string) => id === defaultConfigIDQuery.data?.defaultConfigID
+
   const generalQuery = useGeneralQuery()
   const listQuery = useConfigsQuery()
   const {
@@ -612,6 +592,7 @@ export default function ConfigPage() {
   } = useDisclosure()
 
   const createMutation = useCreateConfigMutation()
+  const selectMutation = useSelectConfigMutation()
 
   const onCreateSubmit: CreateOrEditModalContentProps['onSubmit'] = async (values) => {
     const { name, checkIntervalSeconds, checkToleranceMS, sniffingTimeoutMS, ...global } = values
@@ -629,12 +610,13 @@ export default function ConfigPage() {
     onCreateClose()
   }
 
-  const lanInterfaces: TagsInputOption[] = useMemo(() => {
+  const lanInterfaces: SelectItemProps[] = useMemo(() => {
     const interfaces = generalQuery.data?.general.interfaces
 
     if (!interfaces) return []
 
     return interfaces.map(({ name, ip }) => ({
+      key: name,
       label: name,
       value: name,
       description: (
@@ -647,17 +629,18 @@ export default function ConfigPage() {
     }))
   }, [generalQuery.data?.general.interfaces])
 
-  const wanInterfaces: TagsInputOption[] = useMemo(() => {
+  const wanInterfaces: SelectItemProps[] = useMemo(() => {
     const interfaces = generalQuery.data?.general.interfaces
 
     if (!interfaces) return []
 
     return [
-      { title: t('primitives.autoDetect'), value: 'auto' },
+      { key: 'auto-detect', title: t('primitives.autoDetect'), value: 'auto' },
       ...interfaces
         .filter(({ flag }) => !!flag.default)
         .map(({ name, ip }) => ({
-          title: name,
+          key: name,
+          label: name,
           value: name,
           description: (
             <div className="flex flex-col gap-1">
@@ -671,38 +654,44 @@ export default function ConfigPage() {
   }, [generalQuery.data?.general.interfaces, t])
 
   return (
-    <ResourcePage
-      name={t('primitives.config')}
-      creation={
-        <Fragment>
-          <Button color="primary" isIconOnly onPress={onCreateOpen}>
-            <IconPlus />
-          </Button>
+    <ResourceRadioGroup
+      value={listQuery.data?.configs.find(({ selected }) => selected)?.id || ''}
+      onValueChange={async (id) => {
+        await selectMutation.mutateAsync({ id })
+        await listQuery.refetch()
+      }}
+      label={
+        <div className="flex items-center justify-between">
+          <h2 className="text-2xl font-bold text-foreground">{t('primitives.config')}</h2>
 
-          <CreateOrEditModal
-            isOpen={isCreateOpen}
-            onOpenChange={onCreateOpenChange}
-            type="create"
-            lanInterfaces={lanInterfaces}
-            wanInterfaces={wanInterfaces}
-            form={createForm}
-            onSubmit={onCreateSubmit}
-          />
-        </Fragment>
+          <Fragment>
+            <Button color="primary" isIconOnly onPress={onCreateOpen}>
+              <IconPlus />
+            </Button>
+
+            <CreateOrEditModal
+              isOpen={isCreateOpen}
+              onOpenChange={onCreateOpenChange}
+              type="create"
+              lanInterfaces={lanInterfaces}
+              wanInterfaces={wanInterfaces}
+              form={createForm}
+              onSubmit={onCreateSubmit}
+            />
+          </Fragment>
+        </div>
       }
     >
-      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-        {listQuery.data?.configs.map((details) => (
-          <DetailsCard
-            key={details.id}
-            details={details}
-            isDefault={isDefault(details.id)}
-            refetch={listQuery.refetch}
-            lanInterfaces={lanInterfaces}
-            wanInterfaces={wanInterfaces}
-          />
-        ))}
-      </div>
-    </ResourcePage>
+      {listQuery.data?.configs.map((details) => (
+        <DetailsRadio
+          key={details.id}
+          details={details}
+          isDefault={isDefault(details.id)}
+          refetch={listQuery.refetch}
+          lanInterfaces={lanInterfaces}
+          wanInterfaces={wanInterfaces}
+        />
+      ))}
+    </ResourceRadioGroup>
   )
 }

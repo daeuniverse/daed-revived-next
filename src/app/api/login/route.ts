@@ -25,5 +25,5 @@ export const POST = async (req: Request) => {
     path: '/'
   })
 
-  return new NextResponse().json()
+  return new NextResponse()
 }
