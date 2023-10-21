@@ -18,7 +18,7 @@ const notoSansSCFont = Noto_Sans_SC({
   variable: '--font-noto-sans'
 })
 const twemojiFont = localFont({
-  src: './twemoji.ttf',
+  src: './assets/twemoji.ttf',
   variable: '--font-twemoji',
   display: 'swap'
 })
