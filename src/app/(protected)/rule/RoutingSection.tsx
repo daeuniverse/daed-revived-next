@@ -54,9 +54,9 @@ const CreateOrEditModal: FC<CreateOrEditModalContentProps & (CreateModalContentP
     register,
     reset,
     control,
-    formState: { errors, isSubmitting }
+    formState: { errors, dirtyFields, isSubmitting }
   } = form
-  const dirty = Object.values(form.formState.dirtyFields).some((dirty) => dirty)
+  const dirty = Object.values(dirtyFields).some((dirty) => dirty)
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -239,7 +239,7 @@ const DetailsRadio: FC<{
   )
 }
 
-export default function Routing() {
+export const RoutingSection = () => {
   const { t } = useTranslation()
   const createForm = useForm<z.infer<typeof createRoutingFormSchema>>({
     shouldFocusError: true,

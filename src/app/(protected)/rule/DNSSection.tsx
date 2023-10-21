@@ -44,9 +44,9 @@ const CreateOrEditModal: FC<CreateOrEditModalContentProps & (CreateModalContentP
     register,
     reset,
     control,
-    formState: { errors, isSubmitting }
+    formState: { errors, dirtyFields, isSubmitting }
   } = form
-  const dirty = Object.values(form.formState.dirtyFields).some((dirty) => dirty)
+  const dirty = Object.values(dirtyFields).some((dirty) => dirty)
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -229,7 +229,7 @@ const DetailsRadio: FC<{
   )
 }
 
-export default function DNS() {
+export const DNSSection = () => {
   const { t } = useTranslation()
   const createForm = useForm<z.infer<typeof createDNSFormSchema>>({
     shouldFocusError: true,

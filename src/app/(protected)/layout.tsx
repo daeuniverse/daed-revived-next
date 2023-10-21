@@ -1,8 +1,8 @@
 import { redirect } from 'next/navigation'
 import { ReactNode } from 'react'
-import { Providers } from '~/app/(protected)/providers'
 import { Header } from '~/components/Header'
 import { decodeJWTFromCookie } from '~/helpers'
+import { Providers } from './providers'
 
 export default function ProtectedLayout({ children }: { children: ReactNode }) {
   const jwtPayload = decodeJWTFromCookie()

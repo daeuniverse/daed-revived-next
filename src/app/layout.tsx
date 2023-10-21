@@ -3,8 +3,8 @@ import { Metadata } from 'next'
 import { Noto_Sans_SC, Ubuntu_Mono } from 'next/font/google'
 import localFont from 'next/font/local'
 import { ReactNode } from 'react'
-import { Bootstrap } from '~/app/bootstrap'
-import { Providers } from '~/app/providers'
+import { Bootstrap } from './bootstrap'
+import { Providers } from './providers'
 
 import '~/styles/globals.css'
 

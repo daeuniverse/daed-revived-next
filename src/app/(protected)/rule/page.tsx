@@ -1,13 +1,15 @@
-import Config from './Config'
-import DNS from './DNS'
-import Routing from './Routing'
+import { ConfigSection } from './ConfigSection'
+import { DNSSection } from './DNSSection'
+import { RoutingSection } from './RoutingSection'
 
 export default function RulePage() {
   return (
     <div className="flex flex-col gap-4">
-      <Routing />
-      <DNS />
-      <Config />
+      <RoutingSection />
+
+      <DNSSection />
+
+      <ConfigSection />
     </div>
   )
 }
