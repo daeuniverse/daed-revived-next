@@ -1,30 +1,44 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# daed
 
-![nextjs](public/next.svg)
+A modern web dashboard for dae
 
-## Getting Started
+![pr-closed](https://img.shields.io/github/issues-pr-closed/daeuniverse/daed?style=for-the-badge)
+![last-commit](https://img.shields.io/github/last-commit/daeuniverse/daed?style=for-the-badge)
+![build](https://img.shields.io/github/actions/workflow/status/daeuniverse/daed/release.yml?style=for-the-badge)
+![downloads](https://img.shields.io/github/downloads/daeuniverse/daed/total?style=for-the-badge)
+![license](https://img.shields.io/github/license/daeuniverse/daed?style=for-the-badge)
 
-First, run the development server:
+## Getting started
 
-```bash
-bun dev
+### Build locally
+
+> Install dependencies
+
+```shell
+bun install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+> Build artifacts
 
-## Learn More
+```shell
+bun run build
+```
 
-To learn more about Next.js, take a look at the following resources:
+> Run server
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```shell
+bun start
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+## Contributors
 
-## Deploy on Vercel
+This project is only possible thanks to these amazing people.
 
-![vercel](public/vercel.svg)
+[![contributors](https://contrib.rocks/image?repo=daeuniverse/daed)](https://github.com/daeuniverse/daed/graphs/contributors)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Credits
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+- [dae-wing](https://github.com/daeuniverse/dae-wing)
+- [Bun](https://github.com/oven-sh/bun)
+- [Next.JS](https://github.com/vercel/next.js)
+- [NextUI](https://github.com/nextui-org/nextui)
