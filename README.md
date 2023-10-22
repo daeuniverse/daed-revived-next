@@ -23,24 +23,51 @@ A modern web dashboard for dae
 
 ### Prerequisites
 
-> Clone the repository with submodules
+#### Install the toolchain
 
-```shell
-git clone https://github.com/daeuniverse/daed.git
-cd daed
+> Git is required to fetch the source code
 
-# Initialize submodules
-git submodule update --init --recursive
-```
+- [Git](https://git-scm.com)
 
 > Install the docker engine if you choose to build and run in docker
 
 - [Docker](https://www.docker.com)
 
-> Install the toolchain if you choose to build from the source files on your own
+> Install the build toolchain if you choose to build from the source files on your own
 
-- [Golang](https://go.dev) (required by dae-wing)
+- [Golang](https://go.dev), [GNU GCC](https://gcc.gnu.org) (required by dae-wing)
 - [Node.js](https://nodejs.org), [pnpm](https://pnpm.io) (required by daed)
+
+#### Fetch the source code
+
+> Clone the repository with git submodules (dae-wing) using git
+
+```shell
+git clone https://github.com/daeuniverse/daed.git
+cd daed
+
+# Initialize git submodules
+git submodule update --init --recursive
+```
+
+#### Build and run dae-wing
+
+> Build dae-wing
+
+```shell
+cd wing
+
+make deps
+go build -o dae-wing
+```
+
+> Run dae-wing with root privileges
+
+```shell
+sudo ./dae-wing run -c ./ --api-only
+```
+
+Learn more about dae-wing at [dae-wing](https://github.com/daeuniverse/dae-wing)
 
 ### Docker
 
@@ -65,25 +92,6 @@ docker run -d --name daed -p 3000:3000 daed
 ```
 
 ### From Source
-
-#### Build and run dae-wing
-
-> Build dae-wing
-
-```shell
-cd wing
-
-make deps
-go build -o dae-wing
-```
-
-> Run dae-wing with root privileges
-
-```shell
-sudo ./dae-wing run -c ./ --api-only
-```
-
-Learn more about dae-wing at [dae-wing](https://github.com/daeuniverse/dae-wing)
 
 #### Build and run daed
 

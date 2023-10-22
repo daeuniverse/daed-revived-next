@@ -1,10 +1,8 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {
+module.exports = {
   output: 'standalone',
   experimental: { instrumentationHook: true },
   images: {
     remotePatterns: [{ hostname: 'source.unsplash.com' }]
   }
 }
-
-module.exports = nextConfig
