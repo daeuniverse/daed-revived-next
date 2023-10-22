@@ -5,6 +5,9 @@
       "endpointURL": "接口地址",
       "username": "用户名",
       "password": "密码",
+      "currentPassword": "当前密码",
+      "newPassword": "新密码",
+      "confirmPassword": "确认密码",
       "tproxyPort": "透明代理端口",
       "tproxyPortProtect": "透明代理端口保护",
       "soMarkFromDae": "为 dae 设置套接字标记",
@@ -83,7 +86,7 @@
     "submit": "提交",
     "refresh": "刷新",
     "loading": "正在加载{{resourceName}}...",
-    "updatePassword": "修改密码"
+    "update": "修改{{resourceName}}"
   },
   "primitives": {
     "create": "创建{{resourceName}}",
@@ -109,6 +112,7 @@
     "settings": "设置",
     "username": "登录账户：{{username}}",
     "accountName": "用户名：{{accountName}}",
+    "profile": "个人资料",
     "english": "英文",
     "chineseSimplified": "简中",
     "name": "名称",
@@ -117,9 +121,6 @@
     "updatedAt": "更新时间",
     "address": "地址",
     "action": "动作",
-    "policy": "策略",
-    "currentPassword": "当前密码",
-    "newPassword": "新密码",
-    "confirmPassword": "确认密码"
+    "policy": "策略"
   }
 }

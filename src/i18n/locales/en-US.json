@@ -5,6 +5,9 @@
       "endpointURL": "Endpoint URL",
       "username": "Username",
       "password": "Password",
+      "currentPassword": "Current Password",
+      "newPassword": "New Password",
+      "confirmPassword": "Confirm Password",
       "tproxyPort": "Transparent Proxy Port",
       "tproxyPortProtect": "Transparent Proxy Port Protect",
       "soMarkFromDae": "Set SO_MARK For dae",
@@ -83,7 +86,7 @@
     "submit": "Submit",
     "refresh": "Refresh",
     "loading": "Loading {{resourceName}}...",
-    "updatePassword": "Update Password"
+    "update": "Update {{resourceName}}"
   },
   "primitives": {
     "create": "Create {{resourceName}}",
@@ -109,6 +112,7 @@
     "settings": "Settings",
     "username": "Username: {{username}}",
     "accountName": "Account Name: {{accountName}}",
+    "profile": "Profile",
     "english": "English",
     "chineseSimplified": "Chinese Simplified",
     "name": "Name",
@@ -117,9 +121,6 @@
     "updatedAt": "Updated At",
     "address": "Address",
     "action": "Action",
-    "policy": "Policy",
-    "currentPassword": "Current Password",
-    "newPassword": "New Password",
-    "confirmPassword": "Confirm Password"
+    "policy": "Policy"
   }
 }

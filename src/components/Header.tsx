@@ -12,7 +12,6 @@ import {
   DropdownTrigger,
   Input,
   Link,
-  Modal,
   ModalBody,
   ModalContent,
   ModalHeader,
@@ -23,6 +22,7 @@ import {
   NavbarMenu,
   NavbarMenuItem,
   NavbarMenuToggle,
+  Spinner,
   useDisclosure
 } from '@nextui-org/react'
 import i18n from 'i18next'
@@ -31,19 +31,88 @@ import { useTheme } from 'next-themes'
 import NextLink from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { FC, useEffect, useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { Controller, FormProvider, useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { z } from 'zod'
+import { useUpdateAvatarMutation, useUpdateNameMutation } from '~/apis/mutation'
 import { useUserQuery } from '~/apis/query'
 import { LogoText } from '~/components/LogoText'
-import { ModalConfirmFormFooter } from '~/components/Modal'
+import { Modal, ModalConfirmFormFooter, ModalSubmitFormFooter } from '~/components/Modal'
 import { updatePasswordFormDefault, useUpdatePasswordSchemaWithRefine } from '~/schemas/account'
+
+const AvatarUploader: FC<{ name: string }> = ({ name }) => {
+  const [uploading, setUploading] = useState(false)
+
+  return (
+    <Controller
+      name={name}
+      render={({ field }) => (
+        <div className="flex items-center justify-center">
+          <div className="flex h-32 w-32 items-center justify-center">
+            {uploading ? <Spinner /> : <Avatar size="lg" as="label" htmlFor="avatar" showFallback src={field.value} />}
+          </div>
+
+          <input
+            id="avatar"
+            type="file"
+            hidden
+            multiple={false}
+            onChange={async (e) => {
+              setUploading(true)
+
+              const file = e.target.files?.item(0)
+
+              if (!file) return
+
+              const formData = new FormData()
+              formData.append('avatar', file)
+
+              try {
+                const { url } = await ky.post('/api/avatar', { body: formData }).json<{ url: string }>()
+
+                field.onChange(url)
+              } finally {
+                setUploading(false)
+              }
+            }}
+          />
+        </div>
+      )}
+    />
+  )
+}
 
 export const Header: FC = () => {
   const { t } = useTranslation()
   const { theme: curTheme, setTheme } = useTheme()
+  const pathname = usePathname()
+  const router = useRouter()
+
+  const userQuery = useUserQuery()
 
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+
+  const {
+    isOpen: isUpdateProfileOpen,
+    onOpen: onUpdateProfileOpen,
+    onClose: onUpdateProfileClose,
+    onOpenChange: onUpdateProfileOpenChange
+  } = useDisclosure()
+
+  const updateProfileSchema = z.object({
+    name: z.string().min(4).max(20),
+    avatar: z.string().min(1)
+  })
+
+  const updateProfileForm = useForm<z.infer<typeof updateProfileSchema>>({
+    resolver: zodResolver(updateProfileSchema),
+    defaultValues: { name: '', avatar: '' }
+  })
+
+  const updateProfileFormDirty = Object.values(updateProfileForm.formState.dirtyFields).some((dirty) => dirty)
+
+  const updateNameMutation = useUpdateNameMutation()
+  const updateAvatarMutation = useUpdateAvatarMutation()
 
   const {
     isOpen: isUpdatePasswordOpen,
@@ -58,10 +127,6 @@ export const Header: FC = () => {
     resolver: zodResolver(updatePasswordSchemaWithRefine),
     defaultValues: updatePasswordFormDefault
   })
-
-  const pathname = usePathname()
-  const router = useRouter()
-  const userQuery = useUserQuery()
 
   const navigationMenus = [
     { name: t('primitives.network'), route: '/network' },
@@ -107,6 +172,7 @@ export const Header: FC = () => {
               className="transition-transform"
               color="secondary"
               size="sm"
+              showFallback
               name={userQuery.data?.user.name || userQuery.data?.user.username}
               src={userQuery.data?.user.avatar || ''}
             />
@@ -116,6 +182,13 @@ export const Header: FC = () => {
             aria-label="Profile Actions"
             variant="flat"
             onAction={(key) => {
+              if (key === 'profile') {
+                updateProfileForm.reset({
+                  name: userQuery.data?.user.name || '',
+                  avatar: userQuery.data?.user.avatar || ''
+                })
+                onUpdateProfileOpen()
+              }
               if (key === 'update-password') onUpdatePasswordOpen()
             }}
           >
@@ -129,7 +202,9 @@ export const Header: FC = () => {
               </DropdownItem>
 
               <DropdownItem key="update-password" textValue="update-password">
-                {t('actions.updatePassword')}
+                {t('actions.update', {
+                  resourceName: t('form.fields.password')
+                })}
               </DropdownItem>
             </DropdownSection>
 
@@ -197,6 +272,51 @@ export const Header: FC = () => {
         ))}
       </NavbarMenu>
 
+      <Modal isOpen={isUpdateProfileOpen} onOpenChange={onUpdateProfileOpenChange}>
+        <FormProvider {...updateProfileForm}>
+          <form
+            onSubmit={updateProfileForm.handleSubmit(async (values) => {
+              try {
+                if (values.name !== userQuery.data?.user.name) {
+                  await updateNameMutation.mutateAsync(values.name)
+                }
+
+                if (values.avatar !== userQuery.data?.user.avatar) {
+                  await updateAvatarMutation.mutateAsync(values.avatar)
+                }
+
+                await userQuery.refetch()
+
+                onUpdateProfileClose()
+              } catch {}
+            })}
+          >
+            <ModalContent>
+              <ModalHeader>{t('actions.update', { resourceName: t('primitives.profile') })}</ModalHeader>
+
+              <ModalBody>
+                <div className="flex flex-col gap-4">
+                  <Input
+                    label={t('form.fields.name')}
+                    placeholder={t('form.fields.name')}
+                    errorMessage={updateProfileForm.formState.errors.name?.message}
+                    {...updateProfileForm.register('name')}
+                  />
+
+                  <AvatarUploader name="avatar" />
+                </div>
+              </ModalBody>
+
+              <ModalSubmitFormFooter
+                reset={updateProfileForm.reset}
+                isResetDisabled={!updateProfileFormDirty}
+                isSubmitting={updateProfileForm.formState.isSubmitting}
+              />
+            </ModalContent>
+          </form>
+        </FormProvider>
+      </Modal>
+
       <Modal isOpen={isUpdatePasswordOpen} onOpenChange={onUpdatePasswordOpenChange}>
         <form
           onSubmit={updatePasswordForm.handleSubmit(async (values) => {
@@ -210,30 +330,30 @@ export const Header: FC = () => {
           })}
         >
           <ModalContent>
-            <ModalHeader>{t('actions.updatePassword')}</ModalHeader>
+            <ModalHeader>{t('actions.update', { resourceName: t('form.fields.password') })}</ModalHeader>
 
             <ModalBody>
               <div className="flex flex-col gap-4">
                 <Input
                   type="password"
-                  label={t('primitives.currentPassword')}
-                  placeholder={t('primitives.currentPassword')}
+                  label={t('form.fields.currentPassword')}
+                  placeholder={t('form.fields.currentPassword')}
                   errorMessage={updatePasswordForm.formState.errors.currentPassword?.message}
                   {...updatePasswordForm.register('currentPassword')}
                 />
 
                 <Input
                   type="password"
-                  label={t('primitives.newPassword')}
-                  placeholder={t('primitives.newPassword')}
+                  label={t('form.fields.newPassword')}
+                  placeholder={t('form.fields.newPassword')}
                   errorMessage={updatePasswordForm.formState.errors.newPassword?.message}
                   {...updatePasswordForm.register('newPassword')}
                 />
 
                 <Input
                   type="password"
-                  label={t('primitives.confirmPassword')}
-                  placeholder={t('primitives.confirmPassword')}
+                  label={t('form.fields.confirmPassword')}
+                  placeholder={t('form.fields.confirmPassword')}
                   errorMessage={updatePasswordForm.formState.errors.confirmPassword?.message}
                   {...updatePasswordForm.register('confirmPassword')}
                 />
