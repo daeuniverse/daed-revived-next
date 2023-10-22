@@ -93,8 +93,6 @@ docker run -d --name daed -p 3000:3000 daed
 
 ### From Source
 
-#### Build and run daed
-
 > Install Dependencies
 
 ```shell
