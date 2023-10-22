@@ -10,7 +10,7 @@ A modern web dashboard for dae
 
 ## Preview
 
-![preview-login](./docs/preview-login.webp)
+![preview-login](docs/preview-login.webp)
 
 ## Features
 
@@ -113,7 +113,7 @@ Special thanks go to all these amazing people.
 
 [![contributors](https://contrib.rocks/image?repo=daeuniverse/daed)](https://github.com/daeuniverse/daed/graphs/contributors)
 
-If you would like to contribute, please see the [instructions](./CONTRIBUTING.md). Also, it is recommended following the [commit message guide](./docs/commit-msg-guide.md).
+If you would like to contribute, please see the [instructions](CONTRIBUTING.md). Also, it is recommended following the [commit message guide](docs/commit-msg-guide.md).
 
 ## Credits
 
