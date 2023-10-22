@@ -179,13 +179,10 @@ export const Header: FC = () => {
           </Button>
         ) : (
           <Button
-            size="lg"
             isIconOnly
             isLoading={runMutation.isPending}
             color={generalQuery.data?.general.dae.running ? 'success' : 'secondary'}
-            onPress={async () => {
-              await runMutation.mutateAsync(!!generalQuery.data?.general.dae.running)
-            }}
+            onPress={() => runMutation.mutate(!!generalQuery.data?.general.dae.running)}
           >
             {generalQuery.data?.general.dae.running ? <IconNetwork /> : <IconNetworkOff />}
           </Button>

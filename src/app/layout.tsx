@@ -8,15 +8,20 @@ import { Providers } from './providers'
 
 import '~/styles/globals.css'
 
+// for latin characters
 const ubuntuMonoFont = Ubuntu_Mono({
   subsets: ['latin', 'latin-ext', 'cyrillic', 'cyrillic-ext', 'greek', 'greek-ext'],
   weight: ['400', '700'],
   variable: '--font-ubuntu-mono'
 })
+
+// for chinese characters
 const notoSansSCFont = Noto_Sans_SC({
-  subsets: ['latin', 'latin-ext', 'cyrillic', 'vietnamese'],
+  subsets: ['vietnamese'],
   variable: '--font-noto-sans'
 })
+
+// for emojis and other characters, such as national flags
 const twemojiFont = localFont({
   src: './assets/twemoji.ttf',
   variable: '--font-twemoji',
