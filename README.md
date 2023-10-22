@@ -8,6 +8,10 @@ A modern web dashboard for dae
 ![downloads](https://img.shields.io/github/downloads/daeuniverse/daed/total?style=for-the-badge)
 ![license](https://img.shields.io/github/license/daeuniverse/daed?style=for-the-badge)
 
+## Preview
+
+![preview-login](./docs/preview-login.webp)
+
 ## Features
 
 - [x] Easy to use, with keyboard navigation / shortcuts builtin
@@ -49,13 +53,13 @@ Learn more about bun at [bun.sh](https://bun.sh)
 cd wing
 
 make deps
-go build -o dae-wing run -c ./
+go build -o dae-wing
 ```
 
-> Run dae-wing
+> Run dae-wing with root privileges
 
 ```shell
-./dae-wing
+sudo ./dae-wing run -c ./ --api-only
 ```
 
 Learn more about dae-wing at [dae-wing](https://github.com/daeuniverse/dae-wing)
