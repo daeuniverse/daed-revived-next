@@ -21,6 +21,27 @@ A modern web dashboard for dae
 
 ## Getting started
 
+### Prerequisites
+
+> Clone the repository with submodules
+
+```shell
+git clone https://github.com/daeuniverse/daed.git
+cd daed
+
+# Initialize submodules
+git submodule update --init --recursive
+```
+
+> Install the docker engine if you choose to build and run in docker
+
+- [Docker](https://www.docker.com)
+
+> Install the toolchain if you choose to build from the source files on your own
+
+- [Golang](https://go.dev) (required by dae-wing)
+- [Node.js](https://nodejs.org), [pnpm](https://pnpm.io) (required by daed)
+
 ### Docker
 
 > Pull and run the prebuilt docker image in the background
@@ -43,24 +64,9 @@ docker build . -t daed
 docker run -d --name daed -p 3000:3000 daed
 ```
 
-### Build from the source files on your own
+### From Source
 
-> Clone the repository with submodules
-
-```shell
-git clone https://github.com/daeuniverse/daed.git
-cd daed
-
-# Initialize submodules
-git submodule update --init --recursive
-```
-
-> Install the toolchain
-
-- [Golang](https://go.dev) (required by dae-wing)
-- [Node.js](https://nodejs.org), [pnpm](https://pnpm.io) (required by daed)
-
-### Build and run dae-wing
+#### Build and run dae-wing
 
 > Build dae-wing
 
@@ -79,7 +85,7 @@ sudo ./dae-wing run -c ./ --api-only
 
 Learn more about dae-wing at [dae-wing](https://github.com/daeuniverse/dae-wing)
 
-### Build and run daed
+#### Build and run daed
 
 > Install Dependencies
 
