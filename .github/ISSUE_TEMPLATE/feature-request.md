@@ -1,0 +1,17 @@
+---
+name: Feature Request
+about: feature request related to daed
+labels: topic/feature
+---
+
+<!--
+STOP -- PLEASE READ!
+
+If you have a good idea that wishes us to integrate to the current dae project, feel free to elaborate here.
+
+You may also post your idea on the Discussions or the Dae Telegram channel (https://t.me/daeuniverse).
+-->
+
+## What feature you would like us to integrate into the daed project
+
+## Why is this needed
