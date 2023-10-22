@@ -1,4 +1,6 @@
+import { zodResolver } from '@hookform/resolvers/zod'
 import {
+  Input,
   ModalBody,
   ModalContent,
   ModalHeader,
@@ -12,14 +14,17 @@ import {
   getKeyValue,
   useDisclosure
 } from '@nextui-org/react'
-import { IconPlus, IconQrcode, IconTrash } from '@tabler/icons-react'
+import { IconPlus, IconQrcode, IconTrash, IconUpload } from '@tabler/icons-react'
 import { QRCodeSVG } from 'qrcode.react'
 import { FC, Fragment, Key, useCallback, useMemo } from 'react'
+import { Controller, FormProvider, useFieldArray, useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
-import { useRemoveNodesMutation } from '~/apis/mutation'
+import { z } from 'zod'
+import { useImportNodesMutation, useRemoveNodesMutation } from '~/apis/mutation'
 import { Node } from '~/app/(protected)/network/typings'
 import { Button } from '~/components/Button'
-import { Modal, ModalConfirmFormFooter } from '~/components/Modal'
+import { Modal, ModalConfirmFormFooter, ModalSubmitFormFooter } from '~/components/Modal'
+import { nodeFormDefault, nodeFormSchema } from '~/schemas/node'
 
 const CheckNodeQRCodeButton: FC<{ name: string; link: string }> = ({ name, link }) => {
   const {
@@ -138,16 +143,102 @@ const NodeTable: FC<{
   )
 }
 
+const ImportNodeInputList: FC<{ name: string }> = ({ name }) => {
+  const { t } = useTranslation()
+  const { fields, append, remove } = useFieldArray({ name })
+
+  return (
+    <div className="flex flex-col gap-2">
+      {fields.map((item, index) => (
+        <div key={item.id} className="flex items-start gap-2">
+          <Controller
+            name={`${name}.${index}.tag`}
+            render={({ field, fieldState }) => (
+              <Input
+                className="w-1/3"
+                label={t('form.fields.tag')}
+                placeholder={t('form.fields.tag')}
+                errorMessage={fieldState.error?.message}
+                isRequired
+                {...field}
+              />
+            )}
+          />
+
+          <Controller
+            name={`${name}.${index}.link`}
+            render={({ field, fieldState }) => (
+              <Input
+                label={t('form.fields.link')}
+                placeholder={t('form.fields.link')}
+                errorMessage={fieldState.error?.message}
+                isRequired
+                {...field}
+              />
+            )}
+          />
+
+          <Button color="danger" isIconOnly onPress={() => remove(index)}>
+            <IconTrash />
+          </Button>
+        </div>
+      ))}
+
+      <div className="self-end">
+        <Button color="primary" onPress={() => append({ tag: '', link: '' })} isIconOnly>
+          <IconPlus />
+        </Button>
+      </div>
+    </div>
+  )
+}
+
 export const NodeSection: FC<{ nodes: Node[]; isLoading?: boolean }> = ({ nodes, isLoading }) => {
   const { t } = useTranslation()
+  const {
+    isOpen: isImportNodeOpen,
+    onOpen: onImportNodeOpen,
+    onClose: onImportNodeClose,
+    onOpenChange: onImportNodeOpenChange
+  } = useDisclosure()
+
+  const importNodeForm = useForm<z.infer<typeof nodeFormSchema>>({
+    shouldFocusError: true,
+    resolver: zodResolver(nodeFormSchema),
+    defaultValues: nodeFormDefault
+  })
+
+  const importNodesMutation = useImportNodesMutation()
 
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
         <h3 className="text-xl font-bold">{t('primitives.node')}</h3>
-        <Button color="primary" isIconOnly>
-          <IconPlus />
+        <Button color="primary" isIconOnly onPress={onImportNodeOpen}>
+          <IconUpload />
         </Button>
+
+        <Modal isOpen={isImportNodeOpen} onOpenChange={onImportNodeOpenChange}>
+          <FormProvider {...importNodeForm}>
+            <form
+              onSubmit={importNodeForm.handleSubmit(async (values) => {
+                await importNodesMutation.mutateAsync(values.nodes)
+
+                onImportNodeClose()
+              })}
+            >
+              <ModalContent>
+                <ModalHeader>{t('primitives.node')}</ModalHeader>
+
+                <ModalBody>
+                  <ImportNodeInputList name="nodes" />
+                </ModalBody>
+
+                <ModalSubmitFormFooter reset={importNodeForm.reset} isSubmitting={importNodesMutation.isPending} />
+              </ModalContent>
+            </form>
+          </FormProvider>
+        </Modal>
       </div>
 
       <NodeTable nodes={nodes} isLoading={isLoading} />

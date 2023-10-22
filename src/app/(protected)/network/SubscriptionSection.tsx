@@ -15,7 +15,7 @@ import {
   TableRow,
   useDisclosure
 } from '@nextui-org/react'
-import { IconPlus, IconRefresh, IconTrash } from '@tabler/icons-react'
+import { IconPlus, IconRefresh, IconTrash, IconUpload } from '@tabler/icons-react'
 import dayjs from 'dayjs'
 import { FC, Fragment, useEffect, useMemo } from 'react'
 import { Controller, FormProvider, useFieldArray, useForm } from 'react-hook-form'
@@ -152,7 +152,7 @@ export const SubscriptionSection: FC<{ subscriptions: Subscription[] }> = ({ sub
         <h3 className="text-xl font-bold">{t('primitives.subscription')}</h3>
 
         <Button color="primary" isIconOnly onPress={onImportSubscriptionOpen}>
-          <IconPlus />
+          <IconUpload />
         </Button>
 
         <Modal isOpen={isImportSubscriptionOpen} onOpenChange={onImportSubscriptionOpenChange}>
