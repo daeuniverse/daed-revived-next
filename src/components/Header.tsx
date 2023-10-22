@@ -3,7 +3,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import {
   Avatar,
-  Button,
   ButtonGroup,
   Dropdown,
   DropdownItem,
@@ -25,6 +24,7 @@ import {
   Spinner,
   useDisclosure
 } from '@nextui-org/react'
+import { IconNetwork, IconNetworkOff, IconReload } from '@tabler/icons-react'
 import i18n from 'i18next'
 import ky from 'ky'
 import { useTheme } from 'next-themes'
@@ -34,8 +34,9 @@ import { FC, useEffect, useState } from 'react'
 import { Controller, FormProvider, useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { z } from 'zod'
-import { useUpdateAvatarMutation, useUpdateNameMutation } from '~/apis/mutation'
-import { useUserQuery } from '~/apis/query'
+import { useRunMutation, useUpdateAvatarMutation, useUpdateNameMutation } from '~/apis/mutation'
+import { useGeneralQuery, useUserQuery } from '~/apis/query'
+import { Button } from '~/components/Button'
 import { LogoText } from '~/components/LogoText'
 import { Modal, ModalConfirmFormFooter, ModalSubmitFormFooter } from '~/components/Modal'
 import { updatePasswordFormDefault, useUpdatePasswordSchemaWithRefine } from '~/schemas/account'
@@ -90,6 +91,8 @@ export const Header: FC = () => {
   const router = useRouter()
 
   const userQuery = useUserQuery()
+  const generalQuery = useGeneralQuery()
+  const runMutation = useRunMutation()
 
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
@@ -165,6 +168,29 @@ export const Header: FC = () => {
       </NavbarContent>
 
       <NavbarContent as="div" justify="end">
+        {generalQuery.data?.general.dae.modified ? (
+          <Button
+            color="success"
+            isIconOnly
+            isLoading={runMutation.isPending}
+            onPress={() => runMutation.mutateAsync(false)}
+          >
+            <IconReload />
+          </Button>
+        ) : (
+          <Button
+            size="lg"
+            isIconOnly
+            isLoading={runMutation.isPending}
+            color={generalQuery.data?.general.dae.running ? 'success' : 'secondary'}
+            onPress={async () => {
+              await runMutation.mutateAsync(!!generalQuery.data?.general.dae.running)
+            }}
+          >
+            {generalQuery.data?.general.dae.running ? <IconNetwork /> : <IconNetworkOff />}
+          </Button>
+        )}
+
         <Dropdown placement="bottom-end">
           <DropdownTrigger>
             <Avatar

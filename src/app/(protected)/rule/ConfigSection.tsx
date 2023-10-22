@@ -603,9 +603,7 @@ export const ConfigSection: FC = () => {
   }
 
   const lanInterfaces: SelectItemProps[] = useMemo(() => {
-    const interfaces = generalQuery.data?.general.interfaces
-
-    if (!interfaces) return []
+    const interfaces = generalQuery.data?.general.interfaces || []
 
     return interfaces.map(({ name, ip }) => ({
       key: name,
@@ -622,12 +620,10 @@ export const ConfigSection: FC = () => {
   }, [generalQuery.data?.general.interfaces])
 
   const wanInterfaces: SelectItemProps[] = useMemo(() => {
-    const interfaces = generalQuery.data?.general.interfaces
-
-    if (!interfaces) return []
+    const interfaces = generalQuery.data?.general.interfaces || []
 
     return [
-      { key: 'auto-detect', title: t('primitives.autoDetect'), value: 'auto' },
+      { key: 'auto', title: t('primitives.autoDetect'), value: 'auto' },
       ...interfaces
         .filter(({ flag }) => !!flag.default)
         .map(({ name, ip }) => ({
