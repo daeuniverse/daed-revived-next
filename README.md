@@ -33,17 +33,10 @@ cd daed
 git submodule update --init --recursive
 ```
 
-> Install golang toolchain, which is required for dae-wing
+> Install the toolchain
 
-Learn more about golang at [go.dev](https://go.dev/doc/install)
-
-> Install Bun, which is required fo daed
-
-```shell
-curl -fsSL https://bun.sh/install | bash
-```
-
-Learn more about bun at [bun.sh](https://bun.sh)
+- [Golang](https://go.dev) (required by dae-wing)
+- [Node.js](https://nodejs.org), [pnpm](https://pnpm.io) (required by daed)
 
 ### Build and run dae-wing
 
@@ -69,19 +62,19 @@ Learn more about dae-wing at [dae-wing](https://github.com/daeuniverse/dae-wing)
 > Install Dependencies
 
 ```shell
-bun install
+pnpm install
 ```
 
 > Build Artifacts
 
 ```shell
-bun run build
+pnpm run build
 ```
 
 > Run Server
 
 ```shell
-bun start
+pnpm start
 ```
 
 ## Contributing
@@ -97,6 +90,5 @@ If you would like to contribute, please see the [instructions](./CONTRIBUTING.md
 ## Credits
 
 - [dae-wing](https://github.com/daeuniverse/dae-wing)
-- [Bun](https://github.com/oven-sh/bun)
 - [Next.JS](https://github.com/vercel/next.js)
 - [NextUI](https://github.com/nextui-org/nextui)
