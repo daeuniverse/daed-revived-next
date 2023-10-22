@@ -16,6 +16,10 @@ form {
   @apply contents;
 }
 
+input {
+  @apply bg-clip-text;
+}
+
 @media screen(sm) {
   ::-webkit-scrollbar {
     @apply block;

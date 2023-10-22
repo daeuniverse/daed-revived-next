@@ -309,6 +309,7 @@ export const Header: FC = () => {
               <ModalSubmitFormFooter
                 reset={updateProfileForm.reset}
                 isResetDisabled={!updateProfileFormDirty}
+                isSubmitDisabled={!updateProfileFormDirty}
                 isSubmitting={updateProfileForm.formState.isSubmitting}
               />
             </ModalContent>

@@ -1052,6 +1052,17 @@ export type UserQuery = {
   user: { __typename?: 'User'; username: string; name?: string | null; avatar?: string | null }
 }
 
+export type NumberUsersQueryVariables = Exact<{ [key: string]: never }>
+
+export type NumberUsersQuery = { __typename?: 'Query'; numberUsers: number }
+
+export type CreateUserMutationVariables = Exact<{
+  username: Scalars['String']['input']
+  password: Scalars['String']['input']
+}>
+
+export type CreateUserMutation = { __typename?: 'Mutation'; createUser: string }
+
 export type TokenQueryVariables = Exact<{
   username: Scalars['String']['input']
   password: Scalars['String']['input']
@@ -2925,6 +2936,63 @@ export const UserDocument = {
     }
   ]
 } as unknown as DocumentNode<UserQuery, UserQueryVariables>
+export const NumberUsersDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'NumberUsers' },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [{ kind: 'Field', name: { kind: 'Name', value: 'numberUsers' } }]
+      }
+    }
+  ]
+} as unknown as DocumentNode<NumberUsersQuery, NumberUsersQueryVariables>
+export const CreateUserDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'CreateUser' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'username' } },
+          type: { kind: 'NonNullType', type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } } }
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'password' } },
+          type: { kind: 'NonNullType', type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } } }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'createUser' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'username' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'username' } }
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'password' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'password' } }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<CreateUserMutation, CreateUserMutationVariables>
 export const TokenDocument = {
   kind: 'Document',
   definitions: [
