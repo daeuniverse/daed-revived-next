@@ -23,6 +23,7 @@ import { Config } from '~/apis/gql/graphql'
 import {
   useCreateConfigMutation,
   useRemoveConfigMutation,
+  useRenameConfigMutation,
   useSelectConfigMutation,
   useUpdateConfigMutation
 } from '~/apis/mutation'
@@ -40,9 +41,7 @@ import {
   TcpCheckHttpMethod,
   UTLSImitate,
   configFormDefault,
-  configFormSchema,
-  createConfigFormDefault,
-  createConfigFormSchema
+  configFormSchema
 } from '~/schemas/config'
 
 type CreateOrEditModalContentProps = {
@@ -50,8 +49,8 @@ type CreateOrEditModalContentProps = {
   onOpenChange: () => void
   lanInterfaces: SelectItemProps[]
   wanInterfaces: SelectItemProps[]
-  form: UseFormReturn<z.infer<typeof createConfigFormSchema>>
-  onSubmit: SubmitHandler<z.infer<typeof createConfigFormSchema>>
+  form: UseFormReturn<z.infer<typeof configFormSchema>>
+  onSubmit: SubmitHandler<z.infer<typeof configFormSchema>>
 }
 
 type CreateModalContentProps = {
@@ -102,15 +101,13 @@ const CreateOrEditModal: FC<CreateOrEditModalContentProps & (CreateModalContentP
             </ModalHeader>
 
             <ModalBody className="flex flex-col gap-2">
-              {type === 'create' && (
-                <Input
-                  label={t('form.fields.name')}
-                  placeholder={t('form.fields.name')}
-                  isRequired
-                  errorMessage={errors.name?.message}
-                  {...register('name')}
-                />
-              )}
+              <Input
+                label={t('form.fields.name')}
+                placeholder={t('form.fields.name')}
+                isRequired
+                errorMessage={errors.name?.message}
+                {...register('name')}
+              />
 
               <Accordion defaultExpandedKeys={['software-options']} selectionMode="multiple">
                 <AccordionItem key="software-options" title={t('primitives.softwareOptions')}>
@@ -463,16 +460,18 @@ const DetailsRadio: FC<{
     onClose: onRemoveClose,
     onOpenChange: onRemoveOpenChange
   } = useDisclosure()
-  const editForm = useForm<z.infer<typeof createConfigFormSchema>>({
+  const editForm = useForm<z.infer<typeof configFormSchema>>({
     shouldFocusError: true,
     resolver: zodResolver(configFormSchema),
     defaultValues: configFormDefault
   })
+  const renameMutation = useRenameConfigMutation()
   const updateMutation = useUpdateConfigMutation()
   const removeMutation = useRemoveConfigMutation()
 
   const onEditPress = () => {
     editForm.reset({
+      name: details.name,
       ...details.global,
       checkIntervalSeconds: deriveTime(details.global.checkInterval, 's'),
       sniffingTimeoutMS: deriveTime(details.global.sniffingTimeout, 'ms'),
@@ -481,20 +480,29 @@ const DetailsRadio: FC<{
     onEditOpen()
   }
 
-  const onEditSubmit: (id: string) => CreateOrEditModalContentProps['onSubmit'] = (id) => async (values) => {
-    const { checkIntervalSeconds, checkToleranceMS, sniffingTimeoutMS, ...global } = values
+  const onEditSubmit: (id: string, name: string) => CreateOrEditModalContentProps['onSubmit'] =
+    (id, name) => async (values) => {
+      const { checkIntervalSeconds, checkToleranceMS, sniffingTimeoutMS, ...global } = values
 
-    await updateMutation.mutateAsync({
-      id,
-      global: {
-        ...global,
-        checkInterval: `${checkIntervalSeconds}s`,
-        checkTolerance: `${checkToleranceMS}ms`,
-        sniffingTimeout: `${sniffingTimeoutMS}ms`
+      await updateMutation.mutateAsync({
+        id,
+        global: {
+          ...global,
+          checkInterval: `${checkIntervalSeconds}s`,
+          checkTolerance: `${checkToleranceMS}ms`,
+          sniffingTimeout: `${sniffingTimeoutMS}ms`
+        }
+      })
+
+      if (values.name !== name) {
+        await renameMutation.mutateAsync({
+          id,
+          name: values.name
+        })
       }
-    })
-    onEditClose()
-  }
+
+      onEditClose()
+    }
 
   return (
     <ResourceRadio
@@ -522,7 +530,7 @@ const DetailsRadio: FC<{
               lanInterfaces={lanInterfaces}
               wanInterfaces={wanInterfaces}
               form={editForm}
-              onSubmit={onEditSubmit(details.id)}
+              onSubmit={onEditSubmit(details.id, details.name)}
             />
 
             {!isDefault && (
@@ -559,10 +567,10 @@ const DetailsRadio: FC<{
 
 export const ConfigSection: FC = () => {
   const { t } = useTranslation()
-  const createForm = useForm<z.infer<typeof createConfigFormSchema>>({
+  const createForm = useForm<z.infer<typeof configFormSchema>>({
     shouldFocusError: true,
-    resolver: zodResolver(createConfigFormSchema),
-    defaultValues: createConfigFormDefault
+    resolver: zodResolver(configFormSchema),
+    defaultValues: configFormDefault
   })
   const defaultConfigIDQuery = useGetJSONStorageRequest(['defaultConfigID'] as const)
   const isDefault = (id: string) => id === defaultConfigIDQuery.data?.defaultConfigID

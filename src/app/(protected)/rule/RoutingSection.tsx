@@ -19,18 +19,13 @@ import { CodeBlock } from '~/components/CodeBlock'
 import { Editor } from '~/components/Editor'
 import { Modal, ModalConfirmFormFooter, ModalSubmitFormFooter } from '~/components/Modal'
 import { ResourceRadio, ResourceRadioGroup } from '~/components/ResourceRadioGroup'
-import {
-  createRoutingFormDefault,
-  createRoutingFormSchema,
-  routingFormDefault,
-  routingFormSchema
-} from '~/schemas/routing'
+import { routingFormDefault, routingFormSchema } from '~/schemas/routing'
 
 type CreateOrEditModalContentProps = {
   isOpen: boolean
   onOpenChange: () => void
-  form: UseFormReturn<z.infer<typeof createRoutingFormSchema>>
-  onSubmit: SubmitHandler<z.infer<typeof createRoutingFormSchema>>
+  form: UseFormReturn<z.infer<typeof routingFormSchema>>
+  onSubmit: SubmitHandler<z.infer<typeof routingFormSchema>>
 }
 
 type CreateModalContentProps = {
@@ -77,15 +72,13 @@ const CreateOrEditModal: FC<CreateOrEditModalContentProps & (CreateModalContentP
           </ModalHeader>
 
           <ModalBody className="flex flex-col gap-2">
-            {type === 'create' && (
-              <Input
-                label={t('form.fields.name')}
-                placeholder={t('form.fields.name')}
-                isRequired
-                errorMessage={errors.name?.message}
-                {...register('name')}
-              />
-            )}
+            <Input
+              label={t('form.fields.name')}
+              placeholder={t('form.fields.name')}
+              isRequired
+              errorMessage={errors.name?.message}
+              {...register('name')}
+            />
 
             <Controller
               name="text"
@@ -152,7 +145,7 @@ const DetailsRadio: FC<{
     onClose: onRemoveClose,
     onOpenChange: onRemoveOpenChange
   } = useDisclosure()
-  const editForm = useForm<z.infer<typeof createRoutingFormSchema>>({
+  const editForm = useForm<z.infer<typeof routingFormSchema>>({
     shouldFocusError: true,
     resolver: zodResolver(routingFormSchema),
     defaultValues: routingFormDefault
@@ -160,8 +153,9 @@ const DetailsRadio: FC<{
   const updateMutation = useUpdateRoutingMutation()
   const removeMutation = useRemoveRoutingMutation()
 
-  const onEditPress = () => {
+  const onEditPress = (name: string) => {
     editForm.reset({
+      name,
       text: details.routing.string
     })
     onEditOpen()
@@ -190,7 +184,7 @@ const DetailsRadio: FC<{
           <DetailsModal details={details} isOpen={isDetailsOpen} onOpenChange={onDetailsOpenChange} />
 
           <div className="flex gap-2">
-            <Button color="secondary" isIconOnly onPress={onEditPress}>
+            <Button color="secondary" isIconOnly onPress={() => onEditPress(details.name)}>
               <IconEdit />
             </Button>
 
@@ -238,10 +232,10 @@ const DetailsRadio: FC<{
 
 export const RoutingSection = () => {
   const { t } = useTranslation()
-  const createForm = useForm<z.infer<typeof createRoutingFormSchema>>({
+  const createForm = useForm<z.infer<typeof routingFormSchema>>({
     shouldFocusError: true,
-    resolver: zodResolver(createRoutingFormSchema),
-    defaultValues: createRoutingFormDefault
+    resolver: zodResolver(routingFormSchema),
+    defaultValues: routingFormDefault
   })
   const defaultRoutingIDQuery = useGetJSONStorageRequest(['defaultRoutingID'] as const)
   const listQuery = useRoutingsQuery()

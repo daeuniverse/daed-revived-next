@@ -14,13 +14,13 @@ import { CodeBlock } from '~/components/CodeBlock'
 import { Editor } from '~/components/Editor'
 import { Modal, ModalConfirmFormFooter, ModalSubmitFormFooter } from '~/components/Modal'
 import { ResourceRadio, ResourceRadioGroup } from '~/components/ResourceRadioGroup'
-import { DNSFormDefault, DNSFormSchema, createDNSFormDefault, createDNSFormSchema } from '~/schemas/dns'
+import { DNSFormDefault, DNSFormSchema } from '~/schemas/dns'
 
 type CreateOrEditModalContentProps = {
   isOpen: boolean
   onOpenChange: () => void
-  form: UseFormReturn<z.infer<typeof createDNSFormSchema>>
-  onSubmit: SubmitHandler<z.infer<typeof createDNSFormSchema>>
+  form: UseFormReturn<z.infer<typeof DNSFormSchema>>
+  onSubmit: SubmitHandler<z.infer<typeof DNSFormSchema>>
 }
 
 type CreateModalContentProps = {
@@ -67,15 +67,13 @@ const CreateOrEditModal: FC<CreateOrEditModalContentProps & (CreateModalContentP
           </ModalHeader>
 
           <ModalBody className="flex flex-col gap-2">
-            {type === 'create' && (
-              <Input
-                label={t('form.fields.name')}
-                placeholder={t('form.fields.name')}
-                isRequired
-                errorMessage={errors.name?.message}
-                {...register('name')}
-              />
-            )}
+            <Input
+              label={t('form.fields.name')}
+              placeholder={t('form.fields.name')}
+              isRequired
+              errorMessage={errors.name?.message}
+              {...register('name')}
+            />
 
             <Controller
               name="text"
@@ -142,7 +140,7 @@ const DetailsRadio: FC<{
     onClose: onRemoveClose,
     onOpenChange: onRemoveOpenChange
   } = useDisclosure()
-  const editForm = useForm<z.infer<typeof createDNSFormSchema>>({
+  const editForm = useForm<z.infer<typeof DNSFormSchema>>({
     shouldFocusError: true,
     resolver: zodResolver(DNSFormSchema),
     defaultValues: DNSFormDefault
@@ -150,8 +148,9 @@ const DetailsRadio: FC<{
   const updateMutation = useUpdateDNSMutation()
   const removeMutation = useRemoveDNSMutation()
 
-  const onEditPress = () => {
+  const onEditPress = (name: string) => {
     editForm.reset({
+      name,
       text: details.dns.string
     })
     onEditOpen()
@@ -180,7 +179,7 @@ const DetailsRadio: FC<{
           <DetailsModal details={details} isOpen={isDetailsOpen} onOpenChange={onDetailsOpenChange} />
 
           <div className="flex gap-2">
-            <Button color="secondary" isIconOnly onPress={onEditPress}>
+            <Button color="secondary" isIconOnly onPress={() => onEditPress(details.name)}>
               <IconEdit />
             </Button>
 
@@ -228,10 +227,10 @@ const DetailsRadio: FC<{
 
 export const DNSSection = () => {
   const { t } = useTranslation()
-  const createForm = useForm<z.infer<typeof createDNSFormSchema>>({
+  const createForm = useForm<z.infer<typeof DNSFormSchema>>({
     shouldFocusError: true,
-    resolver: zodResolver(createDNSFormSchema),
-    defaultValues: createDNSFormDefault
+    resolver: zodResolver(DNSFormSchema),
+    defaultValues: DNSFormDefault
   })
   const defaultDNSIDQuery = useGetJSONStorageRequest(['defaultDNSID'] as const)
   const listQuery = useDNSsQuery()
