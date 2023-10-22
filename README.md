@@ -8,33 +8,87 @@ A modern web dashboard for dae
 ![downloads](https://img.shields.io/github/downloads/daeuniverse/daed/total?style=for-the-badge)
 ![license](https://img.shields.io/github/license/daeuniverse/daed?style=for-the-badge)
 
+## Features
+
+- [x] Easy to use, with keyboard navigation / shortcuts builtin
+- [x] Beautiful and intuitive UI
+- [x] Light / Dark mode
+- [x] Mobile friendly
+
 ## Getting started
 
-### Build locally
+### Prerequisites
 
-> Install dependencies
+> Clone the repository with submodules
+
+```shell
+git clone https://github.com/daeuniverse/daed.git
+cd daed
+
+# Initialize submodules
+git submodule update --init --recursive
+```
+
+> Install golang toolchain, which is required for dae-wing
+
+Learn more about golang at [go.dev](https://go.dev/doc/install)
+
+> Install Bun, which is required fo daed
+
+```shell
+curl -fsSL https://bun.sh/install | bash
+```
+
+Learn more about bun at [bun.sh](https://bun.sh)
+
+### Build and run dae-wing
+
+> Build dae-wing
+
+```shell
+cd wing
+
+make deps
+go build -o dae-wing run -c ./
+```
+
+> Run dae-wing
+
+```shell
+./dae-wing
+```
+
+Learn more about dae-wing at [dae-wing](https://github.com/daeuniverse/dae-wing)
+
+### Build and run daed
+
+> Install Dependencies
 
 ```shell
 bun install
 ```
 
-> Build artifacts
+> Build Artifacts
 
 ```shell
 bun run build
 ```
 
-> Run server
+> Run Server
 
 ```shell
 bun start
 ```
 
-## Contributors
+## Contributing
 
-This project is only possible thanks to these amazing people.
+Feel free to open issues or submit your PR, any feedbacks or help are greatly appreciated.
+
+Special thanks go to all these amazing people.
 
 [![contributors](https://contrib.rocks/image?repo=daeuniverse/daed)](https://github.com/daeuniverse/daed/graphs/contributors)
+
+If you would like to contribute, please see the [instructions](./CONTRIBUTING.md). Also, it is recommended following the [commit-msg-guide](./docs/commit-msg-guide.md).
 
 ## Credits
 
