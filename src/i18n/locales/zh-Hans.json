@@ -38,7 +38,9 @@
       "allowInsecure": "允许不安全",
       "sniffingTimeout": "嗅探超时",
       "tlsImplementation": "TLS 实现",
-      "utlsImitate": "uTLS 模仿"
+      "utlsImitate": "uTLS 模仿",
+      "tag": "标签",
+      "link": "链接"
     },
     "descriptions": {
       "pleaseEnter": "请输入您的{{fieldName}}",

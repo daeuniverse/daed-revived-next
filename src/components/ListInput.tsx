@@ -6,30 +6,26 @@ import { FC } from 'react'
 import { Controller, useFieldArray } from 'react-hook-form'
 import { Button } from '~/components/Button'
 
-const ListInput: FC<{ name: string }> = ({ name }) => {
+export const ListInput: FC<{ name: string }> = ({ name }) => {
   const { fields, append, remove } = useFieldArray({ name })
 
   return (
     <div className="flex flex-col gap-2">
-      {fields.map((item, index) => {
-        return (
-          <Controller
-            key={item.id}
-            name={`${name}.${index}`}
-            render={({ field }) => (
-              <div>
-                <div className="flex items-center gap-2">
-                  <Input {...field} />
+      {fields.map((item, index) => (
+        <Controller
+          key={item.id}
+          name={`${name}.${index}`}
+          render={({ field, fieldState }) => (
+            <div className="flex items-start gap-2">
+              <Input errorMessage={fieldState.error?.message} {...field} />
 
-                  <Button color="danger" onPress={() => remove(index)} isIconOnly>
-                    <IconTrash />
-                  </Button>
-                </div>
-              </div>
-            )}
-          />
-        )
-      })}
+              <Button color="danger" onPress={() => remove(index)} isIconOnly>
+                <IconTrash />
+              </Button>
+            </div>
+          )}
+        />
+      ))}
 
       <div className="self-end">
         <Button color="primary" onPress={() => append('')} isIconOnly>
@@ -40,5 +36,3 @@ const ListInput: FC<{ name: string }> = ({ name }) => {
   )
 }
 ListInput.displayName = 'ListInput'
-
-export { ListInput }

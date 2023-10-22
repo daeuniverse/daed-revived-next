@@ -38,7 +38,9 @@
       "allowInsecure": "Allow Insecure",
       "sniffingTimeout": "Sniffing Timeout",
       "tlsImplementation": "TLS Implementation",
-      "utlsImitate": "uTLS Imitate"
+      "utlsImitate": "uTLS Imitate",
+      "tag": "Tag",
+      "link": "Link"
     },
     "descriptions": {
       "pleaseEnter": "Please enter your {{fieldName}}",

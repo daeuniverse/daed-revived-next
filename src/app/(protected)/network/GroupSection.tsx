@@ -44,8 +44,7 @@ const GroupContent: FC<{
   group: Group
   subscriptions: Subscription[]
   nodes: Node[]
-  refetch: () => Promise<unknown>
-}> = ({ group, subscriptions, nodes, refetch }) => {
+}> = ({ group, subscriptions, nodes }) => {
   const { t } = useTranslation()
 
   // subscriptions
@@ -104,8 +103,6 @@ const GroupContent: FC<{
           if (nodesToRemove.length > 0) {
             await groupDelNodesMutation.mutateAsync({ id: group.id, nodeIDs: nodesToRemove })
           }
-
-          await refetch()
         }}
         renderValue={(items) => (
           <div className="flex flex-wrap gap-2">
@@ -119,7 +116,6 @@ const GroupContent: FC<{
                   classNames={{ base: 'max-w-full', content: 'truncate' }}
                   onClose={async () => {
                     await groupDelNodesMutation.mutateAsync({ id: group.id, nodeIDs: [nodeID] })
-                    await refetch()
                   }}
                 >
                   {nodeName} {item.data?.subscription && `(${item.data.subscription})`}
@@ -162,8 +158,6 @@ const GroupContent: FC<{
           if (subscriptionsToRemove.length > 0) {
             await groupDelSubscriptionsMutation.mutateAsync({ id: group.id, subscriptionIDs: subscriptionsToRemove })
           }
-
-          await refetch()
         }}
         items={subscriptions}
         renderValue={(items) => (
@@ -176,7 +170,6 @@ const GroupContent: FC<{
                 }}
                 onClose={async () => {
                   await groupDelSubscriptionsMutation.mutateAsync({ id: group.id, subscriptionIDs: [item.data!.id] })
-                  await refetch()
                 }}
               >
                 {item.data!.tag}
@@ -226,8 +219,7 @@ const GroupAccordion: FC<{
   group: Group
   subscriptions: Subscription[]
   nodes: Node[]
-  refetch: () => Promise<unknown>
-}> = ({ group, refetch, subscriptions, nodes }) => {
+}> = ({ group, subscriptions, nodes }) => {
   const { t } = useTranslation()
 
   const {
@@ -296,7 +288,6 @@ const GroupAccordion: FC<{
                     await removeGroupsMutation.mutateAsync({
                       groupIDs: [group.id]
                     })
-                    await refetch()
 
                     onRemoveGroupClose()
                   }}
@@ -306,7 +297,7 @@ const GroupAccordion: FC<{
           </div>
         }
       >
-        <GroupContent group={group} subscriptions={subscriptions} nodes={nodes} refetch={refetch} />
+        <GroupContent group={group} subscriptions={subscriptions} nodes={nodes} />
       </AccordionItem>
     </Accordion>
   )
@@ -354,7 +345,6 @@ export const GroupSection: FC<{ nodes: Node[]; subscriptions: Subscription[] }> 
                   policy: values.policy,
                   policyParams: []
                 })
-                await groupsQuery.refetch()
 
                 onAddClose()
               })}
@@ -414,13 +404,7 @@ export const GroupSection: FC<{ nodes: Node[]; subscriptions: Subscription[] }> 
 
       {groupsQuery.data &&
         groupsQuery.data.groups.map((group) => (
-          <GroupAccordion
-            key={group.id}
-            group={group}
-            refetch={groupsQuery.refetch}
-            nodes={nodes}
-            subscriptions={subscriptions}
-          />
+          <GroupAccordion key={group.id} group={group} nodes={nodes} subscriptions={subscriptions} />
         ))}
     </div>
   )

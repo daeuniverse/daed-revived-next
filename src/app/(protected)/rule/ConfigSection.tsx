@@ -446,10 +446,9 @@ const DetailsModal: FC<{
 const DetailsRadio: FC<{
   details: Config
   isDefault?: boolean
-  refetch: () => Promise<unknown>
   lanInterfaces: SelectItemProps[]
   wanInterfaces: SelectItemProps[]
-}> = ({ details, isDefault, refetch, lanInterfaces, wanInterfaces }) => {
+}> = ({ details, isDefault, lanInterfaces, wanInterfaces }) => {
   const { t } = useTranslation()
   const { isOpen: isDetailsOpen, onOpen: onDetailsOpen, onOpenChange: onDetailsOpenChange } = useDisclosure()
   const {
@@ -494,7 +493,6 @@ const DetailsRadio: FC<{
         sniffingTimeout: `${sniffingTimeoutMS}ms`
       }
     })
-    await refetch()
     onEditClose()
   }
 
@@ -543,7 +541,6 @@ const DetailsRadio: FC<{
                       isSubmitting={removeMutation.isPending}
                       onConfirm={async () => {
                         await removeMutation.mutateAsync({ id: details.id })
-                        await refetch()
                         onRemoveClose()
                       }}
                     />
@@ -594,7 +591,6 @@ export const ConfigSection: FC = () => {
         sniffingTimeout: `${sniffingTimeoutMS}ms`
       }
     })
-    await listQuery.refetch()
     onCreateClose()
   }
 
@@ -646,7 +642,6 @@ export const ConfigSection: FC = () => {
       value={listQuery.data?.configs.find(({ selected }) => selected)?.id || ''}
       onValueChange={async (id) => {
         await selectMutation.mutateAsync({ id })
-        await listQuery.refetch()
       }}
       label={
         <div className="flex items-center justify-between">
@@ -675,7 +670,6 @@ export const ConfigSection: FC = () => {
           key={details.id}
           details={details}
           isDefault={isDefault(details.id)}
-          refetch={listQuery.refetch}
           lanInterfaces={lanInterfaces}
           wanInterfaces={wanInterfaces}
         />

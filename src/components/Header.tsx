@@ -56,6 +56,7 @@ const AvatarUploader: FC<{ name: string }> = ({ name }) => {
             id="avatar"
             type="file"
             hidden
+            accept="image/*"
             multiple={false}
             onChange={async (e) => {
               setUploading(true)
@@ -284,8 +285,6 @@ export const Header: FC = () => {
                 if (values.avatar !== userQuery.data?.user.avatar) {
                   await updateAvatarMutation.mutateAsync(values.avatar)
                 }
-
-                await userQuery.refetch()
 
                 onUpdateProfileClose()
               } catch {}

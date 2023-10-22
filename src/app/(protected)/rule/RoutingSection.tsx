@@ -137,8 +137,7 @@ const DetailsModal: FC<{
 const DetailsRadio: FC<{
   details: Details
   isDefault?: boolean
-  refetch: () => Promise<unknown>
-}> = ({ details, isDefault, refetch }) => {
+}> = ({ details, isDefault }) => {
   const { t } = useTranslation()
   const { isOpen: isDetailsOpen, onOpen: onDetailsOpen, onOpenChange: onDetailsOpenChange } = useDisclosure()
   const {
@@ -175,7 +174,6 @@ const DetailsRadio: FC<{
       id,
       routing: text
     })
-    await refetch()
     onEditClose()
   }
 
@@ -222,7 +220,6 @@ const DetailsRadio: FC<{
                       isSubmitting={removeMutation.isPending}
                       onConfirm={async () => {
                         await removeMutation.mutateAsync({ id: details.id })
-                        await refetch()
                         onRemoveClose()
                       }}
                     />
@@ -261,7 +258,6 @@ export const RoutingSection = () => {
 
   const onCreateSubmit: CreateOrEditModalContentProps['onSubmit'] = async ({ name, text }) => {
     await createMutation.mutateAsync({ name, routing: text })
-    await listQuery.refetch()
 
     onCreateClose()
   }
@@ -271,7 +267,6 @@ export const RoutingSection = () => {
       value={listQuery.data?.routings.find(({ selected }) => selected)?.id || ''}
       onValueChange={async (id) => {
         await selectMutation.mutateAsync({ id })
-        await listQuery.refetch()
       }}
       label={
         <div className="flex items-center justify-between">
@@ -294,12 +289,7 @@ export const RoutingSection = () => {
       }
     >
       {listQuery.data?.routings.map((details) => (
-        <DetailsRadio
-          key={details.id}
-          details={details}
-          isDefault={isDefault(details.id)}
-          refetch={listQuery.refetch}
-        />
+        <DetailsRadio key={details.id} details={details} isDefault={isDefault(details.id)} />
       ))}
     </ResourceRadioGroup>
   )

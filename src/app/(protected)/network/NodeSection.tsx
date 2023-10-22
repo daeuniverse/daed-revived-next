@@ -50,7 +50,7 @@ const CheckNodeQRCodeButton: FC<{ name: string; link: string }> = ({ name, link 
   )
 }
 
-const RemoveNodeButton: FC<{ id: string; name: string; refetch: () => Promise<unknown> }> = ({ id, name, refetch }) => {
+const RemoveNodeButton: FC<{ id: string; name: string }> = ({ id, name }) => {
   const { t } = useTranslation()
 
   const {
@@ -78,7 +78,6 @@ const RemoveNodeButton: FC<{ id: string; name: string; refetch: () => Promise<un
             isSubmitting={removeNodesMutation.isPending}
             onConfirm={async () => {
               await removeNodesMutation.mutateAsync({ nodeIDs: [id] })
-              await refetch()
 
               onRemoveClose()
             }}
@@ -91,9 +90,8 @@ const RemoveNodeButton: FC<{ id: string; name: string; refetch: () => Promise<un
 
 const NodeTable: FC<{
   nodes: Node[]
-  refetch: () => Promise<unknown>
   isLoading?: boolean
-}> = ({ nodes, refetch, isLoading }) => {
+}> = ({ nodes, isLoading }) => {
   const { t } = useTranslation()
 
   const nodesTableColumns = useMemo(
@@ -106,27 +104,24 @@ const NodeTable: FC<{
     [t]
   )
 
-  const renderCell = useCallback(
-    (item: Node, columnKey: Key) => {
-      switch (columnKey) {
-        case 'name':
-          return item.tag || item.name
+  const renderCell = useCallback((item: Node, columnKey: Key) => {
+    switch (columnKey) {
+      case 'name':
+        return item.tag || item.name
 
-        case 'action':
-          return (
-            <div className="flex items-center gap-2">
-              <CheckNodeQRCodeButton name={item.tag || item.name} link={item.link} />
+      case 'action':
+        return (
+          <div className="flex items-center gap-2">
+            <CheckNodeQRCodeButton name={item.tag || item.name} link={item.link} />
 
-              <RemoveNodeButton id={item.id} name={item.tag || item.name} refetch={refetch} />
-            </div>
-          )
+            <RemoveNodeButton id={item.id} name={item.tag || item.name} />
+          </div>
+        )
 
-        default:
-          return getKeyValue(item, columnKey)
-      }
-    },
-    [refetch]
-  )
+      default:
+        return getKeyValue(item, columnKey)
+    }
+  }, [])
 
   return (
     <Table isCompact aria-label="nodes">
@@ -143,11 +138,7 @@ const NodeTable: FC<{
   )
 }
 
-export const NodeSection: FC<{ nodes: Node[]; refetch: () => Promise<unknown>; isLoading?: boolean }> = ({
-  nodes,
-  refetch,
-  isLoading
-}) => {
+export const NodeSection: FC<{ nodes: Node[]; isLoading?: boolean }> = ({ nodes, isLoading }) => {
   const { t } = useTranslation()
 
   return (
@@ -159,7 +150,7 @@ export const NodeSection: FC<{ nodes: Node[]; refetch: () => Promise<unknown>; i
         </Button>
       </div>
 
-      <NodeTable nodes={nodes} refetch={refetch} isLoading={isLoading} />
+      <NodeTable nodes={nodes} isLoading={isLoading} />
     </div>
   )
 }

@@ -21,16 +21,9 @@ export default function NetworkPage() {
           subscriptions={subscriptionsQuery.data?.subscriptions || []}
         />
 
-        <NodeSection
-          nodes={nodesQuery.data?.nodes.edges || []}
-          refetch={nodesQuery.refetch}
-          isLoading={nodesQuery.isLoading}
-        />
+        <NodeSection nodes={nodesQuery.data?.nodes.edges || []} isLoading={nodesQuery.isLoading} />
 
-        <SubscriptionSection
-          subscriptions={subscriptionsQuery.data?.subscriptions || []}
-          refetch={subscriptionsQuery.refetch}
-        />
+        <SubscriptionSection subscriptions={subscriptionsQuery.data?.subscriptions || []} />
       </div>
     </ResourcePage>
   )

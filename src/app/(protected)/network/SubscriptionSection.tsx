@@ -1,7 +1,9 @@
+import { zodResolver } from '@hookform/resolvers/zod'
 import {
   Accordion,
   AccordionItem,
   getKeyValue,
+  Input,
   ModalBody,
   ModalContent,
   ModalHeader,
@@ -15,11 +17,18 @@ import {
 } from '@nextui-org/react'
 import { IconPlus, IconRefresh, IconTrash } from '@tabler/icons-react'
 import dayjs from 'dayjs'
-import { FC, Fragment, useMemo } from 'react'
+import { FC, Fragment, useEffect, useMemo } from 'react'
+import { Controller, FormProvider, useFieldArray, useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
-import { useRemoveSubscriptionsMutation, useUpdateSubscriptionsMutation } from '~/apis/mutation'
+import { z } from 'zod'
+import {
+  useImportSubscriptionsMutation,
+  useRemoveSubscriptionsMutation,
+  useUpdateSubscriptionsMutation
+} from '~/apis/mutation'
 import { Button } from '~/components/Button'
-import { Modal, ModalConfirmFormFooter } from '~/components/Modal'
+import { Modal, ModalConfirmFormFooter, ModalSubmitFormFooter } from '~/components/Modal'
+import { subscriptionFormDefault, subscriptionFormSchema } from '~/schemas/subscription'
 import { Node, Subscription } from './typings'
 
 const SubscriptionNodeTable: FC<{
@@ -52,11 +61,71 @@ const SubscriptionNodeTable: FC<{
   )
 }
 
-export const SubscriptionSection: FC<{ subscriptions: Subscription[]; refetch: () => Promise<unknown> }> = ({
-  subscriptions,
-  refetch
-}) => {
+const ImportSubscriptionInputList: FC<{ name: string }> = ({ name }) => {
   const { t } = useTranslation()
+  const { fields, append, remove } = useFieldArray({ name })
+
+  return (
+    <div className="flex flex-col gap-2">
+      {fields.map((item, index) => (
+        <div key={item.id} className="flex items-start gap-2">
+          <Controller
+            name={`${name}.${index}.tag`}
+            render={({ field, fieldState }) => (
+              <Input
+                className="w-1/3"
+                label={t('form.fields.tag')}
+                placeholder={t('form.fields.tag')}
+                errorMessage={fieldState.error?.message}
+                isRequired
+                {...field}
+              />
+            )}
+          />
+
+          <Controller
+            name={`${name}.${index}.link`}
+            render={({ field, fieldState }) => (
+              <Input
+                label={t('form.fields.link')}
+                placeholder={t('form.fields.link')}
+                errorMessage={fieldState.error?.message}
+                isRequired
+                {...field}
+              />
+            )}
+          />
+
+          <Button color="danger" isIconOnly onPress={() => remove(index)}>
+            <IconTrash />
+          </Button>
+        </div>
+      ))}
+
+      <div className="self-end">
+        <Button color="primary" onPress={() => append({ tag: '', link: '' })} isIconOnly>
+          <IconPlus />
+        </Button>
+      </div>
+    </div>
+  )
+}
+
+export const SubscriptionSection: FC<{ subscriptions: Subscription[] }> = ({ subscriptions }) => {
+  const { t } = useTranslation()
+
+  const {
+    isOpen: isImportSubscriptionOpen,
+    onOpen: onImportSubscriptionOpen,
+    onClose: onImportSubscriptionClose,
+    onOpenChange: onImportSubscriptionOpenChange
+  } = useDisclosure()
+
+  const importSubscriptionForm = useForm<z.infer<typeof subscriptionFormSchema>>({
+    shouldFocusError: true,
+    resolver: zodResolver(subscriptionFormSchema),
+    defaultValues: subscriptionFormDefault
+  })
 
   const {
     isOpen: isRemoveSubscriptionOpen,
@@ -65,17 +134,51 @@ export const SubscriptionSection: FC<{ subscriptions: Subscription[]; refetch: (
     onOpenChange: onRemoveSubscriptionOpenChange
   } = useDisclosure()
 
+  const importSubscriptionsMutation = useImportSubscriptionsMutation()
   const removeSubscriptionsMutation = useRemoveSubscriptionsMutation()
   const updateSubscriptionsMutation = useUpdateSubscriptionsMutation()
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (!isImportSubscriptionOpen) importSubscriptionForm.reset()
+    }, 150)
+
+    return () => timer && clearTimeout(timer)
+  }, [importSubscriptionForm, isImportSubscriptionOpen])
 
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
         <h3 className="text-xl font-bold">{t('primitives.subscription')}</h3>
 
-        <Button color="primary" isIconOnly>
+        <Button color="primary" isIconOnly onPress={onImportSubscriptionOpen}>
           <IconPlus />
         </Button>
+
+        <Modal isOpen={isImportSubscriptionOpen} onOpenChange={onImportSubscriptionOpenChange}>
+          <FormProvider {...importSubscriptionForm}>
+            <form
+              onSubmit={importSubscriptionForm.handleSubmit(async (values) => {
+                await importSubscriptionsMutation.mutateAsync(values.subscriptions)
+
+                onImportSubscriptionClose()
+              })}
+            >
+              <ModalContent>
+                <ModalHeader>{t('primitives.subscription')}</ModalHeader>
+
+                <ModalBody>
+                  <ImportSubscriptionInputList name="subscriptions" />
+                </ModalBody>
+
+                <ModalSubmitFormFooter
+                  reset={importSubscriptionForm.reset}
+                  isSubmitting={importSubscriptionsMutation.isPending}
+                />
+              </ModalContent>
+            </form>
+          </FormProvider>
+        </Modal>
       </div>
 
       <Accordion selectionMode="multiple" variant="shadow" isCompact>
@@ -91,11 +194,7 @@ export const SubscriptionSection: FC<{ subscriptions: Subscription[]; refetch: (
                   as="div"
                   isIconOnly
                   isLoading={updateSubscriptionsMutation.isPending}
-                  onPress={() =>
-                    updateSubscriptionsMutation.mutate({
-                      subscriptionIDs: [subscription.id]
-                    })
-                  }
+                  onPress={() => updateSubscriptionsMutation.mutate({ subscriptionIDs: [subscription.id] })}
                 >
                   <IconRefresh />
                 </Button>
@@ -117,7 +216,6 @@ export const SubscriptionSection: FC<{ subscriptions: Subscription[]; refetch: (
                         isSubmitting={removeSubscriptionsMutation.isPending}
                         onConfirm={async () => {
                           await removeSubscriptionsMutation.mutateAsync({ subscriptionIDs: [subscription.id] })
-                          await refetch()
 
                           onRemoveSubscriptionClose()
                         }}
