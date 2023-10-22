@@ -21,7 +21,29 @@ A modern web dashboard for dae
 
 ## Getting started
 
-### Prerequisites
+### Docker
+
+> Pull and run the prebuilt docker image in the background
+
+```shell
+docker run -d --name daed -p 3000:3000 ghcr.io/daeuniverse/daed
+```
+
+Alternatively, you can build and run the docker image on your own
+
+> Build the docker image
+
+```shell
+docker build . -t daed
+```
+
+> Run the docker image you just build in the background
+
+```shell
+docker run -d --name daed -p 3000:3000 daed
+```
+
+### Build from the source files on your own
 
 > Clone the repository with submodules
 
