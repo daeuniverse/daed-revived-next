@@ -7,7 +7,13 @@ import { FC, Fragment, useEffect } from 'react'
 import { Controller, SubmitHandler, UseFormReturn, useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { z } from 'zod'
-import { useCreateDNSMutation, useRemoveDNSMutation, useSelectDNSMutation, useUpdateDNSMutation } from '~/apis/mutation'
+import {
+  useCreateDNSMutation,
+  useRemoveDNSMutation,
+  useRenameDNSMutation,
+  useSelectDNSMutation,
+  useUpdateDNSMutation
+} from '~/apis/mutation'
 import { useDNSsQuery, useGetJSONStorageRequest } from '~/apis/query'
 import { Button } from '~/components/Button'
 import { CodeBlock } from '~/components/CodeBlock'
@@ -145,6 +151,8 @@ const DetailsRadio: FC<{
     resolver: zodResolver(DNSFormSchema),
     defaultValues: DNSFormDefault
   })
+
+  const renameMutation = useRenameDNSMutation()
   const updateMutation = useUpdateDNSMutation()
   const removeMutation = useRemoveDNSMutation()
 
@@ -156,15 +164,24 @@ const DetailsRadio: FC<{
     onEditOpen()
   }
 
-  const onEditSubmit: (id: string) => CreateOrEditModalContentProps['onSubmit'] = (id) => async (values) => {
-    const { text } = values
+  const onEditSubmit: (id: string, name: string) => CreateOrEditModalContentProps['onSubmit'] =
+    (id, name) => async (values) => {
+      const { text } = values
 
-    await updateMutation.mutateAsync({
-      id,
-      dns: text
-    })
-    onEditClose()
-  }
+      await updateMutation.mutateAsync({
+        id,
+        dns: text
+      })
+
+      if (values.name !== name) {
+        await renameMutation.mutateAsync({
+          id,
+          name: values.name
+        })
+      }
+
+      onEditClose()
+    }
 
   return (
     <ResourceRadio
@@ -190,7 +207,7 @@ const DetailsRadio: FC<{
               name={details.name}
               id={details.id}
               form={editForm}
-              onSubmit={onEditSubmit(details.id)}
+              onSubmit={onEditSubmit(details.id, details.name)}
             />
 
             {!isDefault && (

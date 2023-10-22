@@ -10,6 +10,7 @@ import { z } from 'zod'
 import {
   useCreateRoutingMutation,
   useRemoveRoutingMutation,
+  useRenameRoutingMutation,
   useSelectRoutingMutation,
   useUpdateRoutingMutation
 } from '~/apis/mutation'
@@ -150,6 +151,7 @@ const DetailsRadio: FC<{
     resolver: zodResolver(routingFormSchema),
     defaultValues: routingFormDefault
   })
+  const renameMutation = useRenameRoutingMutation()
   const updateMutation = useUpdateRoutingMutation()
   const removeMutation = useRemoveRoutingMutation()
 
@@ -161,15 +163,24 @@ const DetailsRadio: FC<{
     onEditOpen()
   }
 
-  const onEditSubmit: (id: string) => CreateOrEditModalContentProps['onSubmit'] = (id) => async (values) => {
-    const { text } = values
+  const onEditSubmit: (id: string, name: string) => CreateOrEditModalContentProps['onSubmit'] =
+    (id, name) => async (values) => {
+      const { text } = values
 
-    await updateMutation.mutateAsync({
-      id,
-      routing: text
-    })
-    onEditClose()
-  }
+      await updateMutation.mutateAsync({
+        id,
+        routing: text
+      })
+
+      if (values.name !== name) {
+        await renameMutation.mutateAsync({
+          id,
+          name: values.name
+        })
+      }
+
+      onEditClose()
+    }
 
   return (
     <ResourceRadio
@@ -195,7 +206,7 @@ const DetailsRadio: FC<{
               name={details.name}
               id={details.id}
               form={editForm}
-              onSubmit={onEditSubmit(details.id)}
+              onSubmit={onEditSubmit(details.id, details.name)}
             />
 
             {!isDefault && (
