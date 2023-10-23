@@ -2,7 +2,7 @@
 # https://github.com/nodejs/node/issues/50269
 # neither on bun, because of this issue:
 # https://github.com/oven-sh/bun/issues/4671
-FROM docker.io/node:20-alpine AS base
+FROM docker.io/node:21-alpine AS base
 
 FROM base AS builder
 
