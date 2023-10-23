@@ -110,7 +110,7 @@ pnpm run build
 > Run Server
 
 ```shell
-WING_API_URL=http://localhost:2023 pnpm start
+pnpm start
 ```
 
 ## Contributing
