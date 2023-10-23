@@ -11,6 +11,7 @@ WORKDIR /build
 COPY . .
 
 ENV HUSKY 0
+ENV STANDALONE 1
 
 RUN corepack enable
 RUN corepack prepare pnpm@latest --activate
