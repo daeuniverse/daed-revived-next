@@ -4,5 +4,7 @@ services:
   daed:
     build: .
     container_name: daed
+    environment:
+      WING_API_URL: http://localhost:2023
     ports:
       - '3000:3000'

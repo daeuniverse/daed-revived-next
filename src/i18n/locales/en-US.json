@@ -2,7 +2,6 @@
   "form": {
     "fields": {
       "name": "Name",
-      "endpointURL": "Endpoint URL",
       "username": "Username",
       "password": "Password",
       "currentPassword": "Current Password",
@@ -91,6 +90,7 @@
     "update": "Update {{resourceName}}"
   },
   "primitives": {
+    "endpointURL": "Endpoint URL",
     "create": "Create {{resourceName}}",
     "remove": "Remove {{resourceName}}",
     "group": "Group",

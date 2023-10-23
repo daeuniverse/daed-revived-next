@@ -13,16 +13,16 @@ export const POST = async (req: Request) => {
 
   const { currentPassword, newPassword } = await req.json()
 
-  const { endpointURL, token } = jwtPayload
+  const { token } = jwtPayload
 
   const { updatePassword } = await request<UpdatePasswordMutation>(
-    endpointURL,
+    'http://localhost:3000/api/wing/graphql',
     updatePasswordMutation,
     { currentPassword, newPassword },
     { Authorization: `Bearer ${token}` }
   )
 
-  storeJWTAsCookie(endpointURL, updatePassword)
+  storeJWTAsCookie(updatePassword)
 
   return new NextResponse()
 }

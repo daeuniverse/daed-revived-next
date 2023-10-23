@@ -9,16 +9,11 @@ export const decodeJWTFromCookie = () => {
 
   if (!jwtToken) return null
 
-  const { endpointURL, token } = jwt.decode(jwtToken.value, { json: true })! as { endpointURL: string; token: string }
-
-  return {
-    endpointURL,
-    token
-  }
+  return jwt.decode(jwtToken.value, { json: true })! as { token: string }
 }
 
-export const storeJWTAsCookie = (endpointURL: string, token: string) => {
-  const jwtToken = jwt.sign({ endpointURL, token }, process.env.NEXT_PUBLIC_JWT_SECRET!)
+export const storeJWTAsCookie = (token: string) => {
+  const jwtToken = jwt.sign({ token }, process.env.NEXT_PUBLIC_JWT_SECRET!)
 
   cookies().set('jwtToken', jwtToken, {
     maxAge: 60 * 60 * 24 * 30, // 30 days

@@ -5,26 +5,22 @@ import { useRouter } from 'next/navigation'
 import { FC, ReactNode, createContext, useContext, useMemo } from 'react'
 import { toast } from 'sonner'
 
-export type SessionContextProps = { endpointURL: string; token: string }
+export type SessionContextProps = { token: string }
 
-const SessionContext = createContext<SessionContextProps>(null as unknown as { endpointURL: string; token: string })
+const SessionContext = createContext<SessionContextProps>(null as unknown as { token: string })
 
 export const useSession = () => useContext(SessionContext)
 
-export const SessionProvider: FC<SessionContextProps & { children: ReactNode }> = ({
-  endpointURL,
-  token,
-  children
-}) => {
+export const SessionProvider: FC<SessionContextProps & { children: ReactNode }> = ({ token, children }) => {
   const router = useRouter()
 
-  if (!endpointURL || !token) {
+  if (!token) {
     router.replace('/login')
 
     return null
   }
 
-  return <SessionContext.Provider value={{ endpointURL, token }}>{children}</SessionContext.Provider>
+  return <SessionContext.Provider value={{ token }}>{children}</SessionContext.Provider>
 }
 
 const GraphqlClientContext = createContext<GraphQLClient>(null as unknown as GraphQLClient)
@@ -33,11 +29,11 @@ export const useGraphqlClient = () => useContext(GraphqlClientContext)
 
 export const GraphqlClientProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const router = useRouter()
-  const { endpointURL, token } = useSession()
+  const { token } = useSession()
 
   const graphqlClient = useMemo(
     () =>
-      new GraphQLClient(endpointURL, {
+      new GraphQLClient('/api/wing/graphql', {
         headers: { Authorization: `Bearer ${token}` },
         responseMiddleware: (response) => {
           const error = (response as ClientError).response?.errors?.[0]
@@ -53,7 +49,7 @@ export const GraphqlClientProvider: FC<{ children: ReactNode }> = ({ children })
           }
         }
       }),
-    [endpointURL, token, router]
+    [token, router]
   )
 
   return <GraphqlClientContext.Provider value={graphqlClient}>{children}</GraphqlClientContext.Provider>

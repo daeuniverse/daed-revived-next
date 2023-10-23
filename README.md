@@ -74,7 +74,7 @@ Learn more about dae-wing at [dae-wing](https://github.com/daeuniverse/dae-wing)
 > Pull and run the prebuilt docker image in the background
 
 ```shell
-docker run -d --name daed -p 3000:3000 ghcr.io/daeuniverse/daed
+docker run -d --name daed -p 3000:3000 -e WING_API_URL=http://localhost:2023 ghcr.io/daeuniverse/daed
 ```
 
 Alternatively, you can build and run the docker image on your own
@@ -88,7 +88,7 @@ docker build . -t daed
 > Run the docker image you just build in the background
 
 ```shell
-docker run -d --name daed -p 3000:3000 daed
+docker run -d --name daed -p 3000:3000 -e WING_API_URL=http://localhost:2023 daed
 ```
 
 ### From Source
@@ -108,7 +108,7 @@ pnpm run build
 > Run Server
 
 ```shell
-pnpm start
+WING_API_URL=http://localhost:2023 pnpm start
 ```
 
 ## Contributing

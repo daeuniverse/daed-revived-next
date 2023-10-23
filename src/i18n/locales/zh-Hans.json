@@ -2,7 +2,6 @@
   "form": {
     "fields": {
       "name": "名称",
-      "endpointURL": "接口地址",
       "username": "用户名",
       "password": "密码",
       "currentPassword": "当前密码",
@@ -91,6 +90,7 @@
     "update": "修改{{resourceName}}"
   },
   "primitives": {
+    "endpointURL": "接口地址",
     "create": "创建{{resourceName}}",
     "remove": "移除{{resourceName}}",
     "group": "群组",

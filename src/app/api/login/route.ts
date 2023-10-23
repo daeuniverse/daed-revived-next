@@ -4,10 +4,10 @@ import { graphql } from '~/apis/gql'
 import { storeJWTAsCookie } from '~/helpers'
 
 export const POST = async (req: Request) => {
-  const { endpointURL, username, password } = await req.json()
+  const { username, password } = await req.json()
 
   const { numberUsers } = await request(
-    endpointURL,
+    'http://localhost:3000/api/wing/graphql',
     graphql(`
       query NumberUsers {
         numberUsers
@@ -17,7 +17,7 @@ export const POST = async (req: Request) => {
 
   if (numberUsers === 0) {
     const { createUser } = await request(
-      endpointURL,
+      'http://localhost:3000/api/wing/graphql',
       graphql(`
         mutation CreateUser($username: String!, $password: String!) {
           createUser(username: $username, password: $password)
@@ -26,13 +26,13 @@ export const POST = async (req: Request) => {
       { username, password }
     )
 
-    storeJWTAsCookie(endpointURL, createUser)
+    storeJWTAsCookie(createUser)
 
     return new NextResponse()
   }
 
   const { token } = await request(
-    endpointURL,
+    'http://localhost:3000/api/wing/graphql',
     graphql(`
       query Token($username: String!, $password: String!) {
         token(username: $username, password: $password)
@@ -41,7 +41,7 @@ export const POST = async (req: Request) => {
     { username, password }
   )
 
-  storeJWTAsCookie(endpointURL, token)
+  storeJWTAsCookie(token)
 
   return new NextResponse()
 }

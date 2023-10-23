@@ -9,10 +9,10 @@ export default function ProtectedLayout({ children }: { children: ReactNode }) {
 
   if (!jwtPayload) redirect('/login')
 
-  const { endpointURL, token } = jwtPayload
+  const { token } = jwtPayload
 
   return (
-    <Providers endpointURL={endpointURL} token={token}>
+    <Providers token={token}>
       <Header />
 
       <section className="flex-1 overflow-y-auto p-2 sm:p-4">{children}</section>

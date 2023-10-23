@@ -33,9 +33,9 @@ export default function LoginPage() {
 
       <div className="flex w-full flex-col gap-2 sm:flex-1">
         <form
-          onSubmit={form.handleSubmit(async ({ endpointURL, username, password }) => {
+          onSubmit={form.handleSubmit(async ({ username, password }) => {
             try {
-              await ky.post('/api/login', { json: { endpointURL, username, password } }).json<{ token: string }>()
+              await ky.post('/api/login', { json: { username, password } }).json<{ token: string }>()
 
               router.replace('/network')
             } catch (err) {
@@ -43,16 +43,6 @@ export default function LoginPage() {
             }
           })}
         >
-          <Input
-            type="url"
-            label={t('form.fields.endpointURL')}
-            placeholder="http://127.0.0.1:2023/graphql"
-            description={t('form.descriptions.pleaseEnter', { fieldName: t('form.fields.endpointURL') })}
-            isRequired
-            errorMessage={form.formState.errors.endpointURL?.message}
-            {...form.register('endpointURL')}
-          />
-
           <Input
             type="text"
             label={t('form.fields.username')}
