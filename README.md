@@ -73,11 +73,11 @@ Learn more about dae-wing at [dae-wing](https://github.com/daeuniverse/dae-wing)
 
 Create a `.env.local` file to customize daed
 
-| Name         | Default               | Required | Description                     |
-| ------------ | --------------------- | -------- | ------------------------------- |
-| WING_API_URL | http://localhost:2023 | ✅       | API endpoint URL of dae-wing    |
-| HOSTNAME     | 0.0.0.0               | ⬜       | HTTP hostname daed listening on |
-| PORT         | 3000                  | ⬜       | HTTP port daed listening on     |
+| Name         | Default               | Required | Description                   |
+| ------------ | --------------------- | -------- | ----------------------------- |
+| WING_API_URL | http://localhost:2023 | ✅       | API Endpoint URL of dae-wing  |
+| HOSTNAME     | 0.0.0.0               | ⬜       | Set the HTTP Hostname of daed |
+| PORT         | 3000                  | ⬜       | Set the HTTP Port of daed     |
 
 ### Docker
 
