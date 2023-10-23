@@ -1,5 +1,8 @@
-# can't build on latest node
-FROM node:20-alpine AS base
+# can't build on latest node version v21.0.0, because of this issue:
+# https://github.com/nodejs/node/issues/50269
+# neither on bun, because of this issue:
+# https://github.com/oven-sh/bun/issues/4671
+FROM docker.io/node:20-alpine AS base
 
 FROM base AS builder
 
