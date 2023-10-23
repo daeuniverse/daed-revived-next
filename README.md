@@ -64,31 +64,33 @@ go build -o dae-wing
 > Run dae-wing with root privileges
 
 ```shell
-sudo ./dae-wing run -c ./ --api-only
+sudo ./dae-wing run -c ./
 ```
 
 Learn more about dae-wing at [dae-wing](https://github.com/daeuniverse/dae-wing)
 
+### Customize daed with `.env.local` file
+
+Create a `.env.local` file to customize daed
+
+| Name         | Default               | Required | Description                     |
+| ------------ | --------------------- | -------- | ------------------------------- |
+| WING_API_URL | http://localhost:2023 | ✅       | API endpoint URL of dae-wing    |
+| HOSTNAME     | 0.0.0.0               | ⬜       | HTTP hostname daed listening on |
+| PORT         | 3000                  | ⬜       | HTTP port daed listening on     |
+
 ### Docker
-
-> Pull and run the prebuilt docker image in the background
-
-```shell
-docker run -d --name daed -p 3000:3000 -e WING_API_URL=http://localhost:2023 ghcr.io/daeuniverse/daed
-```
-
-Alternatively, you can build and run the docker image on your own
 
 > Build the docker image
 
 ```shell
-docker build . -t daed
+docker build -t daed .
 ```
 
 > Run the docker image you just build in the background
 
 ```shell
-docker run -d --name daed -p 3000:3000 -e WING_API_URL=http://localhost:2023 daed
+docker run -d --name daed -p 3000:3000 daed
 ```
 
 ### From Source

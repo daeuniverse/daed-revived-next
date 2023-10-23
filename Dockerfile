@@ -29,12 +29,7 @@ COPY --from=builder /build/public .
 COPY --from=builder /build/.next/standalone .
 COPY --from=builder /build/.next/static ./.next/static
 
-ENV NEXT_TELEMETRY_DISABLED 1
-
 ENV NODE_ENV production
-ENV HOSTNAME "0.0.0.0"
-
-ENV WING_API_URL "http://localhost:2023"
 
 EXPOSE 3000
 
