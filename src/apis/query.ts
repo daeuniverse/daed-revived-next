@@ -25,9 +25,6 @@ export const useGetJSONStorageRequest = <T extends ArrayLike<string>>(paths: T) 
   })
 }
 
-export const useDefaultResourcesQuery = () =>
-  useGetJSONStorageRequest(['defaultConfigID', 'defaultDNSID', 'defaultGroupID', 'defaultRoutingID'] as const)
-
 export const generalQueryKey = ['general']
 export const useGeneralQuery = () => {
   const gqlClient = useGraphqlClient()

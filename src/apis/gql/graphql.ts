@@ -629,6 +629,13 @@ export type GlobalInput = {
   wanInterface?: InputMaybe<Array<Scalars['String']['input']>>
 }
 
+export type SetJsonStorageMutationVariables = Exact<{
+  paths: Array<Scalars['String']['input']> | Scalars['String']['input']
+  values: Array<Scalars['String']['input']> | Scalars['String']['input']
+}>
+
+export type SetJsonStorageMutation = { __typename?: 'Mutation'; setJsonStorage: number }
+
 export type CreateConfigMutationVariables = Exact<{
   name?: InputMaybe<Scalars['String']['input']>
   global?: InputMaybe<GlobalInput>
@@ -1070,6 +1077,61 @@ export type TokenQueryVariables = Exact<{
 
 export type TokenQuery = { __typename?: 'Query'; token: string }
 
+export const SetJsonStorageDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'SetJsonStorage' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'paths' } },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'ListType',
+              type: { kind: 'NonNullType', type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } } }
+            }
+          }
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'values' } },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'ListType',
+              type: { kind: 'NonNullType', type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } } }
+            }
+          }
+        }
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'setJsonStorage' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'paths' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'paths' } }
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'values' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'values' } }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+} as unknown as DocumentNode<SetJsonStorageMutation, SetJsonStorageMutationVariables>
 export const CreateConfigDocument = {
   kind: 'Document',
   definitions: [

@@ -38,7 +38,7 @@ import { useGroupsQuery } from '~/apis/query'
 import { Group, Node, Subscription } from '~/app/(protected)/network/typings'
 import { Button } from '~/components/Button'
 import { Modal, ModalConfirmFormFooter } from '~/components/Modal'
-import { createGroupFormDefault, createGroupFormSchema } from '~/schemas/group'
+import { groupFormDefault, groupFormSchema } from '~/schemas/group'
 
 const GroupContent: FC<{
   group: Group
@@ -316,10 +316,10 @@ export const GroupSection: FC<{ nodes: Node[]; subscriptions: Subscription[] }> 
     handleSubmit,
     reset,
     formState: { errors, dirtyFields, isSubmitting }
-  } = useForm<z.infer<typeof createGroupFormSchema>>({
+  } = useForm<z.infer<typeof groupFormSchema>>({
     shouldFocusError: true,
-    resolver: zodResolver(createGroupFormSchema),
-    defaultValues: createGroupFormDefault
+    resolver: zodResolver(groupFormSchema),
+    defaultValues: groupFormDefault
   })
   const createGroupFormDirty = Object.values(dirtyFields).some((dirty) => dirty)
 

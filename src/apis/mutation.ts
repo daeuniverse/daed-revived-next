@@ -13,26 +13,30 @@ import {
 } from '~/apis/query'
 import { useGraphqlClient } from '~/contexts'
 
+export const setJsonStorageMutation = graphql(`
+  mutation SetJsonStorage($paths: [String!]!, $values: [String!]!) {
+    setJsonStorage(paths: $paths, values: $values)
+  }
+`)
+
+export const createConfigMutation = graphql(`
+  mutation CreateConfig($name: String, $global: globalInput) {
+    createConfig(name: $name, global: $global) {
+      id
+    }
+  }
+`)
+
 export const useCreateConfigMutation = () => {
   const gqlClient = useGraphqlClient()
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: ({ name, global }: { name?: string; global?: GlobalInput }) => {
-      return gqlClient.request(
-        graphql(`
-          mutation CreateConfig($name: String, $global: globalInput) {
-            createConfig(name: $name, global: $global) {
-              id
-            }
-          }
-        `),
-        {
-          name,
-          global
-        }
-      )
-    },
+    mutationFn: ({ name, global }: { name?: string; global?: GlobalInput }) =>
+      gqlClient.request(createConfigMutation, {
+        name,
+        global
+      }),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: configsQueryKey })
     }
@@ -89,22 +93,21 @@ export const useRemoveConfigMutation = () => {
   })
 }
 
+export const selectConfigMutation = graphql(`
+  mutation SelectConfig($id: ID!) {
+    selectConfig(id: $id)
+  }
+`)
+
 export const useSelectConfigMutation = () => {
   const gqlClient = useGraphqlClient()
   const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: ({ id }: { id: string }) => {
-      return gqlClient.request(
-        graphql(`
-          mutation SelectConfig($id: ID!) {
-            selectConfig(id: $id)
-          }
-        `),
-        {
-          id
-        }
-      )
+      return gqlClient.request(selectConfigMutation, {
+        id
+      })
     },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: configsQueryKey })
@@ -137,25 +140,24 @@ export const useRenameConfigMutation = () => {
   })
 }
 
+export const createRoutingMutation = graphql(`
+  mutation CreateRouting($name: String, $routing: String) {
+    createRouting(name: $name, routing: $routing) {
+      id
+    }
+  }
+`)
+
 export const useCreateRoutingMutation = () => {
   const gqlClient = useGraphqlClient()
   const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: ({ name, routing }: { name?: string; routing?: string }) => {
-      return gqlClient.request(
-        graphql(`
-          mutation CreateRouting($name: String, $routing: String) {
-            createRouting(name: $name, routing: $routing) {
-              id
-            }
-          }
-        `),
-        {
-          name,
-          routing
-        }
-      )
+      return gqlClient.request(createRoutingMutation, {
+        name,
+        routing
+      })
     },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: routingsQueryKey })
@@ -214,22 +216,21 @@ export const useRemoveRoutingMutation = () => {
   })
 }
 
+export const selectRoutingMutation = graphql(`
+  mutation SelectRouting($id: ID!) {
+    selectRouting(id: $id)
+  }
+`)
+
 export const useSelectRoutingMutation = () => {
   const gqlClient = useGraphqlClient()
   const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: ({ id }: { id: string }) => {
-      return gqlClient.request(
-        graphql(`
-          mutation SelectRouting($id: ID!) {
-            selectRouting(id: $id)
-          }
-        `),
-        {
-          id
-        }
-      )
+      return gqlClient.request(selectRoutingMutation, {
+        id
+      })
     },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: routingsQueryKey })
@@ -263,25 +264,24 @@ export const useRenameRoutingMutation = () => {
   })
 }
 
+export const createDNSMutation = graphql(`
+  mutation CreateDNS($name: String, $dns: String) {
+    createDns(name: $name, dns: $dns) {
+      id
+    }
+  }
+`)
+
 export const useCreateDNSMutation = () => {
   const gqlClient = useGraphqlClient()
   const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: ({ name, dns }: { name?: string; dns?: string }) => {
-      return gqlClient.request(
-        graphql(`
-          mutation CreateDNS($name: String, $dns: String) {
-            createDns(name: $name, dns: $dns) {
-              id
-            }
-          }
-        `),
-        {
-          name,
-          dns
-        }
-      )
+      return gqlClient.request(createDNSMutation, {
+        name,
+        dns
+      })
     },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: dnssQueryKey })
@@ -339,22 +339,21 @@ export const useRemoveDNSMutation = () => {
   })
 }
 
+export const selectDNSMutation = graphql(`
+  mutation SelectDNS($id: ID!) {
+    selectDns(id: $id)
+  }
+`)
+
 export const useSelectDNSMutation = () => {
   const gqlClient = useGraphqlClient()
   const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: ({ id }: { id: string }) => {
-      return gqlClient.request(
-        graphql(`
-          mutation SelectDNS($id: ID!) {
-            selectDns(id: $id)
-          }
-        `),
-        {
-          id
-        }
-      )
+      return gqlClient.request(selectDNSMutation, {
+        id
+      })
     },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: dnssQueryKey })
@@ -387,26 +386,25 @@ export const useRenameDNSMutation = () => {
   })
 }
 
+export const createGroupMutation = graphql(`
+  mutation CreateGroup($name: String!, $policy: Policy!, $policyParams: [PolicyParam!]) {
+    createGroup(name: $name, policy: $policy, policyParams: $policyParams) {
+      id
+    }
+  }
+`)
+
 export const useCreateGroupMutation = () => {
   const gqlClient = useGraphqlClient()
   const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: ({ name, policy, policyParams }: { name: string; policy: Policy; policyParams: PolicyParam[] }) => {
-      return gqlClient.request(
-        graphql(`
-          mutation CreateGroup($name: String!, $policy: Policy!, $policyParams: [PolicyParam!]) {
-            createGroup(name: $name, policy: $policy, policyParams: $policyParams) {
-              id
-            }
-          }
-        `),
-        {
-          name,
-          policy,
-          policyParams
-        }
-      )
+      return gqlClient.request(createGroupMutation, {
+        name,
+        policy,
+        policyParams
+      })
     },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: groupsQueryKey })

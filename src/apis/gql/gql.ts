@@ -13,37 +13,36 @@ import * as types from './graphql'
  * Therefore it is highly recommended to use the babel or swc plugin for production.
  */
 const documents = {
-  '\n          mutation CreateConfig($name: String, $global: globalInput) {\n            createConfig(name: $name, global: $global) {\n              id\n            }\n          }\n        ':
+  '\n  mutation SetJsonStorage($paths: [String!]!, $values: [String!]!) {\n    setJsonStorage(paths: $paths, values: $values)\n  }\n':
+    types.SetJsonStorageDocument,
+  '\n  mutation CreateConfig($name: String, $global: globalInput) {\n    createConfig(name: $name, global: $global) {\n      id\n    }\n  }\n':
     types.CreateConfigDocument,
   '\n          mutation UpdateConfig($id: ID!, $global: globalInput!) {\n            updateConfig(id: $id, global: $global) {\n              id\n            }\n          }\n        ':
     types.UpdateConfigDocument,
   '\n          mutation RemoveConfig($id: ID!) {\n            removeConfig(id: $id)\n          }\n        ':
     types.RemoveConfigDocument,
-  '\n          mutation SelectConfig($id: ID!) {\n            selectConfig(id: $id)\n          }\n        ':
-    types.SelectConfigDocument,
+  '\n  mutation SelectConfig($id: ID!) {\n    selectConfig(id: $id)\n  }\n': types.SelectConfigDocument,
   '\n          mutation RenameConfig($id: ID!, $name: String!) {\n            renameConfig(id: $id, name: $name)\n          }\n        ':
     types.RenameConfigDocument,
-  '\n          mutation CreateRouting($name: String, $routing: String) {\n            createRouting(name: $name, routing: $routing) {\n              id\n            }\n          }\n        ':
+  '\n  mutation CreateRouting($name: String, $routing: String) {\n    createRouting(name: $name, routing: $routing) {\n      id\n    }\n  }\n':
     types.CreateRoutingDocument,
   '\n          mutation UpdateRouting($id: ID!, $routing: String!) {\n            updateRouting(id: $id, routing: $routing) {\n              id\n            }\n          }\n        ':
     types.UpdateRoutingDocument,
   '\n          mutation RemoveRouting($id: ID!) {\n            removeRouting(id: $id)\n          }\n        ':
     types.RemoveRoutingDocument,
-  '\n          mutation SelectRouting($id: ID!) {\n            selectRouting(id: $id)\n          }\n        ':
-    types.SelectRoutingDocument,
+  '\n  mutation SelectRouting($id: ID!) {\n    selectRouting(id: $id)\n  }\n': types.SelectRoutingDocument,
   '\n          mutation RenameRouting($id: ID!, $name: String!) {\n            renameRouting(id: $id, name: $name)\n          }\n        ':
     types.RenameRoutingDocument,
-  '\n          mutation CreateDNS($name: String, $dns: String) {\n            createDns(name: $name, dns: $dns) {\n              id\n            }\n          }\n        ':
+  '\n  mutation CreateDNS($name: String, $dns: String) {\n    createDns(name: $name, dns: $dns) {\n      id\n    }\n  }\n':
     types.CreateDnsDocument,
   '\n          mutation UpdateDNS($id: ID!, $dns: String!) {\n            updateDns(id: $id, dns: $dns) {\n              id\n            }\n          }\n        ':
     types.UpdateDnsDocument,
   '\n          mutation RemoveDNS($id: ID!) {\n            removeDns(id: $id)\n          }\n        ':
     types.RemoveDnsDocument,
-  '\n          mutation SelectDNS($id: ID!) {\n            selectDns(id: $id)\n          }\n        ':
-    types.SelectDnsDocument,
+  '\n  mutation SelectDNS($id: ID!) {\n    selectDns(id: $id)\n  }\n': types.SelectDnsDocument,
   '\n          mutation RenameDNS($id: ID!, $name: String!) {\n            renameDns(id: $id, name: $name)\n          }\n        ':
     types.RenameDnsDocument,
-  '\n          mutation CreateGroup($name: String!, $policy: Policy!, $policyParams: [PolicyParam!]) {\n            createGroup(name: $name, policy: $policy, policyParams: $policyParams) {\n              id\n            }\n          }\n        ':
+  '\n  mutation CreateGroup($name: String!, $policy: Policy!, $policyParams: [PolicyParam!]) {\n    createGroup(name: $name, policy: $policy, policyParams: $policyParams) {\n      id\n    }\n  }\n':
     types.CreateGroupDocument,
   '\n              mutation RemoveGroup($id: ID!) {\n                removeGroup(id: $id)\n              }\n            ':
     types.RemoveGroupDocument,
@@ -96,6 +95,8 @@ const documents = {
     types.UserDocument,
   '\n        query User {\n          user {\n            username\n            name\n            avatar\n          }\n        }\n      ':
     types.UserDocument,
+  '\n      query JsonStorage($paths: [String!]) {\n        jsonStorage(paths: $paths)\n      }\n    ':
+    types.JsonStorageDocument,
   '\n      query NumberUsers {\n        numberUsers\n      }\n    ': types.NumberUsersDocument,
   '\n        mutation CreateUser($username: String!, $password: String!) {\n          createUser(username: $username, password: $password)\n        }\n      ':
     types.CreateUserDocument,
@@ -121,8 +122,14 @@ export function graphql(source: string): unknown
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(
-  source: '\n          mutation CreateConfig($name: String, $global: globalInput) {\n            createConfig(name: $name, global: $global) {\n              id\n            }\n          }\n        '
-): (typeof documents)['\n          mutation CreateConfig($name: String, $global: globalInput) {\n            createConfig(name: $name, global: $global) {\n              id\n            }\n          }\n        ']
+  source: '\n  mutation SetJsonStorage($paths: [String!]!, $values: [String!]!) {\n    setJsonStorage(paths: $paths, values: $values)\n  }\n'
+): (typeof documents)['\n  mutation SetJsonStorage($paths: [String!]!, $values: [String!]!) {\n    setJsonStorage(paths: $paths, values: $values)\n  }\n']
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: '\n  mutation CreateConfig($name: String, $global: globalInput) {\n    createConfig(name: $name, global: $global) {\n      id\n    }\n  }\n'
+): (typeof documents)['\n  mutation CreateConfig($name: String, $global: globalInput) {\n    createConfig(name: $name, global: $global) {\n      id\n    }\n  }\n']
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -139,8 +146,8 @@ export function graphql(
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(
-  source: '\n          mutation SelectConfig($id: ID!) {\n            selectConfig(id: $id)\n          }\n        '
-): (typeof documents)['\n          mutation SelectConfig($id: ID!) {\n            selectConfig(id: $id)\n          }\n        ']
+  source: '\n  mutation SelectConfig($id: ID!) {\n    selectConfig(id: $id)\n  }\n'
+): (typeof documents)['\n  mutation SelectConfig($id: ID!) {\n    selectConfig(id: $id)\n  }\n']
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -151,8 +158,8 @@ export function graphql(
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(
-  source: '\n          mutation CreateRouting($name: String, $routing: String) {\n            createRouting(name: $name, routing: $routing) {\n              id\n            }\n          }\n        '
-): (typeof documents)['\n          mutation CreateRouting($name: String, $routing: String) {\n            createRouting(name: $name, routing: $routing) {\n              id\n            }\n          }\n        ']
+  source: '\n  mutation CreateRouting($name: String, $routing: String) {\n    createRouting(name: $name, routing: $routing) {\n      id\n    }\n  }\n'
+): (typeof documents)['\n  mutation CreateRouting($name: String, $routing: String) {\n    createRouting(name: $name, routing: $routing) {\n      id\n    }\n  }\n']
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -169,8 +176,8 @@ export function graphql(
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(
-  source: '\n          mutation SelectRouting($id: ID!) {\n            selectRouting(id: $id)\n          }\n        '
-): (typeof documents)['\n          mutation SelectRouting($id: ID!) {\n            selectRouting(id: $id)\n          }\n        ']
+  source: '\n  mutation SelectRouting($id: ID!) {\n    selectRouting(id: $id)\n  }\n'
+): (typeof documents)['\n  mutation SelectRouting($id: ID!) {\n    selectRouting(id: $id)\n  }\n']
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -181,8 +188,8 @@ export function graphql(
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(
-  source: '\n          mutation CreateDNS($name: String, $dns: String) {\n            createDns(name: $name, dns: $dns) {\n              id\n            }\n          }\n        '
-): (typeof documents)['\n          mutation CreateDNS($name: String, $dns: String) {\n            createDns(name: $name, dns: $dns) {\n              id\n            }\n          }\n        ']
+  source: '\n  mutation CreateDNS($name: String, $dns: String) {\n    createDns(name: $name, dns: $dns) {\n      id\n    }\n  }\n'
+): (typeof documents)['\n  mutation CreateDNS($name: String, $dns: String) {\n    createDns(name: $name, dns: $dns) {\n      id\n    }\n  }\n']
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -199,8 +206,8 @@ export function graphql(
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(
-  source: '\n          mutation SelectDNS($id: ID!) {\n            selectDns(id: $id)\n          }\n        '
-): (typeof documents)['\n          mutation SelectDNS($id: ID!) {\n            selectDns(id: $id)\n          }\n        ']
+  source: '\n  mutation SelectDNS($id: ID!) {\n    selectDns(id: $id)\n  }\n'
+): (typeof documents)['\n  mutation SelectDNS($id: ID!) {\n    selectDns(id: $id)\n  }\n']
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -211,8 +218,8 @@ export function graphql(
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(
-  source: '\n          mutation CreateGroup($name: String!, $policy: Policy!, $policyParams: [PolicyParam!]) {\n            createGroup(name: $name, policy: $policy, policyParams: $policyParams) {\n              id\n            }\n          }\n        '
-): (typeof documents)['\n          mutation CreateGroup($name: String!, $policy: Policy!, $policyParams: [PolicyParam!]) {\n            createGroup(name: $name, policy: $policy, policyParams: $policyParams) {\n              id\n            }\n          }\n        ']
+  source: '\n  mutation CreateGroup($name: String!, $policy: Policy!, $policyParams: [PolicyParam!]) {\n    createGroup(name: $name, policy: $policy, policyParams: $policyParams) {\n      id\n    }\n  }\n'
+): (typeof documents)['\n  mutation CreateGroup($name: String!, $policy: Policy!, $policyParams: [PolicyParam!]) {\n    createGroup(name: $name, policy: $policy, policyParams: $policyParams) {\n      id\n    }\n  }\n']
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -369,6 +376,12 @@ export function graphql(
 export function graphql(
   source: '\n        query User {\n          user {\n            username\n            name\n            avatar\n          }\n        }\n      '
 ): (typeof documents)['\n        query User {\n          user {\n            username\n            name\n            avatar\n          }\n        }\n      ']
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: '\n      query JsonStorage($paths: [String!]) {\n        jsonStorage(paths: $paths)\n      }\n    '
+): (typeof documents)['\n      query JsonStorage($paths: [String!]) {\n        jsonStorage(paths: $paths)\n      }\n    ']
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
