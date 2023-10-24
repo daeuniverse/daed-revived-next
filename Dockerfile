@@ -23,9 +23,10 @@ FROM base AS runner
 
 WORKDIR /app
 
+COPY --from=builder /build/public ./public
+
 RUN mkdir .next
 
-COPY --from=builder /build/public .
 COPY --from=builder /build/.next/standalone .
 COPY --from=builder /build/.next/static ./.next/static
 
