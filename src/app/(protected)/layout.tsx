@@ -15,7 +15,9 @@ export default function ProtectedLayout({ children }: { children: ReactNode }) {
     <Providers token={token}>
       <Header />
 
-      <section className="flex-1 overflow-y-auto p-2 sm:p-4">{children}</section>
+      <section className="flex-1 overflow-y-auto p-2 sm:p-4">
+        <div className="pb-12">{children}</div>
+      </section>
     </Providers>
   )
 }
