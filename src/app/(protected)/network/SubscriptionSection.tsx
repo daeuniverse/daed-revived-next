@@ -186,7 +186,7 @@ export const SubscriptionSection: FC<{ subscriptions: Subscription[] }> = ({ sub
           <AccordionItem
             key={subscription.id}
             title={`${subscription.tag} (${subscription.nodes.edges.length})`}
-            subtitle={dayjs(subscription.updatedAt).format('YYYY-MM-DD hh:mm:ss')}
+            subtitle={dayjs(subscription.updatedAt).format('YYYY-MM-DD HH:mm:ss')}
             startContent={
               <div className="flex items-center gap-2">
                 <Button
