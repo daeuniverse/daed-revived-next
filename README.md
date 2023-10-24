@@ -43,7 +43,7 @@ A modern web dashboard for dae
 > Clone the repository with git submodules (dae-wing) using git
 
 ```shell
-git clone https://github.com/daeuniverse/daed.git
+git clone https://github.com/daeuniverse/daed-revived-next.git daed
 cd daed
 
 # Initialize git submodules
