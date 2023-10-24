@@ -21,14 +21,11 @@ export const resources = {
 } as const
 
 export const initializeI18n = async () => {
-  await i18n
-    .use(detectLanguage)
-    .use(initReactI18next)
-    .init({
-      resources,
-      returnNull: false,
-      fallbackLng: { 'en-US': ['en-US'] }
-    })
+  await i18n.use(detectLanguage).use(initReactI18next).init({
+    lng: LANG.enUS,
+    resources,
+    returnNull: false
+  })
 
   z.setErrorMap(zodI18nMap)
 }
