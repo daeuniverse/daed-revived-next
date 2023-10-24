@@ -101,7 +101,6 @@ const initialize = async (token: string) => {
 
 export const POST = async (req: Request) => {
   const { username, password } = await req.json()
-  console.log(process.env.HOSTNAME, process.env.PORT)
 
   const { numberUsers } = await request(
     graphqlAPIURL,
