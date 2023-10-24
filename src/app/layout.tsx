@@ -8,17 +8,17 @@ import { Providers } from './providers'
 
 import '~/styles/globals.css'
 
-// for latin characters
+// general purpose
+const notoSansSCFont = Noto_Sans_SC({
+  subsets: ['latin', 'latin-ext', 'cyrillic', 'vietnamese'],
+  variable: '--font-noto-sans'
+})
+
+// for code editor
 const ubuntuMonoFont = Ubuntu_Mono({
   subsets: ['latin', 'latin-ext', 'cyrillic', 'cyrillic-ext', 'greek', 'greek-ext'],
   weight: ['400', '700'],
   variable: '--font-ubuntu-mono'
-})
-
-// for chinese characters
-const notoSansSCFont = Noto_Sans_SC({
-  subsets: ['vietnamese'],
-  variable: '--font-noto-sans'
 })
 
 // for emojis and other characters, such as national flags
@@ -40,7 +40,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
     <html
       lang="en"
       suppressHydrationWarning
-      className={cn(ubuntuMonoFont.variable, notoSansSCFont.variable, twemojiFont.variable)}
+      className={cn(notoSansSCFont.variable, ubuntuMonoFont.variable, twemojiFont.variable)}
     >
       <body>
         <Providers>
