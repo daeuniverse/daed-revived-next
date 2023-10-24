@@ -21,9 +21,11 @@ export default function NetworkPage() {
           subscriptions={subscriptionsQuery.data?.subscriptions || []}
         />
 
-        <NodeSection nodes={nodesQuery.data?.nodes.edges || []} isLoading={nodesQuery.isLoading} />
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <SubscriptionSection subscriptions={subscriptionsQuery.data?.subscriptions || []} />
 
-        <SubscriptionSection subscriptions={subscriptionsQuery.data?.subscriptions || []} />
+          <NodeSection nodes={nodesQuery.data?.nodes.edges || []} isLoading={nodesQuery.isLoading} />
+        </div>
       </div>
     </ResourcePage>
   )

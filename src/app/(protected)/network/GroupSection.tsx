@@ -1,9 +1,13 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
+import { Divider } from '@nextui-org/divider'
 import {
   Accordion,
   AccordionItem,
+  Card,
+  CardBody,
+  CardHeader,
   Chip,
   Dropdown,
   DropdownItem,
@@ -63,128 +67,147 @@ const GroupContent: FC<{
   const groupDelNodesMutation = useGroupDelNodesMutation()
 
   return (
-    <div className="flex flex-col gap-4 py-4">
-      <Select
-        label={t('primitives.node')}
-        placeholder={t('primitives.node')}
-        variant="bordered"
-        isMultiline
-        selectionMode="multiple"
-        labelPlacement="outside"
-        classNames={{ trigger: 'py-2' }}
-        items={nodes
-          .map(({ id, tag, name }) => ({ id, name: tag || name, subscription: '' }))
-          .concat(
-            subscriptions
-              .map((subscription) =>
-                subscription.nodes.edges.map(({ id, tag, name }) => ({
-                  id,
-                  name: tag || name,
-                  subscription: subscription.tag || ''
-                }))
-              )
-              .flatMap((node) => node)
+    <Accordion variant="splitted">
+      <AccordionItem
+        classNames={{ title: 'text-sm' }}
+        title={`${t('primitives.node')} (${group.nodes.length})`}
+        textValue="node"
+      >
+        <Select
+          classNames={{ trigger: 'py-2' }}
+          aria-label="node"
+          placeholder={t('primitives.node')}
+          variant="bordered"
+          isMultiline
+          selectionMode="multiple"
+          labelPlacement="outside"
+          items={nodes
+            .map(({ id, tag, name }) => ({ id, name: tag || name, subscription: '' }))
+            .concat(
+              subscriptions
+                .map((subscription) =>
+                  subscription.nodes.edges.map(({ id, tag, name }) => ({
+                    id,
+                    name: tag || name,
+                    subscription: subscription.tag || ''
+                  }))
+                )
+                .flatMap((node) => node)
+            )}
+          selectedKeys={selectedNodes}
+          onSelectionChange={async (selected) => {
+            const nodesToAdd = differenceWith(
+              selected === 'all' ? allNodes : (Array.from(selected) as string[]),
+              selectedNodes
+            )
+            const nodesToRemove = differenceWith(
+              selectedNodes,
+              selected === 'all' ? allNodes : (Array.from(selected) as string[])
+            )
+
+            if (nodesToAdd.length > 0) {
+              await groupAddNodesMutation.mutateAsync({ id: group.id, nodeIDs: nodesToAdd })
+            }
+
+            if (nodesToRemove.length > 0) {
+              await groupDelNodesMutation.mutateAsync({ id: group.id, nodeIDs: nodesToRemove })
+            }
+          }}
+          renderValue={(items) => (
+            <div className="flex flex-wrap gap-2">
+              {items.map((item) => {
+                const nodeID = item.textValue!
+                const nodeName = item.data?.name
+
+                return (
+                  <Chip
+                    key={item.key}
+                    radius="sm"
+                    classNames={{ base: 'max-w-full', content: 'truncate' }}
+                    onClose={async () => {
+                      await groupDelNodesMutation.mutateAsync({ id: group.id, nodeIDs: [nodeID] })
+                    }}
+                  >
+                    {nodeName} {item.data?.subscription && `(${item.data.subscription})`}
+                  </Chip>
+                )
+              })}
+            </div>
           )}
-        selectedKeys={selectedNodes}
-        onSelectionChange={async (selected) => {
-          const nodesToAdd = differenceWith(
-            selected === 'all' ? allNodes : (Array.from(selected) as string[]),
-            selectedNodes
-          )
-          const nodesToRemove = differenceWith(
-            selectedNodes,
-            selected === 'all' ? allNodes : (Array.from(selected) as string[])
-          )
+        >
+          {(node) => (
+            <SelectItem key={node.id} textValue={node.id}>
+              {node.name} {node.subscription && `(${node.subscription})`}
+            </SelectItem>
+          )}
+        </Select>
+      </AccordionItem>
 
-          if (nodesToAdd.length > 0) {
-            await groupAddNodesMutation.mutateAsync({ id: group.id, nodeIDs: nodesToAdd })
-          }
+      <AccordionItem
+        classNames={{ title: 'text-sm' }}
+        title={`${t('primitives.subscription')} (${group.subscriptions.length})`}
+        textValue="subscription"
+      >
+        <Select
+          classNames={{ trigger: 'py-2' }}
+          aria-label="subscription"
+          variant="bordered"
+          placeholder={t('primitives.subscription')}
+          isMultiline={true}
+          selectionMode="multiple"
+          labelPlacement="outside"
+          selectedKeys={selectedSubscriptions}
+          onSelectionChange={async (selected) => {
+            const subscriptionsToAdd = differenceWith(
+              selected === 'all' ? allSubscriptions : (Array.from(selected) as string[]),
+              selectedSubscriptions
+            )
+            const subscriptionsToRemove = differenceWith(
+              selectedSubscriptions,
+              selected === 'all' ? allSubscriptions : (Array.from(selected) as string[])
+            )
 
-          if (nodesToRemove.length > 0) {
-            await groupDelNodesMutation.mutateAsync({ id: group.id, nodeIDs: nodesToRemove })
-          }
-        }}
-        renderValue={(items) => (
-          <div className="flex flex-wrap gap-2">
-            {items.map((item) => {
-              const nodeID = item.textValue!
-              const nodeName = item.data?.name
+            if (subscriptionsToAdd.length > 0) {
+              await groupAddSubscriptionsMutation.mutateAsync({ id: group.id, subscriptionIDs: subscriptionsToAdd })
+            }
 
-              return (
+            if (subscriptionsToRemove.length > 0) {
+              await groupDelSubscriptionsMutation.mutateAsync({
+                id: group.id,
+                subscriptionIDs: subscriptionsToRemove
+              })
+            }
+          }}
+          items={subscriptions}
+          renderValue={(items) => (
+            <div className="flex flex-wrap gap-2">
+              {items.map((item) => (
                 <Chip
                   key={item.key}
-                  classNames={{ base: 'max-w-full', content: 'truncate' }}
+                  classNames={{
+                    content: 'block truncate'
+                  }}
                   onClose={async () => {
-                    await groupDelNodesMutation.mutateAsync({ id: group.id, nodeIDs: [nodeID] })
+                    await groupDelSubscriptionsMutation.mutateAsync({
+                      id: group.id,
+                      subscriptionIDs: [item.data!.id]
+                    })
                   }}
                 >
-                  {nodeName} {item.data?.subscription && `(${item.data.subscription})`}
+                  {item.data!.tag}
                 </Chip>
-              )
-            })}
-          </div>
-        )}
-      >
-        {(node) => (
-          <SelectItem key={node.id} textValue={node.id}>
-            {node.name} {node.subscription && `(${node.subscription})`}
-          </SelectItem>
-        )}
-      </Select>
-
-      <Select
-        variant="bordered"
-        label={t('primitives.subscription')}
-        placeholder={t('primitives.subscription')}
-        isMultiline={true}
-        selectionMode="multiple"
-        labelPlacement="outside"
-        classNames={{ trigger: 'py-2' }}
-        selectedKeys={selectedSubscriptions}
-        onSelectionChange={async (selected) => {
-          const subscriptionsToAdd = differenceWith(
-            selected === 'all' ? allSubscriptions : (Array.from(selected) as string[]),
-            selectedSubscriptions
-          )
-          const subscriptionsToRemove = differenceWith(
-            selectedSubscriptions,
-            selected === 'all' ? allSubscriptions : (Array.from(selected) as string[])
-          )
-
-          if (subscriptionsToAdd.length > 0) {
-            await groupAddSubscriptionsMutation.mutateAsync({ id: group.id, subscriptionIDs: subscriptionsToAdd })
-          }
-
-          if (subscriptionsToRemove.length > 0) {
-            await groupDelSubscriptionsMutation.mutateAsync({ id: group.id, subscriptionIDs: subscriptionsToRemove })
-          }
-        }}
-        items={subscriptions}
-        renderValue={(items) => (
-          <div className="flex flex-wrap gap-2">
-            {items.map((item) => (
-              <Chip
-                key={item.key}
-                classNames={{
-                  content: 'block truncate'
-                }}
-                onClose={async () => {
-                  await groupDelSubscriptionsMutation.mutateAsync({ id: group.id, subscriptionIDs: [item.data!.id] })
-                }}
-              >
-                {item.data!.tag}
-              </Chip>
-            ))}
-          </div>
-        )}
-      >
-        {(subscription) => (
-          <SelectItem key={subscription.id} value={subscription.id} textValue={subscription.id}>
-            {subscription.tag}
-          </SelectItem>
-        )}
-      </Select>
-    </div>
+              ))}
+            </div>
+          )}
+        >
+          {(subscription) => (
+            <SelectItem key={subscription.id} value={subscription.id} textValue={subscription.id}>
+              {subscription.tag}
+            </SelectItem>
+          )}
+        </Select>
+      </AccordionItem>
+    </Accordion>
   )
 }
 
@@ -215,7 +238,7 @@ const usePolicies = () => {
   ]
 }
 
-const GroupAccordion: FC<{
+const GroupCard: FC<{
   group: Group
   subscriptions: Subscription[]
   nodes: Node[]
@@ -235,71 +258,72 @@ const GroupAccordion: FC<{
   const removeGroupsMutation = useRemoveGroupsMutation()
 
   return (
-    <Accordion key={group.id} variant="shadow">
-      <AccordionItem
-        title={group.name}
-        startContent={
-          <div className="flex items-center gap-2">
-            <Dropdown>
-              <DropdownTrigger>
-                <Button color="primary" as="div">
-                  {group.policy}
-                </Button>
-              </DropdownTrigger>
+    <Card>
+      <CardHeader className="flex items-center justify-between">
+        <span className="text-lg font-bold">{group.name}</span>
 
-              <DropdownMenu
-                aria-label="Policy"
-                disallowEmptySelection
-                selectionMode="single"
-                selectedKeys={[group.policy]}
-                onSelectionChange={async (selected) => {
-                  if (selected === 'all') {
-                    return
-                  }
+        <div className="flex items-center gap-2">
+          <Dropdown placement="bottom-start">
+            <DropdownTrigger>
+              <Button color="primary" as="div">
+                {group.policy}
+              </Button>
+            </DropdownTrigger>
 
-                  await groupSetPolicyMutation.mutateAsync({
-                    id: group.id,
-                    policy: Array.from(selected)[0] as Policy,
-                    policyParams: []
+            <DropdownMenu
+              aria-label="Policy"
+              disallowEmptySelection
+              selectionMode="single"
+              selectedKeys={[group.policy]}
+              onSelectionChange={async (selected) => {
+                if (selected === 'all') return
+
+                await groupSetPolicyMutation.mutateAsync({
+                  id: group.id,
+                  policy: Array.from(selected)[0] as Policy,
+                  policyParams: []
+                })
+              }}
+            >
+              {policies.map((policy) => (
+                <DropdownItem key={policy.value} value={policy.value}>
+                  {policy.label}
+                </DropdownItem>
+              ))}
+            </DropdownMenu>
+          </Dropdown>
+
+          <Button color="danger" as="div" isIconOnly onPress={onRemoveGroupOpen}>
+            <IconTrash />
+          </Button>
+
+          <Modal isOpen={isRemoveGroupOpen} onOpenChange={onRemoveGroupOpenChange}>
+            <ModalContent>
+              <ModalHeader>{t('primitives.remove', { resourceName: t('primitives.group') })}</ModalHeader>
+              <ModalBody>{group.name}</ModalBody>
+
+              <ModalConfirmFormFooter
+                onCancel={onRemoveGroupClose}
+                isSubmitting={removeGroupsMutation.isPending}
+                onConfirm={async () => {
+                  await removeGroupsMutation.mutateAsync({
+                    groupIDs: [group.id]
                   })
+
+                  onRemoveGroupClose()
                 }}
-              >
-                {policies.map((policy) => (
-                  <DropdownItem key={policy.value} value={policy.value}>
-                    {policy.label}
-                  </DropdownItem>
-                ))}
-              </DropdownMenu>
-            </Dropdown>
+              />
+            </ModalContent>
+          </Modal>
+        </div>
+      </CardHeader>
 
-            <Button color="danger" as="div" isIconOnly onPress={onRemoveGroupOpen}>
-              <IconTrash />
-            </Button>
+      <Divider />
 
-            <Modal isOpen={isRemoveGroupOpen} onOpenChange={onRemoveGroupOpenChange}>
-              <ModalContent>
-                <ModalHeader>{t('primitives.remove', { resourceName: t('primitives.group') })}</ModalHeader>
-                <ModalBody>{group.name}</ModalBody>
-
-                <ModalConfirmFormFooter
-                  onCancel={onRemoveGroupClose}
-                  isSubmitting={removeGroupsMutation.isPending}
-                  onConfirm={async () => {
-                    await removeGroupsMutation.mutateAsync({
-                      groupIDs: [group.id]
-                    })
-
-                    onRemoveGroupClose()
-                  }}
-                />
-              </ModalContent>
-            </Modal>
-          </div>
-        }
-      >
+      <CardBody>
         <GroupContent group={group} subscriptions={subscriptions} nodes={nodes} />
-      </AccordionItem>
-    </Accordion>
+      </CardBody>
+    </Card>
   )
 }
 
@@ -402,10 +426,12 @@ export const GroupSection: FC<{ nodes: Node[]; subscriptions: Subscription[] }> 
         </Fragment>
       </div>
 
-      {groupsQuery.data &&
-        groupsQuery.data.groups.map((group) => (
-          <GroupAccordion key={group.id} group={group} nodes={nodes} subscriptions={subscriptions} />
-        ))}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        {groupsQuery.data &&
+          groupsQuery.data.groups.map((group) => (
+            <GroupCard key={group.id} group={group} nodes={nodes} subscriptions={subscriptions} />
+          ))}
+      </div>
     </div>
   )
 }
