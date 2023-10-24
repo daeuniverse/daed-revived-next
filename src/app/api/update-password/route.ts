@@ -2,6 +2,7 @@ import { request } from 'graphql-request'
 import { NextResponse } from 'next/server'
 import { UpdatePasswordMutation } from '~/apis/gql/graphql'
 import { updatePasswordMutation } from '~/apis/mutation'
+import { graphqlAPIURL } from '~/constants'
 import { decodeJWTFromCookie, storeJWTAsCookie } from '~/helpers'
 
 export const POST = async (req: Request) => {
@@ -16,7 +17,7 @@ export const POST = async (req: Request) => {
   const { token } = jwtPayload
 
   const { updatePassword } = await request<UpdatePasswordMutation>(
-    'http://localhost:3000/api/wing/graphql',
+    graphqlAPIURL,
     updatePasswordMutation,
     { currentPassword, newPassword },
     { Authorization: `Bearer ${token}` }

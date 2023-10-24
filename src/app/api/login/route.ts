@@ -11,13 +11,12 @@ import {
   selectRoutingMutation,
   setJsonStorageMutation
 } from '~/apis/mutation'
+import { graphqlAPIURL } from '~/constants'
 import { storeJWTAsCookie } from '~/helpers'
 import { configFormDefault } from '~/schemas/config'
 import { DNSFormDefault } from '~/schemas/dns'
 import { groupFormDefault } from '~/schemas/group'
 import { routingFormDefault } from '~/schemas/routing'
-
-const apiURL = 'http://localhost:3000/api/wing/graphql'
 
 const getDefaults = async <T extends ArrayLike<string>>(requestClient: GraphQLClient, paths: string[]) => {
   const { jsonStorage } = await requestClient.request(
@@ -46,7 +45,7 @@ const setJsonStorage = (requestClient: GraphQLClient, object: Record<string, str
 }
 
 const initialize = async (token: string) => {
-  const requestClient = new GraphQLClient(apiURL, {
+  const requestClient = new GraphQLClient(graphqlAPIURL, {
     headers: {
       Authorization: `Bearer ${token}`
     }
@@ -102,9 +101,10 @@ const initialize = async (token: string) => {
 
 export const POST = async (req: Request) => {
   const { username, password } = await req.json()
+  console.log(process.env.HOSTNAME, process.env.PORT)
 
   const { numberUsers } = await request(
-    apiURL,
+    graphqlAPIURL,
     graphql(`
       query NumberUsers {
         numberUsers
@@ -116,7 +116,7 @@ export const POST = async (req: Request) => {
   // and initialize the default config, routing, dns, and group
   if (numberUsers === 0) {
     const { createUser } = await request(
-      apiURL,
+      graphqlAPIURL,
       graphql(`
         mutation CreateUser($username: String!, $password: String!) {
           createUser(username: $username, password: $password)
@@ -133,7 +133,7 @@ export const POST = async (req: Request) => {
   }
 
   const { token } = await request(
-    apiURL,
+    graphqlAPIURL,
     graphql(`
       query Token($username: String!, $password: String!) {
         token(username: $username, password: $password)
