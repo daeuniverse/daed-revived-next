@@ -35,7 +35,7 @@
     "@types/react-syntax-highlighter": "^15.5.9",
     "@vitejs/plugin-react": "^4.1.0",
     "autoprefixer": "^10.4.16",
-    "commitlint": "^18.0.0",
+    "commitlint": "^18.1.0",
     "dayjs": "^1.11.10",
     "encoding": "^0.1.13",
     "env-paths": "^3.0.0",
