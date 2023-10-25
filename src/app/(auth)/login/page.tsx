@@ -22,7 +22,7 @@ export default function LoginPage() {
   })
 
   return (
-    <div className="mx-auto flex w-full max-w-screen-xl flex-col items-center gap-4 px-4 pt-4 sm:flex-row sm:pt-64">
+    <div className="absolute left-1/2 top-1/2 flex w-full max-w-screen-xl -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-4 px-4 sm:flex-row">
       <div className="flex w-full flex-col items-center sm:w-2/5">
         <div className="overflow-hidden rounded-lg">
           <RiveComponent src="/809-1634-rocket-demo.riv" className="h-64 w-64" />
