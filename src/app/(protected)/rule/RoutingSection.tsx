@@ -72,7 +72,7 @@ const CreateOrEditModal: FC<CreateOrEditModalContentProps & (CreateModalContentP
             {type === 'create' && t('primitives.create', { resourceName: t('primitives.routing') })}
           </ModalHeader>
 
-          <ModalBody className="flex flex-col gap-2">
+          <ModalBody className="flex flex-col gap-4">
             <Input
               label={t('form.fields.name')}
               placeholder={t('form.fields.name')}

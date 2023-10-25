@@ -1,6 +1,6 @@
 import { cn } from '@nextui-org/react'
 import { Metadata } from 'next'
-import { Noto_Sans_SC, Ubuntu_Mono } from 'next/font/google'
+import { Inter, Noto_Sans_SC, Ubuntu_Mono } from 'next/font/google'
 import localFont from 'next/font/local'
 import { ReactNode } from 'react'
 import { Bootstrap } from './bootstrap'
@@ -9,6 +9,12 @@ import { Providers } from './providers'
 import '~/styles/globals.css'
 
 // general purpose
+const interFont = Inter({
+  subsets: ['latin', 'latin-ext', 'cyrillic', 'cyrillic-ext', 'greek', 'greek-ext'],
+  variable: '--font-inter'
+})
+
+// for chinese characters
 const notoSansSCFont = Noto_Sans_SC({
   subsets: ['latin', 'latin-ext', 'cyrillic', 'vietnamese'],
   variable: '--font-noto-sans'
@@ -40,7 +46,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
     <html
       lang="en"
       suppressHydrationWarning
-      className={cn(notoSansSCFont.variable, ubuntuMonoFont.variable, twemojiFont.variable)}
+      className={cn(interFont.variable, notoSansSCFont.variable, ubuntuMonoFont.variable, twemojiFont.variable)}
     >
       <body>
         <Providers>
