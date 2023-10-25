@@ -21,9 +21,9 @@ export const resources = {
 } as const
 
 export const initializeI18n = async () => {
-  await i18n.use(detectLanguage).use(initReactI18next).init({
-    lng: LANG.enUS,
+  await i18n.use(initReactI18next).use(detectLanguage).init({
     resources,
+    fallbackLng: LANG.enUS,
     returnNull: false
   })
 

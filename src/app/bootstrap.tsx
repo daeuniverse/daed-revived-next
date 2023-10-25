@@ -2,24 +2,21 @@
 
 import dayjs from 'dayjs'
 import duration from 'dayjs/plugin/duration'
-import { FC, ReactNode, useState } from 'react'
+import { FC, ReactNode } from 'react'
 import { useAsync } from 'react-use'
 import { LoadingSpinner } from '~/components/LoadingSpinner'
 import { initializeEditor } from '~/editor'
 import { initializeI18n } from '~/i18n'
 
 export const Bootstrap: FC<{ children: ReactNode }> = ({ children }) => {
-  const [loading, setLoading] = useState(true)
-
-  useAsync(async () => {
-    setLoading(true)
-
+  const { loading } = useAsync(async () => {
     dayjs.extend(duration)
-    await initializeI18n()
-    await initializeEditor()
 
-    setLoading(false)
-  })
+    try {
+      await initializeI18n()
+      await initializeEditor()
+    } catch {}
+  }, [])
 
   if (loading) {
     return (
