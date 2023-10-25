@@ -9,6 +9,7 @@ import {
   CardBody,
   CardHeader,
   Chip,
+  cn,
   Dropdown,
   DropdownItem,
   DropdownMenu,
@@ -426,12 +427,18 @@ export const GroupSection: FC<{ nodes: Node[]; subscriptions: Subscription[] }> 
         </Fragment>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        {groupsQuery.data &&
-          groupsQuery.data.groups.map((group) => (
+      {groupsQuery.data && (
+        <div
+          className={cn(
+            'grid grid-cols-1 gap-4',
+            groupsQuery.data.groups.length > 1 ? 'sm:grid-cols-2' : 'sm:grid-cols-1'
+          )}
+        >
+          {groupsQuery.data?.groups.map((group) => (
             <GroupCard key={group.id} group={group} nodes={nodes} subscriptions={subscriptions} />
           ))}
-      </div>
+        </div>
+      )}
     </div>
   )
 }
