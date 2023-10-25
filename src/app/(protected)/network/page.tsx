@@ -21,7 +21,7 @@ export default function NetworkPage() {
           subscriptions={subscriptionsQuery.data?.subscriptions || []}
         />
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
           <NodeSection nodes={nodesQuery.data?.nodes.edges || []} isLoading={nodesQuery.isLoading} />
 
           <SubscriptionSection subscriptions={subscriptionsQuery.data?.subscriptions || []} />
