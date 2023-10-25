@@ -30,7 +30,7 @@
     "@types/lodash": "^4.14.200",
     "@types/mime": "^3.0.3",
     "@types/node": "^20.8.8",
-    "@types/react": "^18.2.31",
+    "@types/react": "^18.2.32",
     "@types/react-dom": "^18.2.14",
     "@types/react-syntax-highlighter": "^15.5.9",
     "@vitejs/plugin-react": "^4.1.0",
