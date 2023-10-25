@@ -9,11 +9,9 @@ const CodeBlock: FC<{ children: string } & SyntaxHighlighterProps> = ({ children
   const { resolvedTheme } = useTheme()
 
   return (
-    <div className="overflow-hidden rounded-lg">
-      <SyntaxHighlighter style={resolvedTheme === 'dark' ? atomOneDark : atomOneLight} {...props}>
-        {children}
-      </SyntaxHighlighter>
-    </div>
+    <SyntaxHighlighter className="rounded-lg" style={resolvedTheme === 'dark' ? atomOneDark : atomOneLight} {...props}>
+      {children}
+    </SyntaxHighlighter>
   )
 }
 CodeBlock.displayName = 'CodeBlock'
