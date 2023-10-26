@@ -3,7 +3,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button, Input } from '@nextui-org/react'
 import RiveComponent from '@rive-app/react-canvas'
-import ky from 'ky'
+import ky, { HTTPError } from 'ky'
 import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
@@ -39,7 +39,7 @@ export default function LoginPage() {
 
               router.replace('/network')
             } catch (err) {
-              toast.error((err as Error).message)
+              toast.error((await (err as HTTPError).response.json()).message)
             }
           })}
         >

@@ -1,4 +1,4 @@
-import { GraphQLClient, request } from 'graphql-request'
+import { ClientError, GraphQLClient } from 'graphql-request'
 import { NextResponse } from 'next/server'
 import { graphql } from '~/apis/gql'
 import {
@@ -100,10 +100,21 @@ const initialize = async (token: string) => {
 }
 
 export const POST = async (req: Request) => {
+  const requestClient = new GraphQLClient(graphqlAPIURL, {
+    responseMiddleware: (response) => {
+      const error = (response as ClientError).response?.errors?.[0]
+
+      if (!error) {
+        return response
+      }
+
+      throw error
+    }
+  })
+
   const { username, password } = await req.json()
 
-  const { numberUsers } = await request(
-    graphqlAPIURL,
+  const { numberUsers } = await requestClient.request(
     graphql(`
       query NumberUsers {
         numberUsers
@@ -114,8 +125,7 @@ export const POST = async (req: Request) => {
   // If there are no users, create one
   // and initialize the default config, routing, dns, and group
   if (numberUsers === 0) {
-    const { createUser } = await request(
-      graphqlAPIURL,
+    const { createUser } = await requestClient.request(
       graphql(`
         mutation CreateUser($username: String!, $password: String!) {
           createUser(username: $username, password: $password)
@@ -131,17 +141,20 @@ export const POST = async (req: Request) => {
     return new NextResponse()
   }
 
-  const { token } = await request(
-    graphqlAPIURL,
-    graphql(`
-      query Token($username: String!, $password: String!) {
-        token(username: $username, password: $password)
-      }
-    `),
-    { username, password }
-  )
+  try {
+    const { token } = await requestClient.request(
+      graphql(`
+        query Token($username: String!, $password: String!) {
+          token(username: $username, password: $password)
+        }
+      `),
+      { username, password }
+    )
 
-  storeJWTAsCookie(token)
+    storeJWTAsCookie(token)
 
-  return new NextResponse()
+    return new NextResponse()
+  } catch (err) {
+    return NextResponse.json({ message: (err as Error).message }, { status: 401 })
+  }
 }
