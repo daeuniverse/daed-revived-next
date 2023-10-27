@@ -1,5 +1,5 @@
 import { cn } from '@nextui-org/react'
-import { Metadata } from 'next'
+import { Metadata, Viewport } from 'next'
 import { Inter, Noto_Sans_SC, Ubuntu_Mono } from 'next/font/google'
 import localFont from 'next/font/local'
 import { ReactNode } from 'react'
@@ -36,9 +36,17 @@ const twemojiFont = localFont({
 
 export const metadata: Metadata = {
   title: 'daed',
-  description: 'A modern dashboard for dae',
-  viewport:
-    'width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover'
+  description: 'A modern dashboard for dae'
+}
+
+export const viewport: Viewport = {
+  colorScheme: 'dark light',
+  width: 'device-width',
+  initialScale: 1,
+  minimumScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: 'cover'
 }
 
 export default async function RootLayout({ children }: { children: ReactNode }) {
