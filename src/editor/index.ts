@@ -8,9 +8,7 @@ export const initializeEditor = async () => {
   monacoInstance.languages.register({ id: 'dae', extensions: ['dae'] })
   monacoInstance.languages.setMonarchTokensProvider('dae', daeLang)
 
-  const themeGithub = await import('monaco-themes/themes/GitHub.json')
   const themeGithubLight = await import('monaco-themes/themes/GitHub Light.json')
 
-  monacoInstance.editor.defineTheme('github', themeGithub as monaco.editor.IStandaloneThemeData)
   monacoInstance.editor.defineTheme('githubLight', themeGithubLight as monaco.editor.IStandaloneThemeData)
 }

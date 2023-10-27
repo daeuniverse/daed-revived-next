@@ -8,7 +8,7 @@ import { GraphqlClientProvider, SessionContextProps, SessionProvider } from '~/c
 export const Providers: FC<SessionContextProps & { children: ReactNode }> = ({ token, children }) => (
   <SessionProvider token={token}>
     <GraphqlClientProvider>
-      <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { refetchOnWindowFocus: false } } })}>
+      <QueryClientProvider client={new QueryClient()}>
         {children}
 
         <ReactQueryDevtools />
