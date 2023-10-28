@@ -65,6 +65,9 @@ dependencies:
   '@types/react-syntax-highlighter':
     specifier: ^15.5.9
     version: 15.5.9
+  '@types/urijs':
+    specifier: ^1.19.22
+    version: 1.19.22
   '@vitejs/plugin-react':
     specifier: ^4.1.0
     version: 4.1.0(vite@4.5.0)
@@ -185,6 +188,9 @@ dependencies:
   typescript:
     specifier: ^5.2.2
     version: 5.2.2
+  urijs:
+    specifier: ^1.19.11
+    version: 1.19.11
   vitest:
     specifier: ^0.34.6
     version: 0.34.6(jsdom@22.1.0)
@@ -4774,6 +4780,11 @@ packages:
   /@types/unist@2.0.9:
     resolution:
       { integrity: sha512-zC0iXxAv1C1ERURduJueYzkzZ2zaGyc+P2c95hgkikHPr3z8EdUZOlgEQ5X0DRmwDZn+hekycQnoeiiRVrmilQ== }
+    dev: false
+
+  /@types/urijs@1.19.22:
+    resolution:
+      { integrity: sha512-qnYBwfN7O/+i6E1Kr8JaCKsrCLpRCiQ1XxkSxNIYuJ/5Aagt0+HlMX78DJMUrNzDULMz0eu2gcprlxJaDtACOw== }
     dev: false
 
   /@types/ws@8.5.8:
@@ -11033,6 +11044,11 @@ packages:
       { integrity: sha512-7rKUyy33Q1yc98pQ1DAmLtwX109F7TIfWlW1Ydo8Wl1ii1SeHieeh0HHfPeL2fMXK6z0s8ecKs9frCuLJvndBg== }
     dependencies:
       punycode: 2.3.0
+    dev: false
+
+  /urijs@1.19.11:
+    resolution:
+      { integrity: sha512-HXgFDgDommxn5/bIv0cnQZsPhHDA90NPHD6+c/v21U5+Sx5hoP8+dP9IZXBU1gIfvdRfhG8cel9QNPeionfcCQ== }
     dev: false
 
   /url-parse@1.5.10:
