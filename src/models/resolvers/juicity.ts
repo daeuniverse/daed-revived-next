@@ -1,12 +1,12 @@
 import { z } from 'zod'
-
-import { DEFAULT_JUICITY_FORM_VALUES, NodeType, juicitySchema } from '~/constants'
+import { NodeType } from '~/constants'
 import { BaseNodeResolver } from '~/models'
+import { juicityDefault, juicitySchema } from '~/schemas/node'
 
 export class JuicityNodeResolver extends BaseNodeResolver<typeof juicitySchema> {
   type = NodeType.juicity
   schema = juicitySchema
-  defaultValues = DEFAULT_JUICITY_FORM_VALUES
+  defaultValues = juicityDefault
 
   generate = (values: z.infer<typeof juicitySchema>) =>
     this.generateURL({

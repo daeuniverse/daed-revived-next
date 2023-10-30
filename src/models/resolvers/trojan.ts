@@ -1,12 +1,12 @@
 import { z } from 'zod'
-
-import { DEFAULT_TROJAN_FORM_VALUES, NodeType, trojanSchema } from '~/constants'
+import { NodeType } from '~/constants'
 import { BaseNodeResolver } from '~/models'
+import { trojanDefault, trojanSchema } from '~/schemas/node'
 
 export class TrojanNodeResolver extends BaseNodeResolver<typeof trojanSchema> {
   type = NodeType.trojan
   schema = trojanSchema
-  defaultValues = DEFAULT_TROJAN_FORM_VALUES
+  defaultValues = trojanDefault
 
   generate = (values: z.infer<typeof trojanSchema>) => {
     const query: Record<string, unknown> = {

@@ -1,13 +1,13 @@
 import { Base64 } from 'js-base64'
 import { z } from 'zod'
-
-import { DEFAULT_SS_FORM_VALUES, NodeType, ssSchema } from '~/constants'
+import { NodeType } from '~/constants'
 import { BaseNodeResolver } from '~/models'
+import { ssDefault, ssSchema } from '~/schemas/node'
 
 export class ShadowsocksNodeResolver extends BaseNodeResolver<typeof ssSchema> {
   type = NodeType.shadowsocks
   schema = ssSchema
-  defaultValues = DEFAULT_SS_FORM_VALUES
+  defaultValues = ssDefault
 
   generate(values: z.infer<typeof ssSchema>) {
     /* ss://BASE64(method:password)@server:port#name */

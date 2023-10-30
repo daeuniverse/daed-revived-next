@@ -1,12 +1,12 @@
 import { z } from 'zod'
-
-import { DEFAULT_TUIC_FORM_VALUES, NodeType, tuicSchema } from '~/constants'
+import { NodeType } from '~/constants'
 import { BaseNodeResolver } from '~/models'
+import { tuicDefault, tuicSchema } from '~/schemas/node'
 
 export class TuicNodeResolver extends BaseNodeResolver<typeof tuicSchema> {
   type = NodeType.tuic
   schema = tuicSchema
-  defaultValues = DEFAULT_TUIC_FORM_VALUES
+  defaultValues = tuicDefault
 
   generate = (values: z.infer<typeof tuicSchema>) =>
     this.generateURL({

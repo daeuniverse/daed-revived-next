@@ -1,13 +1,13 @@
 import { z } from 'zod'
-
-import { DEFAULT_SOCKS5_FORM_VALUES, NodeType, socks5Schema } from '~/constants'
+import { NodeType } from '~/constants'
 import { BaseNodeResolver } from '~/models'
-import { GenerateURLParams } from '~/utils'
+import { GenerateURLParams } from '~/models/base'
+import { socks5Default, socks5Schema } from '~/schemas/node'
 
 export class Socks5NodeResolver extends BaseNodeResolver<typeof socks5Schema> {
   type = NodeType.socks5
   schema = socks5Schema
-  defaultValues = DEFAULT_SOCKS5_FORM_VALUES
+  defaultValues = socks5Default
 
   generate = (values: z.infer<typeof socks5Schema>) => {
     const generateURLParams: GenerateURLParams = {

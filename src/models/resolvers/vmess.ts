@@ -1,13 +1,13 @@
 import { Base64 } from 'js-base64'
 import { z } from 'zod'
-
-import { DEFAULT_V2RAY_FORM_VALUES, NodeType, v2raySchema } from '~/constants'
+import { NodeType } from '~/constants'
 import { BaseNodeResolver } from '~/models'
+import { v2rayDefault, v2raySchema } from '~/schemas/node'
 
 export class VmessNodeResolver extends BaseNodeResolver<typeof v2raySchema> {
   type = NodeType.vmess
   schema = v2raySchema
-  defaultValues = DEFAULT_V2RAY_FORM_VALUES
+  defaultValues = v2rayDefault
 
   generate(values: z.infer<typeof v2raySchema>) {
     const { net } = values

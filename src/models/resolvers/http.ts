@@ -1,13 +1,13 @@
 import { z } from 'zod'
-
-import { DEFAULT_HTTP_FORM_VALUES, NodeType, httpSchema } from '~/constants'
+import { NodeType } from '~/constants'
 import { BaseNodeResolver } from '~/models'
-import { GenerateURLParams } from '~/utils'
+import { GenerateURLParams } from '~/models/base'
+import { httpDefault, httpSchema } from '~/schemas/node'
 
 export class HTTPNodeResolver extends BaseNodeResolver<typeof httpSchema> {
   type = NodeType.http
   schema = httpSchema
-  defaultValues = DEFAULT_HTTP_FORM_VALUES
+  defaultValues = httpDefault
 
   generate = (values: z.infer<typeof httpSchema> & { protocol: 'http' | 'https' }) => {
     const generateURLParams: GenerateURLParams = {

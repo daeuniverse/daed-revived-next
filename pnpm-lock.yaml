@@ -110,6 +110,9 @@ dependencies:
   i18next-browser-languagedetector:
     specifier: ^7.1.0
     version: 7.1.0
+  js-base64:
+    specifier: ^3.7.5
+    version: 3.7.5
   jsdom:
     specifier: ^22.1.0
     version: 22.1.0
@@ -8042,6 +8045,11 @@ packages:
   /jose@4.15.4:
     resolution:
       { integrity: sha512-W+oqK4H+r5sITxfxpSU+MMdr/YSWGvgZMQDIsNoBDGGy4i7GBPTtvFKibQzW06n3U3TqHjhvBJsirShsEJ6eeQ== }
+    dev: false
+
+  /js-base64@3.7.5:
+    resolution:
+      { integrity: sha512-3MEt5DTINKqfScXKfJFrRbxkrnk2AxPWGBL/ycjz4dK8iqiSJ06UxD8jh8xuh6p10TX4t2+7FsBYVxxQbMg+qA== }
     dev: false
 
   /js-cookie@2.2.1:

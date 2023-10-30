@@ -1,13 +1,13 @@
 import { Base64 } from 'js-base64'
 import { z } from 'zod'
-
-import { DEFAULT_SSR_FORM_VALUES, NodeType, ssrSchema } from '~/constants'
+import { NodeType } from '~/constants'
 import { BaseNodeResolver } from '~/models'
+import { ssrDefault, ssrSchema } from '~/schemas/node'
 
 export class ShadowsocksRNodeResolver extends BaseNodeResolver<typeof ssrSchema> {
   type = NodeType.shadowsocksR
   schema = ssrSchema
-  defaultValues = DEFAULT_SSR_FORM_VALUES
+  defaultValues = ssrDefault
 
   generate = (values: z.infer<typeof ssrSchema>) =>
     /* ssr://server:port:proto:method:obfs:URLBASE64(password)/?remarks=URLBASE64(remarks)&protoparam=URLBASE64(protoparam)&obfsparam=URLBASE64(obfsparam)) */
