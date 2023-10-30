@@ -51,7 +51,7 @@
     "js-base64": "^3.7.5",
     "jsdom": "^22.1.0",
     "jsonwebtoken": "^9.0.2",
-    "ky": "^1.1.1",
+    "ky": "^1.1.2",
     "lint-staged": "^15.0.2",
     "lodash": "^4.17.21",
     "match-sorter": "^6.3.1",
