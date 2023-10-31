@@ -5,7 +5,7 @@
 :root {
   scrollbar-width: thin;
   scrollbar-color: transparent transparent;
-  font-family: var(--font-inter), var(--font-noto-sans), var(--font-ubuntu-mono), var(--font-twemoji);
+  font-family: var(--font-geist-sans), var(--font-twemoji);
 }
 
 ::-webkit-scrollbar {

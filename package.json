@@ -43,6 +43,7 @@
     "eslint": "^8.52.0",
     "eslint-config-next": "14.0.0",
     "framer-motion": "^10.16.4",
+    "geist": "^1.0.0",
     "graphql": "^16.8.1",
     "graphql-request": "^6.1.0",
     "husky": "^8.0.3",

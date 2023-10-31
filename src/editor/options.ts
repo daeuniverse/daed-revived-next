@@ -6,8 +6,7 @@ export const themeLight = 'githubLight'
 export const options: EditorProps['options'] = {
   cursorBlinking: 'solid',
   folding: false,
-  fontFamily: 'var(--font-ubuntu-mono)',
-  fontSize: 14,
+  fontFamily: 'var(--font-fira-code)',
   fontWeight: 'bold',
   formatOnPaste: true,
   glyphMargin: false,
