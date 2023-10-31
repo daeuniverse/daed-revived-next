@@ -14,6 +14,8 @@ this is a test message
 
   return (
     <div className="flex flex-col gap-4">
+      <h1 className="py-12 text-center text-9xl font-semibold">daed</h1>
+
       <Editor height="20vh" language="markdown" value={editorValue} onChange={(value) => setEditorValue(value || '')} />
     </div>
   )

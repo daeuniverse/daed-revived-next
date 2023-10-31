@@ -151,7 +151,7 @@ export const Header: FC = () => {
         <NavbarMenuToggle className="sm:hidden" />
 
         <NavbarBrand>
-          <NextLink href="/">
+          <NextLink href="/" onClick={() => setIsMenuOpen(false)}>
             <LogoText />
           </NextLink>
         </NavbarBrand>
