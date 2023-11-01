@@ -41,7 +41,7 @@
     "encoding": "^0.1.13",
     "env-paths": "^3.0.0",
     "eslint": "^8.52.0",
-    "eslint-config-next": "14.0.0",
+    "eslint-config-next": "14.0.1",
     "framer-motion": "^10.16.4",
     "geist": "^1.0.0",
     "graphql": "^16.8.1",
