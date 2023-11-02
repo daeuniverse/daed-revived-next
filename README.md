@@ -119,7 +119,7 @@ Feel free to open issues or submit your PR, any feedbacks or help are greatly ap
 
 Special thanks go to all these amazing people.
 
-[![contributors](https://contrib.rocks/image?repo=daeuniverse/daed)](https://github.com/daeuniverse/daed/graphs/contributors)
+[![contributors](https://contrib.rocks/image?repo=daeuniverse/daed-revived-next)](https://github.com/daeuniverse/daed-revived-next/graphs/contributors)
 
 If you would like to contribute, please see the [instructions](CONTRIBUTING.md). Also, it is recommended following the [commit message guide](docs/commit-msg-guide.md).
 
