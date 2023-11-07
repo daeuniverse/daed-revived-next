@@ -183,8 +183,8 @@ dependencies:
     specifier: ^17.4.0
     version: 17.4.0(react-dom@18.2.0)(react@18.2.0)
   sonner:
-    specifier: ^1.1.0
-    version: 1.1.0(react-dom@18.2.0)(react@18.2.0)
+    specifier: ^1.2.0
+    version: 1.2.0(react-dom@18.2.0)(react@18.2.0)
   sort-package-json:
     specifier: ^2.6.0
     version: 2.6.0
@@ -9566,8 +9566,8 @@ packages:
       tslib: 2.6.2
     dev: false
 
-  /sonner@1.1.0(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-pqc5yd1ekS6dBXLKljRogqatiGJSxCaX8mspnqKjLg5Rzw6eiAUgsG1SS8RuQzOjQq8/MlgFao6sIw9doqAkNg==}
+  /sonner@1.2.0(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-4bIPKrhF+Z4yEC4EZvNBswcVzMrUhztOQXqyIoiZqiqN1TT39FeK+TgRsQidvvztnYgOn4+S3LdAsri61c7ATA==}
     peerDependencies:
       react: ^18.0.0
       react-dom: ^18.0.0
