@@ -63,8 +63,8 @@ dependencies:
     specifier: ^18.2.14
     version: 18.2.14
   '@types/react-syntax-highlighter':
-    specifier: ^15.5.9
-    version: 15.5.9
+    specifier: ^15.5.10
+    version: 15.5.10
   '@types/urijs':
     specifier: ^1.19.22
     version: 1.19.22
@@ -4702,8 +4702,8 @@ packages:
       '@types/react': 18.2.36
     dev: false
 
-  /@types/react-syntax-highlighter@15.5.9:
-    resolution: {integrity: sha512-ven8zRSVMNkqt8ySJ2eEW5ugbfl/V/Z9S1c9UNhGqwkwVZNV5akk10rYDALxgwS25cLmN+/Q5UxlGj9CJmZ6Ew==}
+  /@types/react-syntax-highlighter@15.5.10:
+    resolution: {integrity: sha512-Vf8nNkGHnjwK37b2wDs92zJSAWS2Mb57NcYHgajCNssHeTNEixvjINnXJkKdY0V0/eLrYkPP1xDKvNmYIr4HIg==}
     dependencies:
       '@types/react': 18.2.36
     dev: false
