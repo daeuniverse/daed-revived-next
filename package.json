@@ -28,7 +28,7 @@
     "@tanstack/react-query-devtools": "^5.4.3",
     "@types/jsonwebtoken": "^9.0.5",
     "@types/lodash": "^4.14.200",
-    "@types/mime": "^3.0.3",
+    "@types/mime": "^3.0.4",
     "@types/node": "^20.8.10",
     "@types/react": "^18.2.36",
     "@types/react-dom": "^18.2.14",
