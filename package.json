@@ -31,7 +31,7 @@
     "@types/mime": "^3.0.3",
     "@types/node": "^20.8.10",
     "@types/react": "^18.2.36",
-    "@types/react-dom": "^18.2.14",
+    "@types/react-dom": "^18.2.15",
     "@types/react-syntax-highlighter": "^15.5.10",
     "@types/urijs": "^1.19.22",
     "@vitejs/plugin-react": "^4.1.1",
