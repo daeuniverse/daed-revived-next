@@ -42,7 +42,7 @@
     "env-paths": "^3.0.0",
     "eslint": "^8.53.0",
     "eslint-config-next": "14.0.1",
-    "framer-motion": "^10.16.4",
+    "framer-motion": "^10.16.5",
     "geist": "^1.1.0",
     "graphql": "^16.8.1",
     "graphql-request": "^6.1.0",
