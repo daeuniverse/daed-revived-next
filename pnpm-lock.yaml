@@ -159,8 +159,8 @@ dependencies:
     specifier: ^3.2.4
     version: 3.2.4(prettier@3.0.3)(typescript@5.2.2)
   prettier-plugin-tailwindcss:
-    specifier: ^0.5.6
-    version: 0.5.6(prettier-plugin-organize-imports@3.2.4)(prettier@3.0.3)
+    specifier: ^0.5.7
+    version: 0.5.7(prettier-plugin-organize-imports@3.2.4)(prettier@3.0.3)
   qrcode.react:
     specifier: ^3.1.0
     version: 3.1.0(react@18.2.0)
@@ -8808,8 +8808,8 @@ packages:
       typescript: 5.2.2
     dev: false
 
-  /prettier-plugin-tailwindcss@0.5.6(prettier-plugin-organize-imports@3.2.4)(prettier@3.0.3):
-    resolution: {integrity: sha512-2Xgb+GQlkPAUCFi3sV+NOYcSI5XgduvDBL2Zt/hwJudeKXkyvRS65c38SB0yb9UB40+1rL83I6m0RtlOQ8eHdg==}
+  /prettier-plugin-tailwindcss@0.5.7(prettier-plugin-organize-imports@3.2.4)(prettier@3.0.3):
+    resolution: {integrity: sha512-4v6uESAgwCni6YF6DwJlRaDjg9Z+al5zM4JfngcazMy4WEf/XkPS5TEQjbD+DZ5iNuG6RrKQLa/HuX2SYzC3kQ==}
     engines: {node: '>=14.21.3'}
     peerDependencies:
       '@ianvs/prettier-plugin-sort-imports': '*'
