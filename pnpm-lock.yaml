@@ -6,8 +6,8 @@ settings:
 
 dependencies:
   '@commitlint/config-conventional':
-    specifier: ^18.4.0
-    version: 18.4.0
+    specifier: ^18.4.2
+    version: 18.4.2
   '@graphql-codegen/cli':
     specifier: ^5.0.0
     version: 5.0.0(@parcel/watcher@2.3.0)(@types/node@20.9.0)(encoding@0.1.13)(graphql@16.8.1)(typescript@5.2.2)
@@ -942,8 +942,8 @@ packages:
       - typescript
     dev: false
 
-  /@commitlint/config-conventional@18.4.0:
-    resolution: {integrity: sha512-vArwCZopsZs0FnGsh9AR7uUTPZ5oVGk8+qnEZWq2KTsMjrE0k80b+oZ32GSQmXQT2iMKVrDC8pKX5uKNkCe9Sw==}
+  /@commitlint/config-conventional@18.4.2:
+    resolution: {integrity: sha512-qFjIqgKGV89lzUGHxanq2WJDXk5wZIxoZmZvf0I4i4CirL06Xj8qRh1shPsXNyI15d8Rj2HExww6cGJSFU9DdA==}
     engines: {node: '>=v18'}
     dependencies:
       conventional-changelog-conventionalcommits: 7.0.2
