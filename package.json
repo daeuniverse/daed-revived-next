@@ -36,7 +36,7 @@
     "@types/urijs": "^1.19.23",
     "@vitejs/plugin-react": "^4.2.0",
     "autoprefixer": "^10.4.16",
-    "commitlint": "^18.4.1",
+    "commitlint": "^18.4.2",
     "dayjs": "^1.11.10",
     "encoding": "^0.1.13",
     "env-paths": "^3.0.0",
