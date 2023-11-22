@@ -66,8 +66,8 @@ dependencies:
     specifier: ^15.5.10
     version: 15.5.10
   '@types/urijs':
-    specifier: ^1.19.23
-    version: 1.19.23
+    specifier: ^1.19.25
+    version: 1.19.25
   '@vitejs/plugin-react':
     specifier: ^4.2.0
     version: 4.2.0(vite@4.5.0)
@@ -4802,8 +4802,8 @@ packages:
     resolution: {integrity: sha512-zC0iXxAv1C1ERURduJueYzkzZ2zaGyc+P2c95hgkikHPr3z8EdUZOlgEQ5X0DRmwDZn+hekycQnoeiiRVrmilQ==}
     dev: false
 
-  /@types/urijs@1.19.23:
-    resolution: {integrity: sha512-3Zbk6RzmIpvKTNEHO2RcPOGHM++BQEITMqBRR1Ju32WbruhV/pygYgxiP3xA0b1B88zjzs0Izzjxsbj768+IjA==}
+  /@types/urijs@1.19.25:
+    resolution: {integrity: sha512-XOfUup9r3Y06nFAZh3WvO0rBU4OtlfPB/vgxpjg+NRdGU6CN6djdc6OEiH+PcqHCY6eFLo9Ista73uarf4gnBg==}
     dev: false
 
   /@types/ws@8.5.8:
