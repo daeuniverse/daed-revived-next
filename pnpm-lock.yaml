@@ -33,8 +33,8 @@ dependencies:
     specifier: ^2.3.0
     version: 2.3.0
   '@rive-app/react-canvas':
-    specifier: ^4.5.3
-    version: 4.5.3(react@18.2.0)
+    specifier: ^4.5.4
+    version: 4.5.4(react@18.2.0)
   '@tabler/icons-react':
     specifier: ^2.42.0
     version: 2.42.0(react@18.2.0)
@@ -4572,16 +4572,16 @@ packages:
     resolution: {integrity: sha512-AW8PKd6iX3vAZ0vA43nOUOnbq/X5ihgU+mSXXqunMkeQADGiqw/PY0JNeYtD5sr0PAy51YPgAPbDoeapv9r8WA==}
     dev: false
 
-  /@rive-app/canvas@2.7.3:
-    resolution: {integrity: sha512-b/NeFwUTa243aC68xNZPFDVpg1CPmlBB89q0vi3Fiv6q14/WPua+fVsmG1omx0/8ToGNR2DmmXHdvfVP2YazoA==}
+  /@rive-app/canvas@2.7.4:
+    resolution: {integrity: sha512-WgEBcdQkEitaRikLfzkwY0Ye456kITamNNz40hBf4oxFjhCSBySxTw21ZKgw+ZqymTGNJLuN+a9zF2SW8ARusg==}
     dev: false
 
-  /@rive-app/react-canvas@4.5.3(react@18.2.0):
-    resolution: {integrity: sha512-sfFS0dmRpfrhUmBFp0Xo2ZfkEP7Yh+1MQVyl4qhVF9KSgErcwJwkaGDpyKTwyUVSbd8A0y2PLmkmQGHrbQj5wA==}
+  /@rive-app/react-canvas@4.5.4(react@18.2.0):
+    resolution: {integrity: sha512-SUoFAA+FuuBdAnFkOzn+Ft43oNiPm1N6mGiXc+YyJwSxZoKXAdjzu8cCvSfoEZL7jlJTVA1QBCq+ofST/vQaqA==}
     peerDependencies:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0
     dependencies:
-      '@rive-app/canvas': 2.7.3
+      '@rive-app/canvas': 2.7.4
       react: 18.2.0
     dev: false
 
