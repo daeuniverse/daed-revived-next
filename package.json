@@ -24,7 +24,7 @@
     "@parcel/watcher": "^2.3.0",
     "@rive-app/react-canvas": "^4.5.4",
     "@tabler/icons-react": "^2.42.0",
-    "@tanstack/react-query": "^5.8.7",
+    "@tanstack/react-query": "^5.8.9",
     "@tanstack/react-query-devtools": "^5.8.4",
     "@types/jsonwebtoken": "^9.0.5",
     "@types/lodash": "^4.14.202",
