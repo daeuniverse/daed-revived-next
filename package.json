@@ -30,7 +30,7 @@
     "@types/lodash": "^4.14.202",
     "@types/mime": "^3.0.4",
     "@types/node": "^20.10.0",
-    "@types/react": "^18.2.38",
+    "@types/react": "^18.2.39",
     "@types/react-dom": "^18.2.17",
     "@types/react-syntax-highlighter": "^15.5.10",
     "@types/urijs": "^1.19.25",
