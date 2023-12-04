@@ -56,7 +56,7 @@
     "lint-staged": "^15.1.0",
     "lodash": "^4.17.21",
     "match-sorter": "^6.3.1",
-    "mime": "^3.0.0",
+    "mime": "^4.0.0",
     "monaco-editor": "^0.44.0",
     "monaco-themes": "^0.4.4",
     "next": "^14.0.3",
